@@ -87,7 +87,7 @@ KNOWN_PRESETS = [
 def resolve_paths(target_dir: Optional[str] = None, index_dir: Optional[str] = None) -> tuple[Path, Optional[Path]]:
     """Resolve absolute repository and index directory paths."""
     global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH, config
-    
+
     if target_dir:
         t_path = Path(target_dir).expanduser().resolve()
     else:
@@ -243,7 +243,7 @@ async def get_stats(repo_path: Optional[str] = None, index_path: Optional[str] =
     """Get statistics about the selected repository index."""
     t_path, i_path = resolve_paths(repo_path, index_path)
     p = get_pipeline(str(t_path), str(i_path) if i_path else None)
-    
+
     if not p.is_indexed():
         return {
             "status": "not_indexed",
@@ -300,15 +300,20 @@ async def stream_indexing(
             if cache_key in _PIPELINES:
                 del _PIPELINES[cache_key]
 
+            t_files = getattr(metrics, 'total_files', None) if not isinstance(metrics, dict) else metrics.get('total_files', 0)
+            t_lines = getattr(metrics, 'total_lines', None) if not isinstance(metrics, dict) else metrics.get('total_lines', 0)
+            t_chunks = getattr(metrics, 'total_chunks', None) if not isinstance(metrics, dict) else metrics.get('total_chunks', 0)
+            t_time = getattr(metrics, 'indexing_time_seconds', None) if not isinstance(metrics, dict) else metrics.get('indexing_time_seconds', 0.0)
+
             event_q.put({
                 "stage": "done",
                 "percentage": 100.0,
-                "message": f"Successfully indexed {metrics.total_files} files ({metrics.total_lines:,} LOC).",
+                "message": f"Successfully indexed {t_files} files ({t_lines:,} LOC).",
                 "metrics": {
-                    "total_files": metrics.total_files,
-                    "total_lines": metrics.total_lines,
-                    "total_chunks": metrics.total_chunks,
-                    "indexing_time_seconds": metrics.indexing_time_seconds
+                    "total_files": t_files,
+                    "total_lines": t_lines,
+                    "total_chunks": t_chunks,
+                    "indexing_time_seconds": t_time
                 }
             })
         except Exception as e:
@@ -339,14 +344,14 @@ async def stream_indexing(
 async def trigger_index(req: IndexRequest):
     """Synchronous indexing fallback endpoint."""
     t_path, i_path = resolve_paths(req.target_dir, req.index_dir)
-    
+
     if not t_path.exists():
         raise HTTPException(status_code=404, detail=f"Target directory not found: {t_path}")
 
     cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
     indexer = HybridIndexer(cfg)
     metrics = indexer.index_codebase(t_path, force_reindex=req.force)
-    
+
     cache_key = f"{t_path}::{cfg.get_index_dir()}"
     if cache_key in _PIPELINES:
         del _PIPELINES[cache_key]
@@ -514,7 +519,7 @@ async def toggle_watcher(repo_path: Optional[str] = None):
     """Toggle background file watcher on/off."""
     global _WATCHER
     t_path, _ = resolve_paths(repo_path)
-    
+
     if _WATCHER and _WATCHER.is_running:
         _WATCHER.stop()
         return {"running": False, "message": "Watcher stopped"}
@@ -579,7 +584,7 @@ async def open_file(req: OpenFileRequest):
     import shutil
     import subprocess
     t_path, _ = resolve_paths(req.repo_path)
-    
+
     # Resolve target file path
     target = (Path(t_path) / req.file_path).resolve()
     if not target.exists():
