@@ -41,7 +41,7 @@
             --glass-blur: blur(40px) saturate(210%);
             --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.75);
 
-            /* Apple Accents */
+            /* Apple Semantic Accents */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
             --system-blue-tint: rgba(10, 132, 255, 0.16);
@@ -50,6 +50,8 @@
             --system-orange: #FF9F0A;
             --system-orange-tint: rgba(255, 159, 10, 0.14);
             --system-purple: #BF5AF2;
+            --system-purple-tint: rgba(191, 90, 242, 0.14);
+            --system-red: #FF453A;
 
             /* Labels */
             --label-primary: #FFFFFF;
@@ -867,7 +869,7 @@
         }
 
         /* ==========================================================================
-           Interactive Collapsible Code Architecture Explorer
+           Interactive Dual-Mode Architecture & Interactive Graph Engine
            ========================================================================== */
         .arch-explorer {
             display: flex;
@@ -885,6 +887,7 @@
 
         .arch-controls-right {
             display: flex;
+            align-items: center;
             gap: var(--space-2);
         }
 
@@ -906,6 +909,75 @@
             color: var(--label-primary);
         }
 
+        /* Interactive Canvas Force Graph */
+        .graph-canvas-container {
+            position: relative;
+            width: 100%;
+            height: 560px;
+            background: radial-gradient(circle at center, rgba(14, 14, 20, 0.95) 0%, rgba(4, 4, 6, 0.98) 100%);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
+            overflow: hidden;
+        }
+
+        #graphCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+        }
+
+        #graphCanvas:active {
+            cursor: grabbing;
+        }
+
+        .graph-floating-controls {
+            position: absolute;
+            bottom: var(--space-4);
+            right: var(--space-4);
+            display: flex;
+            gap: var(--space-2);
+            background: rgba(10, 10, 14, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            box-shadow: var(--glass-specular);
+        }
+
+        .graph-control-btn {
+            background: transparent;
+            border: none;
+            color: var(--label-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.3rem 0.6rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .graph-control-btn:hover {
+            background: var(--glass-bg-hover);
+            color: var(--label-primary);
+        }
+
+        .graph-hint-overlay {
+            position: absolute;
+            top: var(--space-3);
+            left: var(--space-4);
+            font-size: 0.72rem;
+            color: var(--label-tertiary);
+            font-family: var(--font-sans);
+            pointer-events: none;
+        }
+
+        /* Tree Explorer Container */
         .file-tree-container {
             display: flex;
             flex-direction: column;
@@ -1433,7 +1505,7 @@
         <div class="workspace-tabs-row">
             <button class="workspace-tab active" data-tab="search" onclick="switchTab('search')">Search & Citations</button>
             <button class="workspace-tab" data-tab="synthesize" onclick="switchTab('synthesize')">AI Synthesizer</button>
-            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Architecture Explorer</button>
+            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Architecture & Graph</button>
             <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Diff Patcher</button>
         </div>
 
@@ -1539,34 +1611,53 @@
             </div>
         </div>
 
-        <!-- 3. ARCHITECTURE & CALL-GRAPH EXPLORER TAB (EXPAND / CONTRACT / OPEN) -->
+        <!-- 3. ARCHITECTURE & GRAPH TAB (DUAL VIEW: GRAPH & TREE) -->
         <div id="tab-graph" class="tab-content-view hidden">
             <div class="arch-explorer">
-                <!-- Explorer Filter & Expansion Controls -->
+                <!-- Explorer Controls Toolbar -->
                 <div class="glass-panel" style="padding: 1rem 1.25rem;">
                     <div class="arch-toolbar-row">
-                        <div class="search-input-wrapper" style="max-width: 460px;">
+                        <div class="segmented-control">
+                            <button class="segment-btn active" id="btnViewGraph" onclick="switchArchView('graph')">Network Graph</button>
+                            <button class="segment-btn" id="btnViewTree" onclick="switchArchView('tree')">Tree Explorer</button>
+                        </div>
+
+                        <div class="search-input-wrapper" style="max-width: 360px;">
                             <input
                                 type="text"
                                 id="archFilterInput"
                                 class="apple-search-input"
-                                style="padding: 0.55rem 1rem; font-size: 0.85rem;"
-                                placeholder="Filter files or symbols in real-time..."
-                                oninput="filterArchTree()"
+                                style="padding: 0.5rem 0.9rem; font-size: 0.85rem;"
+                                placeholder="Filter files or symbols..."
+                                oninput="filterArchView()"
                             />
                         </div>
+
                         <div class="arch-controls-right">
-                            <button class="btn-arch-action" onclick="expandAllFiles()">Expand All</button>
-                            <button class="btn-arch-action" onclick="collapseAllFiles()">Contract All</button>
+                            <button class="btn-arch-action" onclick="expandAllNodes()">Expand All</button>
+                            <button class="btn-arch-action" onclick="contractAllNodes()">Contract All</button>
                             <button class="btn-arch-action" onclick="loadSymbolGraph()">Refresh</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Interactive File Tree Container -->
-                <div class="file-tree-container" id="fileTreeContainer">
+                <!-- VIEW A: Interactive Force Graph Canvas -->
+                <div id="archViewGraphContainer" class="graph-canvas-container">
+                    <div class="graph-hint-overlay">
+                        Drag nodes • Scroll to zoom • Click symbol to inspect • Double-click file to expand/contract
+                    </div>
+                    <canvas id="graphCanvas"></canvas>
+                    <div class="graph-floating-controls">
+                        <button class="graph-control-btn" onclick="zoomGraph(1.2)">+ Zoom In</button>
+                        <button class="graph-control-btn" onclick="zoomGraph(0.8)">- Zoom Out</button>
+                        <button class="graph-control-btn" onclick="resetGraphCamera()">Fit View</button>
+                    </div>
+                </div>
+
+                <!-- VIEW B: Interactive Collapsible Tree Explorer -->
+                <div id="archViewTreeContainer" class="file-tree-container" style="display: none;">
                     <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);" id="archPlaceholder">
-                        Analyzing symbol hierarchy and building architecture tree...
+                        Analyzing symbol hierarchy...
                     </div>
                 </div>
             </div>
@@ -1672,8 +1763,19 @@
         let currentMode = 'hybrid';
         let currentTopK = 5;
         let activeTab = 'search';
+        let currentArchView = 'graph';
         let graphRawData = null;
         let currentInspectorData = null;
+
+        // Force-Directed Canvas Graph Engine State
+        let graphNodes = [];
+        let graphEdges = [];
+        let camera = { x: 0, y: 0, zoom: 1 };
+        let isDraggingCanvas = false;
+        let dragStart = { x: 0, y: 0 };
+        let draggedNode = null;
+        let hoveredNode = null;
+        let animFrameId = null;
 
         const SAMPLE_QUERIES = {
             '.': [
@@ -1711,6 +1813,20 @@
 
             if (tabName === 'graph') {
                 loadSymbolGraph();
+            }
+        }
+
+        function switchArchView(viewName) {
+            currentArchView = viewName;
+            document.getElementById('btnViewGraph').classList.toggle('active', viewName === 'graph');
+            document.getElementById('btnViewTree').classList.toggle('active', viewName === 'tree');
+            
+            document.getElementById('archViewGraphContainer').style.display = viewName === 'graph' ? 'block' : 'none';
+            document.getElementById('archViewTreeContainer').style.display = viewName === 'tree' ? 'flex' : 'none';
+
+            if (viewName === 'graph') {
+                resizeCanvas();
+                resetGraphCamera();
             }
         }
 
@@ -2126,51 +2242,414 @@
         }
 
         /* ==========================================================================
-           Interactive Collapsible Architecture & Symbol Explorer
+           Interactive Force-Directed Node Graph Engine
            ========================================================================== */
         async function loadSymbolGraph() {
             const target = getActiveTarget();
-            const container = document.getElementById('fileTreeContainer');
-            container.innerHTML = `<div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">Analyzing symbol hierarchy...</div>`;
-
             try {
                 const res = await fetch(`/api/graph?repo_path=${encodeURIComponent(target)}`);
                 const data = await res.json();
                 graphRawData = data;
 
-                if (!data.nodes || data.nodes.length === 0) {
-                    container.innerHTML = `<div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">No symbols found. Ensure repository is indexed.</div>`;
-                    return;
-                }
-
                 renderArchitectureTree(data);
+                initForceGraph(data);
             } catch (err) {
-                container.innerHTML = `<div style="text-align: center; padding: 3rem 1rem; color: var(--system-red);">Error loading architecture: ${err.message}</div>`;
+                console.error(err);
             }
         }
 
-        function renderArchitectureTree(data) {
-            const container = document.getElementById('fileTreeContainer');
+        function initForceGraph(data) {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+
+            resizeCanvas();
+
             const files = data.nodes.filter(n => n.group === 1);
             const symbols = data.nodes.filter(n => n.group === 2);
             const edges = data.edges || [];
 
-            // Group symbols by their parent file
-            const fileSymbolsMap = {};
-            files.forEach(f => {
-                fileSymbolsMap[f.id] = [];
+            // Build node objects
+            graphNodes = [];
+            const nodeMap = {};
+
+            // Place File Clusters
+            const centerX = canvas.width / (2 * (window.devicePixelRatio || 1));
+            const centerY = canvas.height / (2 * (window.devicePixelRatio || 1));
+            const radius = Math.min(centerX, centerY) * 0.65;
+
+            files.forEach((f, i) => {
+                const angle = (i / Math.max(files.length, 1)) * 2 * Math.PI;
+                const node = {
+                    ...f,
+                    x: centerX + radius * Math.cos(angle) + (Math.random() - 0.5) * 40,
+                    y: centerY + radius * Math.sin(angle) + (Math.random() - 0.5) * 40,
+                    vx: 0,
+                    vy: 0,
+                    radius: 20,
+                    isCollapsed: false,
+                    visible: true
+                };
+                graphNodes.push(node);
+                nodeMap[node.id] = node;
             });
+
+            symbols.forEach((s, i) => {
+                const parentEdge = edges.find(e => e.target === s.id && e.relation === 'defines');
+                const parent = parentEdge ? nodeMap[parentEdge.source] : null;
+
+                const px = parent ? parent.x + (Math.random() - 0.5) * 120 : centerX + (Math.random() - 0.5) * 200;
+                const py = parent ? parent.y + (Math.random() - 0.5) * 120 : centerY + (Math.random() - 0.5) * 200;
+
+                const node = {
+                    ...s,
+                    x: px,
+                    y: py,
+                    vx: 0,
+                    vy: 0,
+                    radius: 12,
+                    parentId: parent ? parent.id : null,
+                    visible: true
+                };
+                graphNodes.push(node);
+                nodeMap[node.id] = node;
+            });
+
+            // Build edge references
+            graphEdges = edges.map(e => ({
+                source: nodeMap[e.source],
+                target: nodeMap[e.target],
+                relation: e.relation
+            })).filter(e => e.source && e.target);
+
+            resetGraphCamera();
+            startPhysicsSimulation();
+        }
+
+        function resizeCanvas() {
+            const canvas = document.getElementById('graphCanvas');
+            const container = document.getElementById('archViewGraphContainer');
+            if (!canvas || !container) return;
+
+            const dpr = window.devicePixelRatio || 1;
+            const w = container.clientWidth || 980;
+            const h = container.clientHeight || 560;
+
+            canvas.width = w * dpr;
+            canvas.height = h * dpr;
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpr, dpr);
+        }
+
+        window.addEventListener('resize', () => {
+            if (activeTab === 'graph' && currentArchView === 'graph') {
+                resizeCanvas();
+            }
+        });
+
+        function resetGraphCamera() {
+            const container = document.getElementById('archViewGraphContainer');
+            camera.x = 0;
+            camera.y = 0;
+            camera.zoom = 1;
+        }
+
+        function zoomGraph(factor) {
+            camera.zoom = Math.max(0.3, Math.min(3.0, camera.zoom * factor));
+        }
+
+        function expandAllNodes() {
+            expandAllFiles();
+            graphNodes.forEach(n => {
+                if (n.group === 1) n.isCollapsed = false;
+                n.visible = true;
+            });
+        }
+
+        function contractAllNodes() {
+            collapseAllFiles();
+            graphNodes.forEach(n => {
+                if (n.group === 1) n.isCollapsed = true;
+                if (n.group === 2) n.visible = false;
+            });
+        }
+
+        function filterArchView() {
+            filterArchTree();
+            const query = document.getElementById('archFilterInput').value.trim().toLowerCase();
+
+            graphNodes.forEach(n => {
+                const label = (n.name || n.label || '').toLowerCase();
+                const path = (n.full_path || '').toLowerCase();
+                const matches = query === '' || label.includes(query) || path.includes(query);
+                
+                if (n.group === 1) {
+                    n.visible = true;
+                } else {
+                    n.visible = matches;
+                }
+            });
+        }
+
+        /* --- Physics Simulation & Canvas Rendering Loop --- */
+        function startPhysicsSimulation() {
+            if (animFrameId) cancelAnimationFrame(animFrameId);
+
+            function step() {
+                updatePhysics();
+                drawGraphCanvas();
+                animFrameId = requestAnimationFrame(step);
+            }
+            step();
+        }
+
+        function updatePhysics() {
+            const visibleNodes = graphNodes.filter(n => n.visible);
+
+            // 1. Repulsion between all nodes
+            for (let i = 0; i < visibleNodes.length; i++) {
+                for (let j = i + 1; j < visibleNodes.length; j++) {
+                    const n1 = visibleNodes[i];
+                    const n2 = visibleNodes[j];
+                    const dx = n2.x - n1.x;
+                    const dy = n2.y - n1.y;
+                    const distSq = dx * dx + dy * dy || 1;
+                    const dist = Math.sqrt(distSq);
+
+                    if (dist < 320) {
+                        const force = (n1.group === 1 && n2.group === 1) ? 2200 / distSq : 750 / distSq;
+                        const fx = (dx / dist) * force;
+                        const fy = (dy / dist) * force;
+
+                        if (n1 !== draggedNode) { n1.vx -= fx; n1.vy -= fy; }
+                        if (n2 !== draggedNode) { n2.vx += fx; n2.vy += fy; }
+                    }
+                }
+            }
+
+            // 2. Spring attraction along edges
+            graphEdges.forEach(e => {
+                if (!e.source.visible || !e.target.visible) return;
+                const dx = e.target.x - e.source.x;
+                const dy = e.target.y - e.source.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                const idealDist = e.relation === 'defines' ? 70 : 160;
+                const force = (dist - idealDist) * 0.035;
+
+                const fx = (dx / dist) * force;
+                const fy = (dy / dist) * force;
+
+                if (e.source !== draggedNode) { e.source.vx += fx; e.source.vy += fy; }
+                if (e.target !== draggedNode) { e.target.vx -= fx; e.target.vy -= fy; }
+            });
+
+            // 3. Center gravity and damping
+            const canvas = document.getElementById('graphCanvas');
+            const dpr = window.devicePixelRatio || 1;
+            const cx = canvas.width / (2 * dpr);
+            const cy = canvas.height / (2 * dpr);
+
+            visibleNodes.forEach(n => {
+                if (n === draggedNode) return;
+                // Center gravity
+                n.vx += (cx - n.x) * 0.002;
+                n.vy += (cy - n.y) * 0.002;
+
+                // Velocity damping
+                n.vx *= 0.88;
+                n.vy *= 0.88;
+
+                n.x += n.vx;
+                n.y += n.vy;
+            });
+        }
+
+        function drawGraphCanvas() {
+            const canvas = document.getElementById('graphCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            const w = canvas.width / dpr;
+            const h = canvas.height / dpr;
+
+            ctx.clearRect(0, 0, w, h);
+
+            ctx.save();
+            ctx.translate(w / 2 + camera.x, h / 2 + camera.y);
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-w / 2, -h / 2);
+
+            // Draw Edges
+            graphEdges.forEach(e => {
+                if (!e.source.visible || !e.target.visible) return;
+                const isHighlighted = hoveredNode && (hoveredNode === e.source || hoveredNode === e.target);
+
+                ctx.beginPath();
+                ctx.moveTo(e.source.x, e.source.y);
+                ctx.lineTo(e.target.x, e.target.y);
+
+                if (isHighlighted) {
+                    ctx.strokeStyle = '#0A84FF';
+                    ctx.lineWidth = 2.2;
+                } else {
+                    ctx.strokeStyle = e.relation === 'defines' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(48, 209, 88, 0.2)';
+                    ctx.lineWidth = 1.2;
+                }
+                ctx.stroke();
+            });
+
+            // Draw Nodes
+            graphNodes.forEach(n => {
+                if (!n.visible) return;
+
+                const isHovered = n === hoveredNode;
+                const isFile = n.group === 1;
+
+                ctx.save();
+
+                // Glow ring
+                if (isHovered) {
+                    ctx.beginPath();
+                    ctx.arc(n.x, n.y, n.radius + 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = isFile ? 'rgba(10, 132, 255, 0.3)' : 'rgba(48, 209, 88, 0.3)';
+                    ctx.fill();
+                }
+
+                // Node Body
+                ctx.beginPath();
+                ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = isFile ? '#0A84FF' : (n.type === 'class' ? '#BF5AF2' : '#30D158');
+                ctx.fill();
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+
+                // Text Label
+                ctx.font = isFile ? '600 12px "SF Mono", monospace' : '500 11px "SF Mono", monospace';
+                ctx.fillStyle = isHovered ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)';
+                ctx.textAlign = 'center';
+                ctx.fillText(n.label, n.x, n.y + n.radius + 14);
+
+                ctx.restore();
+            });
+
+            ctx.restore();
+        }
+
+        /* --- Canvas Mouse & Gesture Interaction --- */
+        const canvas = document.getElementById('graphCanvas');
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.clientX - rect.left;
+            const clientY = e.clientY - rect.top;
+
+            const w = rect.width;
+            const h = rect.height;
+
+            const worldX = (clientX - (w / 2 + camera.x)) / camera.zoom + w / 2;
+            const worldY = (clientY - (h / 2 + camera.y)) / camera.zoom + h / 2;
+
+            return { x: worldX, y: worldY, clientX, clientY };
+        }
+
+        function findNodeAt(x, y) {
+            const visibleNodes = graphNodes.filter(n => n.visible);
+            for (let i = visibleNodes.length - 1; i >= 0; i--) {
+                const n = visibleNodes[i];
+                const dx = x - n.x;
+                const dy = y - n.y;
+                if (dx * dx + dy * dy <= (n.radius + 8) * (n.radius + 8)) {
+                    return n;
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            const pos = getMousePos(e);
+            const node = findNodeAt(pos.x, pos.y);
+
+            if (node) {
+                draggedNode = node;
+            } else {
+                isDraggingCanvas = true;
+                dragStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
+            }
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            const pos = getMousePos(e);
+
+            if (draggedNode) {
+                draggedNode.x = pos.x;
+                draggedNode.y = pos.y;
+                draggedNode.vx = 0;
+                draggedNode.vy = 0;
+            } else if (isDraggingCanvas) {
+                camera.x = e.clientX - dragStart.x;
+                camera.y = e.clientY - dragStart.y;
+            } else {
+                hoveredNode = findNodeAt(pos.x, pos.y);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            draggedNode = null;
+            isDraggingCanvas = false;
+        });
+
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const factor = e.deltaY < 0 ? 1.08 : 0.92;
+            zoomGraph(factor);
+        }, { passive: false });
+
+        canvas.addEventListener('click', (e) => {
+            const pos = getMousePos(e);
+            const node = findNodeAt(pos.x, pos.y);
+            if (!node) return;
+
+            if (node.group === 2) {
+                openSymbolInspector(node.id);
+            }
+        });
+
+        canvas.addEventListener('dblclick', (e) => {
+            const pos = getMousePos(e);
+            const node = findNodeAt(pos.x, pos.y);
+            if (node && node.group === 1) {
+                node.isCollapsed = !node.isCollapsed;
+                graphNodes.forEach(child => {
+                    if (child.parentId === node.id) {
+                        child.visible = !node.isCollapsed;
+                        if (child.visible) {
+                            child.x = node.x + (Math.random() - 0.5) * 50;
+                            child.y = node.y + (Math.random() - 0.5) * 50;
+                        }
+                    }
+                });
+            }
+        });
+
+        /* ==========================================================================
+           Tree Explorer Renderer
+           ========================================================================== */
+        function renderArchitectureTree(data) {
+            const container = document.getElementById('archViewTreeContainer');
+            const files = data.nodes.filter(n => n.group === 1);
+            const symbols = data.nodes.filter(n => n.group === 2);
+            const edges = data.edges || [];
+
+            const fileSymbolsMap = {};
+            files.forEach(f => { fileSymbolsMap[f.id] = []; });
 
             symbols.forEach(sym => {
                 const parentEdge = edges.find(e => e.target === sym.id && e.relation === 'defines');
                 const parentFileId = parentEdge ? parentEdge.source : `file:${sym.full_path}`;
-                if (!fileSymbolsMap[parentFileId]) {
-                    fileSymbolsMap[parentFileId] = [];
-                }
+                if (!fileSymbolsMap[parentFileId]) fileSymbolsMap[parentFileId] = [];
                 fileSymbolsMap[parentFileId].push(sym);
             });
 
-            // Map incoming callers and outgoing calls for each symbol
             const callersMap = {};
             const calleesMap = {};
             edges.forEach(e => {
@@ -2184,7 +2663,7 @@
                 const symList = fileSymbolsMap[f.id] || [];
                 if (symList.length === 0) return '';
 
-                const isInitiallyOpen = idx < 3; // Open first 3 files by default
+                const isInitiallyOpen = idx < 3;
 
                 const symbolsHtml = symList.map(s => {
                     const callers = callersMap[s.id] || [];
@@ -2231,9 +2710,7 @@
 
         function toggleFileCard(cardId) {
             const card = document.getElementById(cardId);
-            if (card) {
-                card.classList.toggle('open');
-            }
+            if (card) card.classList.toggle('open');
         }
 
         function expandAllFiles() {
@@ -2291,7 +2768,6 @@
             citationEl.textContent = `${sym.full_path || sym.file}:${sym.start_line}-${sym.end_line || sym.start_line}`;
             scopeEl.textContent = `Language: ${sym.language || 'python'}`;
 
-            // Build Gutter & Code
             const start = sym.start_line || 1;
             const end = sym.end_line || start;
             let gutterHtml = '';
@@ -2304,7 +2780,6 @@
             codeBlock.className = `language-${sym.language || 'python'}`;
             hljs.highlightElement(codeBlock);
 
-            // Populate Callers and Callees
             const callersList = document.getElementById('inspectorCallersList');
             const calleesList = document.getElementById('inspectorCalleesList');
 
