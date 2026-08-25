@@ -1,201 +1,622 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Semantic Code Intelligence Platform</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <style>
-    :root {
-      --bg-primary: #0d1117;
-      --bg-secondary: #161b22;
-      --bg-card: #21262d;
-      --border-color: #30363d;
-      --accent: #58a6ff;
-      --accent-hover: #79b8ff;
-      --accent-green: #3fb950;
-      --text-main: #c9d1d9;
-      --text-muted: #8b949e;
-      --code-bg: #090d13;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
-    body { background-color: var(--bg-primary); color: var(--text-main); line-height: 1.6; padding: 24px; }
-    .container { max-width: 1200px; margin: 0 auto; }
-    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
-    .logo { display: flex; align-items: center; gap: 12px; }
-    .logo h1 { font-size: 1.5rem; color: #fff; font-weight: 600; }
-    .logo span { background: #238636; color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
-    .search-panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
-    .search-row { display: flex; gap: 12px; margin-bottom: 14px; }
-    input[type="text"] { flex: 1; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 1rem; outline: none; }
-    input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2); }
-    button.btn-primary { background: #238636; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    button.btn-primary:hover { background: #2ea043; }
-    .options-row { display: flex; gap: 20px; align-items: center; font-size: 0.88rem; color: var(--text-muted); }
-    select { background: var(--bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 6px; }
-    .metrics-bar { display: none; background: #1f2937; border-left: 4px solid var(--accent-green); padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
-    .metrics-bar.visible { display: flex; justify-content: space-between; align-items: center; }
-    .card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
-    .card-header { padding: 12px 16px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-    .citation-badge { background: #1f6feb22; border: 1px solid #1f6feb; color: #58a6ff; font-family: monospace; font-size: 0.85rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; }
-    .meta-info { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 12px; }
-    .card-body { padding: 16px; font-size: 0.9rem; }
-    .card-scope { margin-bottom: 8px; color: #7ee787; font-family: monospace; font-size: 0.85rem; }
-    .card-doc { color: #8b949e; font-style: italic; margin-bottom: 12px; }
-    pre { border-radius: 6px; background: var(--code-bg) !important; padding: 14px; overflow-x: auto; font-size: 0.88rem; }
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Code Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --accent: #58a6ff;
+            --accent-glow: rgba(88, 166, 255, 0.15);
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --text-muted: #6e7681;
+            --success: #3fb950;
+            --warning: #d29922;
+            --font-code: 'JetBrains Mono', monospace;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+        }
+
+        .brand-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #58a6ff, #a371f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-badge {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-family: var(--font-code);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 1.25rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            align-items: center;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .stat-val {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-family: var(--font-code);
+        }
+
+        .btn-index {
+            background: #238636;
+            color: white;
+            border: 1px solid rgba(240, 246, 252, 0.1);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-index:hover {
+            background: #2ea043;
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .search-panel {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .search-input {
+            flex: 1;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.85rem 1.25rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: var(--font-sans);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .btn-search {
+            background: var(--accent);
+            color: #0d1117;
+            border: none;
+            border-radius: 8px;
+            padding: 0.85rem 1.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-search:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+
+        .search-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .mode-selectors {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--bg-primary);
+            padding: 0.25rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .mode-btn.active {
+            background: var(--bg-tertiary);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .latency-dashboard {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.85rem 1.25rem;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .latency-metric {
+            text-align: center;
+        }
+
+        .latency-label {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .latency-val {
+            font-family: var(--font-code);
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--accent);
+        }
+
+        .latency-val.fast {
+            color: var(--success);
+        }
+
+        .results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .result-card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .result-card:hover {
+            border-color: #58a6ff66;
+            transform: translateY(-1px);
+        }
+
+        .result-header {
+            background-color: var(--bg-tertiary);
+            padding: 0.65rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-citation {
+            font-family: var(--font-code);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-scores {
+            display: flex;
+            gap: 0.75rem;
+            font-family: var(--font-code);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+
+        .score-pill {
+            background: var(--bg-primary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+        }
+
+        .score-pill.highlight {
+            color: var(--success);
+            border-color: #3fb95044;
+        }
+
+        .result-body {
+            position: relative;
+        }
+
+        .result-body pre {
+            margin: 0;
+            padding: 1rem;
+            background: var(--bg-primary) !important;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .result-footer {
+            padding: 0.5rem 1rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(13, 17, 23, 0.3);
+            border-radius: 50%;
+            border-top-color: #0d1117;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
     <header>
-      <div class="logo">
-        <h1>Semantic Code Intelligence</h1>
-        <span>FAISS + BM25 + CrossEncoder</span>
-      </div>
-      <div id="repo-stats" style="font-size: 0.85rem; color: var(--text-muted);">Loading stats...</div>
+        <div class="brand">
+            <span class="brand-logo">⚡</span>
+            <span class="brand-title">Semantic Code Intelligence</span>
+            <span class="brand-badge">FAISS + BM25 + CrossEncoder</span>
+        </div>
+        <div class="header-stats" id="headerStats">
+            <div class="stat-item">
+                <span>Indexed Files:</span>
+                <span class="stat-val" id="statFiles">0</span>
+            </div>
+            <div class="stat-item">
+                <span>LOC:</span>
+                <span class="stat-val" id="statLoc">0</span>
+            </div>
+            <div class="stat-item">
+                <span>Chunks:</span>
+                <span class="stat-val" id="statChunks">0</span>
+            </div>
+            <button class="btn-index" id="btnReindex" onclick="triggerReindex()">⚡ Index Repository</button>
+        </div>
     </header>
 
-    <div class="search-panel">
-      <div class="search-row">
-        <input type="text" id="query-input" placeholder="e.g. How does user authentication verify passwords or find where database connections are pooled..." autofocus>
-        <button class="btn-primary" id="search-btn" onclick="executeSearch()">Search Code</button>
-      </div>
-      <div class="options-row">
-        <label>Mode: 
-          <select id="mode-select">
-            <option value="hybrid">Hybrid (Dense FAISS + Sparse BM25 + RRF)</option>
-            <option value="dense">Dense Vector Only (FAISS)</option>
-            <option value="sparse">Sparse Lexical Only (BM25)</option>
-          </select>
-        </label>
-        <label>
-          <input type="checkbox" id="rerank-toggle" checked> Cross-Encoder Reranking
-        </label>
-        <label>Top K:
-          <select id="top-k-select">
-            <option value="3">3</option>
-            <option value="5" selected>5</option>
-            <option value="10">10</option>
-          </select>
-        </label>
-      </div>
-    </div>
+    <main>
+        <div class="search-panel">
+            <div class="search-box">
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="search-input"
+                    placeholder="Search codebase (e.g. 'Where is rate limiting handled?', 'JWT auth verify', 'database pool connection')..."
+                    autocomplete="off"
+                />
+                <button class="btn-search" id="searchBtn" onclick="performSearch()">
+                    <span id="btnText">Search</span>
+                </button>
+            </div>
+            <div class="search-options">
+                <div class="mode-selectors">
+                    <button class="mode-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid (Dense + Sparse)</button>
+                    <button class="mode-btn" data-mode="dense" onclick="setMode('dense')">Dense FAISS</button>
+                    <button class="mode-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse BM25</button>
+                </div>
+                <div class="toggle-group">
+                    <input type="checkbox" id="rerankToggle" checked />
+                    <label for="rerankToggle">Cross-Encoder Precision Reranking</label>
+                </div>
+            </div>
+        </div>
 
-    <div id="metrics-bar" class="metrics-bar">
-      <div id="metrics-text">⚡ Latency: 0ms</div>
-      <div id="status-badge" style="color: var(--accent-green); font-weight: bold;">SUB-SECOND RETRIEVAL</div>
-    </div>
+        <div class="latency-dashboard" id="latencyDashboard" style="display: none;">
+            <div class="latency-metric">
+                <div class="latency-label">Dense Vector</div>
+                <div class="latency-val" id="denseLatency">-- ms</div>
+            </div>
+            <div class="latency-metric">
+                <div class="latency-label">BM25 Sparse</div>
+                <div class="latency-val" id="bm25Latency">-- ms</div>
+            </div>
+            <div class="latency-metric">
+                <div class="latency-label">RRF Fusion</div>
+                <div class="latency-val" id="rrfLatency">-- ms</div>
+            </div>
+            <div class="latency-metric">
+                <div class="latency-label">Reranker</div>
+                <div class="latency-val" id="rerankLatency">-- ms</div>
+            </div>
+            <div class="latency-metric">
+                <div class="latency-label">Total Time</div>
+                <div class="latency-val fast" id="totalLatency">-- ms</div>
+            </div>
+        </div>
 
-    <div id="results-container">
-      <div class="empty-state">
-        <h3>Ready to search</h3>
-        <p>Type a semantic question or code identifier to search indexed repository.</p>
-      </div>
-    </div>
-  </div>
+        <div class="results-container" id="resultsContainer">
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>Ready to Query</h3>
+                <p>Enter a query above to retrieve exact lines, function scopes, and citations in sub-second latency.</p>
+            </div>
+        </div>
+    </main>
 
-  <script>
-    async function loadStats() {
-      try {
-        const res = await fetch('/api/stats');
-        const data = await res.json();
-        document.getElementById('repo-stats').innerText = 
-          `📊 Indexed: ${data.total_files || 0} files | ${Number(data.total_lines || 0).toLocaleString()} LOC | ${data.total_chunks || 0} chunks`;
-      } catch (e) {
-        document.getElementById('repo-stats').innerText = 'Index not yet initialized.';
-      }
-    }
+    <script>
+        let currentMode = 'hybrid';
 
-    async function executeSearch() {
-      const query = document.getElementById('query-input').value.trim();
-      if (!query) return;
+        async function fetchStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                if (data.status === 'ready') {
+                    document.getElementById('statFiles').textContent = data.stats.total_files || 0;
+                    document.getElementById('statLoc').textContent = data.stats.total_lines || 0;
+                    document.getElementById('statChunks').textContent = data.stats.total_chunks || 0;
+                    document.getElementById('btnReindex').textContent = '↻ Re-Index';
+                } else {
+                    document.getElementById('btnReindex').textContent = '⚡ Index Codebase Now';
+                }
+            } catch (err) {
+                console.error('Failed to load stats', err);
+            }
+        }
 
-      const btn = document.getElementById('search-btn');
-      btn.innerText = 'Searching...';
-      btn.disabled = true;
+        async function triggerReindex() {
+            const btn = document.getElementById('btnReindex');
+            btn.textContent = '⏳ Indexing...';
+            btn.disabled = true;
+            try {
+                const res = await fetch('/api/index', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_dir: '.', force: true })
+                });
+                const data = await res.json();
+                alert(`✓ Indexing complete! Indexed ${data.metrics.total_lines} LOC in ${data.metrics.total_files} files.`);
+                await fetchStats();
+            } catch (err) {
+                alert('Indexing failed: ' + err);
+            } finally {
+                btn.textContent = '↻ Re-Index';
+                btn.disabled = false;
+            }
+        }
 
-      const mode = document.getElementById('mode-select').value;
-      const use_reranker = document.getElementById('rerank-toggle').checked;
-      const top_k = parseInt(document.getElementById('top-k-select').value);
+        function setMode(mode) {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
 
-      try {
-        const res = await fetch('/api/search', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query, mode, use_reranker, top_k })
+        document.getElementById('searchInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') performSearch();
         });
-        const data = await res.json();
-        renderResults(data);
-      } catch (err) {
-        alert('Search failed: ' + err.message);
-      } finally {
-        btn.innerText = 'Search Code';
-        btn.disabled = false;
-      }
-    }
 
-    function renderResults(data) {
-      const mb = document.getElementById('metrics-bar');
-      const mt = document.getElementById('metrics-text');
-      const sb = document.getElementById('status-badge');
-      mb.className = 'metrics-bar visible';
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
 
-      const lat = data.latency_ms || {};
-      const total = lat.total_ms ? lat.total_ms.toFixed(1) : '0';
-      mt.innerHTML = `⚡ <strong>Total Latency: ${total} ms</strong> (FAISS: ${lat.dense_ms?.toFixed(1) || 0}ms | BM25: ${lat.sparse_ms?.toFixed(1) || 0}ms | Rerank: ${lat.rerank_ms?.toFixed(1) || 0}ms)`;
-      
-      if (lat.total_ms < 1000) {
-        sb.innerText = '⚡ SUB-SECOND RETRIEVAL (PASS)';
-        sb.style.color = '#3fb950';
-      } else {
-        sb.innerText = '⚠️ > 1.0s';
-        sb.style.color = '#d29922';
-      }
+            const btnText = document.getElementById('btnText');
+            btnText.innerHTML = '<span class="loading-spinner"></span>';
 
-      const container = document.getElementById('results-container');
-      if (!data.results || data.results.length === 0) {
-        container.innerHTML = `<div class="empty-state"><h3>No results found</h3><p>Try refining your search terms.</p></div>`;
-        return;
-      }
+            const rerank = document.getElementById('rerankToggle').checked;
 
-      let html = '';
-      data.results.forEach((r, idx) => {
-        const symbol = r.symbol_name ? `<span style="color: #58a6ff;">${r.symbol_type}: ${r.symbol_name}</span>` : '';
-        html += `
-          <div class="card">
-            <div class="card-header">
-              <span class="citation-badge">#${idx+1} ${r.citation}</span>
-              <div class="meta-info">
-                <span>Score: <strong>${r.score.toFixed(4)}</strong></span>
-                <span>Language: <strong>${r.language}</strong></span>
-                ${symbol}
-              </div>
-            </div>
-            <div class="card-body">
-              ${r.context_header ? `<div class="card-scope">Scope: ${r.context_header}</div>` : ''}
-              ${r.docstring ? `<div class="card-doc">"${r.docstring.trim()}"</div>` : ''}
-              <pre><code class="language-${r.language}">${escapeHtml(r.content)}</code></pre>
-            </div>
-          </div>
-        `;
-      });
-      container.innerHTML = html;
-      hljs.highlightAll();
-    }
+            try {
+                const res = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        query: query,
+                        top_k: 5,
+                        mode: currentMode,
+                        rerank: rerank
+                    })
+                });
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.innerText = text;
-      return div.innerHTML;
-    }
+                const data = await res.json();
+                renderResults(data);
+            } catch (err) {
+                console.error(err);
+                document.getElementById('resultsContainer').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">⚠️</div>
+                        <h3>Search Error</h3>
+                        <p>${err.message}</p>
+                    </div>
+                `;
+            } finally {
+                btnText.textContent = 'Search';
+            }
+        }
 
-    document.getElementById('query-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') executeSearch();
-    });
+        function renderResults(data) {
+            const container = document.getElementById('resultsContainer');
+            const latencyDash = document.getElementById('latencyDashboard');
 
-    loadStats();
-  </script>
+            if (data.index_status === 'not_indexed') {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📂</div>
+                        <h3>Codebase Not Indexed</h3>
+                        <p>Click <strong>⚡ Index Codebase</strong> at top right to build the index.</p>
+                    </div>
+                `;
+                latencyDash.style.display = 'none';
+                return;
+            }
+
+            if (data.latency_ms) {
+                latencyDash.style.display = 'flex';
+                document.getElementById('denseLatency').textContent = `${(data.latency_ms.dense_search_ms || 0).toFixed(1)} ms`;
+                document.getElementById('bm25Latency').textContent = `${(data.latency_ms.sparse_search_ms || 0).toFixed(1)} ms`;
+                document.getElementById('rrfLatency').textContent = `${(data.latency_ms.rrf_fusion_ms || 0).toFixed(2)} ms`;
+                document.getElementById('rerankLatency').textContent = `${(data.latency_ms.reranker_ms || 0).toFixed(1)} ms`;
+                
+                const total = (data.latency_ms.total_end_to_end_ms || 0).toFixed(1);
+                const totalEl = document.getElementById('totalLatency');
+                totalEl.textContent = `${total} ms`;
+                totalEl.className = total < 1000 ? 'latency-val fast' : 'latency-val';
+            }
+
+            if (!data.results || data.results.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🤷</div>
+                        <h3>No Exact Matches Found</h3>
+                        <p>Try rephrasing your search query or enabling Hybrid search.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = data.results.map((r, idx) => `
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-citation">
+                            <span>#${idx + 1}</span>
+                            <span>📄 ${r.citation}</span>
+                        </div>
+                        <div class="result-scores">
+                            <span class="score-pill highlight">Score: ${r.score}</span>
+                            ${r.rerank_score !== null ? `<span class="score-pill">Rerank: ${r.rerank_score}</span>` : ''}
+                            ${r.dense_score !== null ? `<span class="score-pill">Dense: ${r.dense_score}</span>` : ''}
+                            ${r.sparse_score !== null ? `<span class="score-pill">BM25: ${r.sparse_score}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="result-body">
+                        <pre><code class="language-${r.language}">${escapeHtml(r.code)}</code></pre>
+                    </div>
+                    <div class="result-footer">
+                        <span>Scope: ${r.symbol_name ? `<strong>${r.symbol_name}</strong> (${r.symbol_type || 'symbol'})` : r.file_path}</span>
+                        <span>Lines ${r.start_line} - ${r.end_line}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('pre code').forEach((el) => {
+                hljs.highlightElement(el);
+            });
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        fetchStats();
+    </script>
 </body>
 </html>

@@ -134,13 +134,12 @@ def query_cmd(
         console.print(f"[bold red]Error:[/] Index not found in [yellow]{cfg.get_index_dir()}[/]. Run `code-intel index` first.")
         raise typer.Exit(code=1)
 
-    with console.status("[bold cyan]Retrieving & reranking code candidates...", spinner="dots"):
-        response = pipeline.query(
-            query_text=query_text,
-            top_k=top_k,
-            use_reranker=rerank,
-            mode=mode
-        )
+    response = pipeline.query(
+        query_text=query_text,
+        top_k=top_k,
+        use_reranker=rerank,
+        mode=mode
+    )
 
     render_query_results(response, show_code=show_code)
 
@@ -163,10 +162,9 @@ def ask_cmd(
         console.print(f"[bold red]Error:[/] Index not found in [yellow]{cfg.get_index_dir()}[/]. Run `code-intel index` first.")
         raise typer.Exit(code=1)
 
-    with console.status("[bold cyan]Synthesizing cited answer...", spinner="dots"):
-        res = pipeline.query(query_text=query_text, top_k=top_k, use_reranker=True)
-        synthesizer = CodeSynthesizer(provider=provider)
-        answer = synthesizer.synthesize(query_text, res.results)
+    res = pipeline.query(query_text=query_text, top_k=top_k, use_reranker=True)
+    synthesizer = CodeSynthesizer(provider=provider)
+    answer = synthesizer.synthesize(query_text, res.results)
 
     console.print(f"\n[bold green]Answer for:[/] [bold]{query_text}[/]\n")
     console.print(answer.answer)

@@ -1,12 +1,13 @@
 """
-Cross-Encoder reranking module for deep query-document relevance scoring.
+Cross-Encoder reranking module using native Transformers with batch classification.
 """
 
 from __future__ import annotations
 
 import logging
 from typing import List, Optional, Tuple
-from sentence_transformers import CrossEncoder
+import torch
+from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from semantic_code_intel.config import RerankerConfig
 
 logger = logging.getLogger(__name__)
@@ -21,15 +22,16 @@ class CrossEncoderReranker:
         self.config = config or RerankerConfig()
         self.model_name = self.config.model_name
         self.device = self.config.device
-        self._model: Optional[CrossEncoder] = None
+        self._tokenizer: Optional[AutoTokenizer] = None
+        self._model: Optional[AutoModelForSequenceClassification] = None
 
-    @property
-    def model(self) -> CrossEncoder:
-        """Lazy-load the Cross-Encoder model."""
-        if self._model is None:
+    def _ensure_loaded(self) -> None:
+        """Lazy load tokenizer and model."""
+        if self._tokenizer is None or self._model is None:
             logger.info(f"Loading Cross-Encoder reranker '{self.model_name}' on '{self.device}'...")
-            self._model = CrossEncoder(self.model_name, device=self.device)
-        return self._model
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self._model = AutoModelForSequenceClassification.from_pretrained(self.model_name).to(self.device)
+            self._model.eval()
 
     def rerank(
         self,
@@ -44,14 +46,30 @@ class CrossEncoderReranker:
         if not candidates:
             return []
 
-        pairs = [(query, text) for _, text in candidates]
+        self._ensure_loaded()
+        pairs = [[query, text[:512]] for _, text in candidates]
+        
         try:
-            scores = self.model.predict(
+            encoded = self._tokenizer(
                 pairs,
-                batch_size=self.config.batch_size,
-                show_progress_bar=False
-            )
-            # Ensure float scores
+                padding=True,
+                truncation=True,
+                max_length=512,
+                return_tensors="pt"
+            ).to(self.device)
+
+            with torch.no_grad():
+                logits = self._model(**encoded).logits
+                if logits.dim() > 1 and logits.shape[1] == 1:
+                    scores = logits.squeeze(-1).tolist()
+                elif logits.dim() == 1:
+                    scores = logits.tolist()
+                else:
+                    scores = logits[:, 0].tolist()
+
+            if isinstance(scores, float):
+                scores = [scores]
+
             scored_candidates = [
                 (candidates[idx][0], float(scores[idx]))
                 for idx in range(len(candidates))

@@ -12,11 +12,9 @@ import torch
 
 
 def detect_device() -> str:
-    """Detect the fastest available hardware acceleration device."""
+    """Detect available hardware acceleration (CUDA if available, else CPU for stability)."""
     if torch.cuda.is_available():
         return "cuda"
-    if torch.backends.mps.is_available():
-        return "mps"
     return "cpu"
 
 
@@ -42,7 +40,8 @@ class ParserConfig(BaseModel):
             "env", ".tox", ".eggs", "*.egg-info", "*.pyc", "*.pyo", "*.pyd",
             "*.so", "*.dylib", "*.dll", "*.a", "*.lib", "*.o", "*.obj",
             "*.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
-            ".DS_Store", "Thumbs.db", "*.min.js", "*.min.css", "*.map"
+            ".DS_Store", "Thumbs.db", "*.min.js", "*.min.css", "*.map",
+            "oss_evaluation", ".code_intel_index"
         ],
         description="Glob patterns to ignore"
     )

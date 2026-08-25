@@ -1,34 +1,28 @@
 """
-FastAPI application serving REST search endpoints and the web frontend.
+FastAPI REST API and Web Interface Server for Semantic Code Intelligence Platform.
 """
 
 from __future__ import annotations
 
-import os
-import time
+import logging
 from pathlib import Path
-from typing import Optional
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from typing import Any, Dict, List, Optional
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
-from semantic_code_intel.api.schemas import (
-    ChunkResponse,
-    IndexRequest,
-    SearchApiResponse,
-    SearchRequest,
-    SynthesizeApiResponse,
-    SynthesizeRequest,
-)
-from semantic_code_intel.config import CodeIntelConfig
+from semantic_code_intel.config import CodeIntelConfig, DEFAULT_CONFIG
 from semantic_code_intel.generation.synthesizer import CodeSynthesizer
 from semantic_code_intel.indexing.engine import HybridIndexer
 from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="Semantic Code Intelligence API",
-    description="Sub-second Hybrid Code Search & RAG with FAISS, BM25, and Cross-Encoder Reranking",
+    description="Local-first hybrid code search with FAISS, BM25, and Cross-Encoder reranking",
     version="0.1.0"
 )
 
@@ -40,125 +34,208 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-config = CodeIntelConfig()
+STATIC_DIR = Path(__file__).parent / "static"
+if STATIC_DIR.exists():
+    app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+# Module level configuration & pipeline references
+config: CodeIntelConfig = DEFAULT_CONFIG
 pipeline: Optional[HybridRetrievalPipeline] = None
-synthesizer = CodeSynthesizer()
 
 
 def get_pipeline() -> HybridRetrievalPipeline:
-    global pipeline
-    if pipeline is None:
+    global pipeline, config
+    if pipeline is None or pipeline.config != config:
         pipeline = HybridRetrievalPipeline(config)
     return pipeline
 
 
+class SearchRequest(BaseModel):
+    query: str = Field(..., description="Query string or question")
+    top_k: int = Field(default=5, ge=1, le=50)
+    mode: str = Field(default="hybrid", description="'hybrid', 'dense', or 'sparse'")
+    rerank: bool = Field(default=True)
+    use_reranker: Optional[bool] = Field(default=None)
+    directory: Optional[str] = Field(default=None)
+
+
+class SearchResultItem(BaseModel):
+    chunk_id: str
+    file_path: str
+    start_line: int
+    end_line: int
+    language: str
+    symbol_name: Optional[str] = None
+    symbol_type: Optional[str] = None
+    score: float
+    citation: str
+    code: str
+    content: Optional[str] = None
+    dense_score: Optional[float] = None
+    sparse_score: Optional[float] = None
+    rerank_score: Optional[float] = None
+
+
+class SearchResponse(BaseModel):
+    query: str
+    total_results: int
+    results: List[SearchResultItem]
+    latency_ms: Dict[str, float]
+    index_status: str = "ready"
+
+
+class SynthesizeRequest(BaseModel):
+    query: str
+    top_k: int = Field(default=5, ge=1, le=20)
+    provider: str = Field(default="extractive")
+
+
+class SynthesizeResponse(BaseModel):
+    query: str
+    answer: str
+    citations: List[str]
+    latency_ms: Dict[str, float]
+
+
+class IndexRequest(BaseModel):
+    target_dir: Optional[str] = Field(default=".")
+    force: bool = Field(default=False)
+
+
+@app.get("/", response_class=HTMLResponse)
+async def serve_ui():
+    """Serve the single-page web UI dashboard."""
+    index_path = STATIC_DIR / "index.html"
+    if not index_path.exists():
+        return HTMLResponse("<h1>Semantic Code Intelligence Web UI</h1>", status_code=200)
+    return FileResponse(str(index_path))
+
+
 @app.get("/api/health")
-def health_check():
+async def health_check():
+    """Health check endpoint confirming service and index readiness."""
     p = get_pipeline()
     indexed = p.is_indexed()
-    return {"status": "ok", "indexed": indexed, "index_dir": str(config.get_index_dir())}
+    return {
+        "status": "ok",
+        "service": "semantic-code-intelligence",
+        "indexed": indexed
+    }
 
 
 @app.get("/api/stats")
-def get_stats():
-    p = get_pipeline()
-    stats = p.metadata_store.get_stats()
-    manifest = p.metadata_store.get_manifest_val("index_manifest", {})
-    return {**stats, "manifest": manifest}
-
-
-@app.post("/api/search", response_model=SearchApiResponse)
-def search_code(req: SearchRequest):
+async def get_stats():
+    """Get statistics about the indexed repository and vector dimensions."""
     p = get_pipeline()
     if not p.is_indexed():
-        raise HTTPException(status_code=400, detail="Repository is not indexed yet. Run index first.")
+        return {
+            "status": "not_indexed",
+            "message": "Repository is not indexed yet.",
+            "total_chunks": 0,
+            "total_files": 0,
+            "total_lines": 0
+        }
+
+    stats = p.metadata_store.get_stats()
+    manifest = p.metadata_store.get_manifest_val("index_manifest", {})
+    return {
+        "status": "ready",
+        **stats,
+        "manifest": manifest,
+        "index_dir": str(p.config.get_index_dir())
+    }
+
+
+@app.post("/api/index")
+async def trigger_index(req: IndexRequest):
+    """Index a codebase directory via API."""
+    global pipeline, config
+    target_dir = Path(req.target_dir or ".").resolve()
+    config = CodeIntelConfig(project_root=target_dir)
+    indexer = HybridIndexer(config)
+    metrics = indexer.index_codebase(target_dir, force_reindex=req.force)
+    pipeline = None
+    return {
+        "status": "indexed",
+        "metrics": metrics
+    }
+
+
+@app.post("/api/search", response_model=SearchResponse)
+async def search_code(req: SearchRequest):
+    """Execute hybrid code search with line citations and sub-second latency breakdown."""
+    p = get_pipeline()
+    if not p.is_indexed():
+        return SearchResponse(
+            query=req.query,
+            total_results=0,
+            results=[],
+            latency_ms={"total_ms": 0.0},
+            index_status="not_indexed"
+        )
+
+    use_rerank = req.use_reranker if req.use_reranker is not None else req.rerank
 
     res = p.query(
         query_text=req.query,
         top_k=req.top_k,
-        use_reranker=req.use_reranker,
+        use_reranker=use_rerank,
         mode=req.mode
     )
 
-    chunk_responses: list[ChunkResponse] = []
-    for r in res.results:
-        c = r.chunk
-        chunk_responses.append(
-            ChunkResponse(
-                chunk_id=c.chunk_id,
-                file_path=c.file_path,
-                absolute_path=c.absolute_path,
-                language=c.language,
-                symbol_name=c.symbol_name,
-                symbol_type=c.symbol_type.value,
-                parent_scope=c.parent_scope,
-                start_line=c.start_line,
-                end_line=c.end_line,
-                content=c.content,
-                context_header=c.context_header,
-                docstring=c.docstring,
-                citation=r.citation,
-                markdown_link=r.markdown_link,
-                score=r.score,
-                dense_score=r.dense_score,
-                sparse_score=r.sparse_score,
-                rrf_score=r.rrf_score,
-                rerank_score=r.rerank_score
-            )
+    items = [
+        SearchResultItem(
+            chunk_id=r.chunk.chunk_id,
+            file_path=r.chunk.file_path,
+            start_line=r.chunk.start_line,
+            end_line=r.chunk.end_line,
+            language=r.chunk.language,
+            symbol_name=r.chunk.symbol_name,
+            symbol_type=r.chunk.symbol_type.value if r.chunk.symbol_type else None,
+            score=round(r.score, 4),
+            citation=r.chunk.citation,
+            code=r.chunk.content,
+            content=r.chunk.content,
+            dense_score=round(r.dense_score, 4) if r.dense_score is not None else None,
+            sparse_score=round(r.sparse_score, 4) if r.sparse_score is not None else None,
+            rerank_score=round(r.rerank_score, 4) if r.rerank_score is not None else None,
+        )
+        for r in res.results
+    ]
+
+    latency_dict = res.latency.to_dict()
+    latency_dict["total_ms"] = latency_dict.get("total_end_to_end_ms", 0.0)
+
+    return SearchResponse(
+        query=req.query,
+        total_results=len(items),
+        results=items,
+        latency_ms=latency_dict,
+        index_status="ready"
+    )
+
+
+@app.post("/api/synthesize", response_model=SynthesizeResponse)
+@app.post("/api/ask", response_model=SynthesizeResponse)
+async def ask_or_synthesize(req: SynthesizeRequest):
+    """Synthesize cited code answer using extractive or local Ollama LLM backend."""
+    p = get_pipeline()
+    if not p.is_indexed():
+        raise HTTPException(
+            status_code=400,
+            detail="Repository is not indexed yet. Please run `code-intel index` first."
         )
 
-    return SearchApiResponse(
+    res = p.query(query_text=req.query, top_k=req.top_k, use_reranker=True)
+    synthesizer = CodeSynthesizer(provider=req.provider)
+    answer = synthesizer.synthesize(req.query, res.results)
+
+    latency_dict = res.latency.to_dict()
+    latency_dict["total_ms"] = latency_dict.get("total_end_to_end_ms", 0.0)
+
+    return SynthesizeResponse(
         query=req.query,
-        results=chunk_responses,
-        latency_ms=res.latency.model_dump(),
-        total_candidates=res.total_candidates_considered
+        answer=answer.answer,
+        citations=answer.citations,
+        latency_ms=latency_dict
     )
-
-
-@app.post("/api/synthesize", response_model=SynthesizeApiResponse)
-def synthesize_answer(req: SynthesizeRequest):
-    p = get_pipeline()
-    t0 = time.perf_counter()
-    search_res = p.query(query_text=req.query, top_k=req.top_k, use_reranker=True)
-    search_latency = (time.perf_counter() - t0) * 1000.0
-
-    synth_res = synthesizer.synthesize(req.query, search_res.results)
-    total_latency = (time.perf_counter() - t0) * 1000.0
-
-    return SynthesizeApiResponse(
-        query=req.query,
-        answer=synth_res.answer,
-        citations=synth_res.citations,
-        model_used=synth_res.model_used,
-        search_latency_ms=search_latency,
-        total_latency_ms=total_latency
-    )
-
-
-@app.post("/api/index")
-def index_repo(req: IndexRequest, background_tasks: BackgroundTasks):
-    target_path = Path(req.target_dir) if req.target_dir else config.project_root
-    
-    def run_indexing():
-        global pipeline
-        indexer = HybridIndexer(config)
-        indexer.index_codebase(target_dir=target_path, force_reindex=req.force_reindex)
-        # Reset cached pipeline
-        pipeline = None
-
-    background_tasks.add_task(run_indexing)
-    return {"message": "Indexing triggered in background", "target_dir": str(target_path)}
-
-
-# Mount static directory for frontend
-static_dir = Path(__file__).parent / "static"
-if static_dir.exists():
-    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
-
-
-@app.get("/", response_class=HTMLResponse)
-def serve_index():
-    index_file = static_dir / "index.html"
-    if index_file.exists():
-        return FileResponse(str(index_file))
-    return "<h1>Semantic Code Intelligence API Running</h1>"

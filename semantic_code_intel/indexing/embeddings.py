@@ -1,14 +1,15 @@
 """
-Dense embedding generation with SentenceTransformer and hardware acceleration (MPS/CUDA/CPU).
+Dense embedding generation with native Transformers, mean-pooling, and hardware acceleration.
 """
 
 from __future__ import annotations
 
 import logging
-from typing import List, Optional, Union
+from typing import List, Optional
 import numpy as np
-from sentence_transformers import SentenceTransformer
 import torch
+import torch.nn.functional as F
+from transformers import AutoModel, AutoTokenizer
 from semantic_code_intel.config import EmbeddingConfig
 
 logger = logging.getLogger(__name__)
@@ -21,17 +22,24 @@ class EmbeddingEngine:
         self.config = config or EmbeddingConfig()
         self.model_name = self.config.model_name
         self.device = self.config.device
-        self._model: Optional[SentenceTransformer] = None
+        self._tokenizer: Optional[AutoTokenizer] = None
+        self._model: Optional[AutoModel] = None
 
-    @property
-    def model(self) -> SentenceTransformer:
-        """Lazy load the sentence transformer model."""
-        if self._model is None:
+    def _ensure_loaded(self) -> None:
+        """Lazy load tokenizer and model."""
+        if self._tokenizer is None or self._model is None:
             logger.info(f"Loading embedding model '{self.model_name}' on device '{self.device}'...")
-            self._model = SentenceTransformer(self.model_name, device=self.device)
-            # Ensure model is in eval mode
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+            self._model = AutoModel.from_pretrained(self.model_name).to(self.device)
             self._model.eval()
-        return self._model
+
+    def _mean_pooling(self, model_output, attention_mask: torch.Tensor) -> torch.Tensor:
+        """Mean pooling to extract sentence-level embeddings from token embeddings."""
+        token_embeddings = model_output[0]
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(token_embeddings.size()).float()
+        sum_embeddings = torch.sum(token_embeddings * input_mask_expanded, 1)
+        sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+        return sum_embeddings / sum_mask
 
     def encode_texts(
         self,
@@ -46,29 +54,52 @@ class EmbeddingEngine:
         if not texts:
             return np.empty((0, self.config.embedding_dim), dtype=np.float32)
 
+        self._ensure_loaded()
         batch_sz = batch_size or self.config.batch_size
-        embeddings = self.model.encode(
-            texts,
-            batch_size=batch_sz,
-            show_progress_bar=show_progress_bar,
-            convert_to_numpy=True,
-            normalize_embeddings=self.config.normalize_embeddings
-        )
-        return embeddings.astype(np.float32)
+        all_embeddings: List[np.ndarray] = []
+
+        for i in range(0, len(texts), batch_sz):
+            batch_texts = texts[i : i + batch_sz]
+            encoded = self._tokenizer(
+                batch_texts,
+                padding=True,
+                truncation=True,
+                max_length=512,
+                return_tensors="pt"
+            ).to(self.device)
+
+            with torch.no_grad():
+                out = self._model(**encoded)
+                pooled = self._mean_pooling(out, encoded["attention_mask"])
+                if self.config.normalize_embeddings:
+                    pooled = F.normalize(pooled, p=2, dim=1)
+
+            all_embeddings.append(pooled.cpu().numpy().astype(np.float32))
+
+        return np.vstack(all_embeddings)
 
     def encode_query(self, query: str) -> np.ndarray:
         """
         Encode a single query string into a normalized 1D float32 numpy vector.
         Shape: (embedding_dim,)
         """
-        embedding = self.model.encode(
-            query,
-            convert_to_numpy=True,
-            normalize_embeddings=self.config.normalize_embeddings
-        )
-        return embedding.astype(np.float32)
+        self._ensure_loaded()
+        encoded = self._tokenizer(
+            [query],
+            padding=True,
+            truncation=True,
+            max_length=512,
+            return_tensors="pt"
+        ).to(self.device)
+
+        with torch.no_grad():
+            out = self._model(**encoded)
+            pooled = self._mean_pooling(out, encoded["attention_mask"])
+            if self.config.normalize_embeddings:
+                pooled = F.normalize(pooled, p=2, dim=1)
+
+        return pooled.cpu().numpy()[0].astype(np.float32)
 
     @property
     def dimension(self) -> int:
-        """Return the dimension of embeddings produced by the model."""
-        return self.model.get_sentence_embedding_dimension() or self.config.embedding_dim
+        return self.config.embedding_dim
