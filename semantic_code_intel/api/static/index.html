@@ -11,53 +11,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           Apple Human Interface Guidelines (HIG) Design Tokens & System Colors
-           Reference: developer.apple.com/design/human-interface-guidelines/design-principles
+           Official Apple Human Interface Guidelines (HIG) Color Specifications
+           Reference: developer.apple.com/design/human-interface-guidelines/color
            ========================================================================== */
         :root {
-            /* Semantic Backgrounds (macOS / iOS Dark System Palette) */
-            --system-bg: #000000;
-            --secondary-system-bg: #1c1c1e;
-            --tertiary-system-bg: #2c2c2e;
-            
-            /* Apple Vibrancy & Translucent Materials */
-            --material-regular: rgba(30, 30, 35, 0.72);
-            --material-thin: rgba(255, 255, 255, 0.04);
-            --material-ultra-thin: rgba(255, 255, 255, 0.02);
-            --material-input: rgba(255, 255, 255, 0.06);
-            --material-hover: rgba(255, 255, 255, 0.09);
-            --material-active: rgba(255, 255, 255, 0.14);
-            
-            /* Apple Hairlines & Separators */
-            --separator: rgba(84, 84, 88, 0.45);
+            /* Standard Apple System Colors (Dark Mode Spec) */
+            --system-blue: #0A84FF;
+            --system-blue-hover: #0071E3;
+            --system-blue-tint: rgba(10, 132, 255, 0.15);
+            --system-green: #30D158;
+            --system-green-tint: rgba(48, 209, 88, 0.15);
+            --system-indigo: #5E5CE6;
+            --system-orange: #FF9F0A;
+            --system-orange-tint: rgba(255, 159, 10, 0.15);
+            --system-pink: #FF375F;
+            --system-purple: #BF5AF2;
+            --system-red: #FF453A;
+            --system-red-tint: rgba(255, 69, 58, 0.15);
+            --system-teal: #64D2FF;
+            --system-yellow: #FFD60A;
+
+            /* Apple Standard System Grays (Dark Mode) */
+            --system-gray: #8E8E93;
+            --system-gray2: #636366;
+            --system-gray3: #48484A;
+            --system-gray4: #3A3A3C;
+            --system-gray5: #2C2C2E;
+            --system-gray6: #1C1C1E;
+
+            /* Semantic Backgrounds */
+            --system-background: #000000;
+            --secondary-system-background: #1C1C1E;
+            --tertiary-system-background: #2C2C2E;
+
+            /* Semantic Labels */
+            --label: #FFFFFF;
+            --secondary-label: rgba(235, 235, 245, 0.60);
+            --tertiary-label: rgba(235, 235, 245, 0.30);
+            --quaternary-label: rgba(235, 235, 245, 0.18);
+
+            /* Semantic Fills & Overlays */
+            --system-fill: rgba(120, 120, 128, 0.36);
+            --secondary-system-fill: rgba(120, 120, 128, 0.32);
+            --tertiary-system-fill: rgba(118, 118, 128, 0.24);
+            --quaternary-system-fill: rgba(118, 118, 128, 0.18);
+
+            /* Semantic Separators */
+            --separator: rgba(84, 84, 88, 0.60);
+            --opaque-separator: #38383A;
             --separator-subtle: rgba(255, 255, 255, 0.08);
-            --separator-glass: rgba(255, 255, 255, 0.12);
-            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
-            
-            /* Apple Dynamic System Colors (Dark Mode) */
-            --system-blue: #0a84ff;
-            --system-blue-hover: #0071e3;
-            --system-blue-subtle: rgba(10, 132, 255, 0.15);
-            --system-green: #30d158;
-            --system-green-subtle: rgba(48, 209, 88, 0.12);
-            --system-orange: #ff9f0a;
-            --system-orange-subtle: rgba(255, 159, 10, 0.12);
-            --system-red: #ff453a;
-            
-            /* Apple Label Hierarchy */
-            --label: #ffffff;
-            --secondary-label: rgba(235, 235, 245, 0.65);
-            --tertiary-label: rgba(235, 235, 245, 0.42);
-            --quaternary-label: rgba(235, 235, 245, 0.22);
-            
+            --separator-hairline: rgba(255, 255, 255, 0.12);
+            --specular-reflection: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+
             /* Typography */
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-            
-            /* Depth, Radii & Easing */
+
+            /* Standard Dimensions & Physics */
             --blur-standard: blur(32px) saturate(190%);
-            --shadow-elevated: 0 16px 48px 0 rgba(0, 0, 0, 0.6);
-            --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.35);
+            --shadow-elevated: 0 20px 60px 0 rgba(0, 0, 0, 0.7);
+            --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.4);
             --radius-large: 16px;
             --radius-medium: 10px;
             --radius-small: 6px;
@@ -74,10 +87,10 @@
         }
 
         body {
-            background-color: var(--system-bg);
+            background-color: var(--system-background);
             background-image: 
-                radial-gradient(circle at 50% -8%, rgba(10, 132, 255, 0.14) 0%, transparent 60%),
-                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 50%);
+                radial-gradient(circle at 50% -10%, rgba(10, 132, 255, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
             color: var(--label);
             font-family: var(--font-sans);
             min-height: 100vh;
@@ -86,18 +99,16 @@
             letter-spacing: -0.012em;
         }
 
-        /* ==========================================================================
-           1. CLARITY & DEFERENCE: Translucent Navigation Bar
-           ========================================================================== */
+        /* Top Navigation with Translucent Material */
         nav {
             position: sticky;
             top: 0;
             z-index: 50;
-            background: var(--material-regular);
+            background: rgba(28, 28, 30, 0.75);
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border-bottom: 1px solid var(--separator-subtle);
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -122,7 +133,7 @@
             font-weight: 500;
             color: var(--tertiary-label);
             padding: 0.18rem 0.6rem;
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-pill);
             letter-spacing: 0.02em;
@@ -140,7 +151,7 @@
             display: inline-flex;
             align-items: center;
             gap: 0.45rem;
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             padding: 0.2rem 0.7rem;
             border-radius: var(--radius-pill);
@@ -159,15 +170,13 @@
             background: var(--system-orange);
         }
 
-        /* ==========================================================================
-           2. CONSISTENCY & USER CONTROL: Repository Toolbar
-           ========================================================================== */
+        /* Repository Control Toolbar */
         .toolbar {
-            background: rgba(18, 18, 22, 0.6);
+            background: rgba(28, 28, 30, 0.5);
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border-bottom: 1px solid var(--separator-subtle);
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             padding: 0.8rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -199,7 +208,7 @@
         select.apple-select {
             width: 100%;
             appearance: none;
-            background: var(--material-input);
+            background: var(--tertiary-system-fill);
             border: 1px solid var(--separator-subtle);
             color: var(--label);
             font-family: var(--font-sans);
@@ -209,19 +218,19 @@
             border-radius: var(--radius-medium);
             outline: none;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
         }
 
         select.apple-select:hover {
-            background: var(--material-hover);
-            border-color: var(--separator-glass);
+            background: var(--secondary-system-fill);
+            border-color: var(--separator-hairline);
         }
 
         select.apple-select:focus {
             border-color: var(--system-blue);
-            background: var(--material-active);
-            box-shadow: 0 0 0 3px var(--system-blue-subtle);
+            background: var(--system-fill);
+            box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
         .select-arrow {
@@ -232,13 +241,13 @@
             pointer-events: none;
             width: 8px;
             height: 5px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(235,235,245,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
         }
 
         input.apple-input-custom {
             margin-top: 0.5rem;
             width: 100%;
-            background: var(--material-input);
+            background: var(--tertiary-system-fill);
             border: 1px solid var(--separator-subtle);
             color: var(--label);
             font-family: var(--font-mono);
@@ -247,7 +256,7 @@
             border-radius: var(--radius-medium);
             outline: none;
             display: none;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
         }
 
         input.apple-input-custom:focus {
@@ -276,7 +285,7 @@
         }
 
         button.apple-btn-secondary {
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--secondary-system-fill);
             color: var(--label);
             border: 1px solid var(--separator-subtle);
             font-family: var(--font-sans);
@@ -285,23 +294,21 @@
             padding: 0.45rem 0.95rem;
             border-radius: var(--radius-medium);
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         button.apple-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.14);
-            border-color: var(--separator-glass);
+            background: var(--system-fill);
+            border-color: var(--separator-hairline);
         }
 
         button.apple-btn-secondary:active {
             transform: scale(0.98);
         }
 
-        /* ==========================================================================
-           3. DIRECT MANIPULATION: Main Workspace & Search Controls
-           ========================================================================== */
+        /* Main Workspace Container */
         main {
             flex: 1;
             max-width: 1040px;
@@ -314,12 +321,12 @@
         }
 
         .glass-panel {
-            background: var(--material-thin);
+            background: rgba(28, 28, 30, 0.45);
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-large);
-            box-shadow: var(--glass-specular), var(--shadow-card);
+            box-shadow: var(--specular-reflection), var(--shadow-card);
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
@@ -341,7 +348,7 @@
 
         input.apple-search-input {
             width: 100%;
-            background: var(--material-input);
+            background: var(--tertiary-system-fill);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.85rem 3.5rem 0.85rem 1.15rem;
@@ -349,7 +356,7 @@
             font-family: var(--font-sans);
             font-size: 0.95rem;
             outline: none;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
         }
 
@@ -360,15 +367,15 @@
 
         input.apple-search-input:focus {
             border-color: var(--system-blue);
-            background: var(--material-active);
-            box-shadow: 0 0 0 3px var(--system-blue-subtle);
+            background: var(--system-fill);
+            box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
         .search-shortcut-badge {
             position: absolute;
             right: 0.85rem;
             pointer-events: none;
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             border-radius: 4px;
             padding: 0.15rem 0.45rem;
@@ -379,7 +386,7 @@
 
         button.apple-btn-primary {
             background: var(--system-blue);
-            color: #ffffff;
+            color: #FFFFFF;
             border: none;
             border-radius: var(--radius-medium);
             padding: 0.85rem 1.75rem;
@@ -438,7 +445,7 @@
         }
 
         .segment-btn.active {
-            background: rgba(255, 255, 255, 0.14);
+            background: var(--secondary-system-fill);
             color: var(--label);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
@@ -466,7 +473,7 @@
         }
 
         .topk-btn.active {
-            background: rgba(255, 255, 255, 0.14);
+            background: var(--secondary-system-fill);
             color: var(--label);
         }
 
@@ -501,7 +508,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.15);
+            background-color: var(--system-gray4);
             transition: 0.2s var(--spring-easing);
             border-radius: 34px;
         }
@@ -513,7 +520,7 @@
             width: 16px;
             left: 2px;
             bottom: 2px;
-            background-color: white;
+            background-color: #FFFFFF;
             transition: 0.2s var(--spring-easing);
             border-radius: 50%;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -538,7 +545,7 @@
         }
 
         .suggestion-pill {
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             color: var(--secondary-label);
             padding: 0.28rem 0.75rem;
@@ -548,16 +555,14 @@
         }
 
         .suggestion-pill:hover {
-            background: var(--material-hover);
+            background: var(--tertiary-system-fill);
             color: var(--label);
-            border-color: var(--separator-glass);
+            border-color: var(--separator-hairline);
         }
 
-        /* ==========================================================================
-           4. FEEDBACK: Latency Telemetry & Result Cards
-           ========================================================================== */
+        /* Telemetry Dashboard */
         .telemetry-row {
-            background: var(--material-ultra-thin);
+            background: rgba(28, 28, 30, 0.35);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.85rem 1.5rem;
@@ -609,18 +614,18 @@
         }
 
         .code-card {
-            background: var(--material-thin);
+            background: rgba(28, 28, 30, 0.45);
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-large);
-            box-shadow: var(--glass-specular), var(--shadow-card);
+            box-shadow: var(--specular-reflection), var(--shadow-card);
             overflow: hidden;
             transition: all 0.2s var(--spring-easing);
         }
 
         .code-card:hover {
-            border-color: var(--separator-glass);
+            border-color: var(--separator-hairline);
             transform: translateY(-1px);
         }
 
@@ -655,7 +660,7 @@
         }
 
         .btn-copy {
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             color: var(--secondary-label);
             font-family: var(--font-sans);
@@ -667,7 +672,7 @@
         }
 
         .btn-copy:hover {
-            background: var(--material-hover);
+            background: var(--tertiary-system-fill);
             color: var(--label);
         }
 
@@ -680,7 +685,7 @@
         }
 
         .score-tag {
-            background: var(--material-ultra-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             padding: 0.15rem 0.45rem;
             border-radius: 4px;
@@ -690,13 +695,13 @@
         .score-tag.active-score {
             color: var(--system-green);
             border-color: rgba(48, 209, 88, 0.25);
-            background: var(--system-green-subtle);
+            background: var(--system-green-tint);
         }
 
         /* Xcode-Style Line Numbers Gutter */
         .code-block-container {
             display: flex;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.45);
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
@@ -736,7 +741,7 @@
         }
 
         .scope-badge {
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             padding: 0.15rem 0.5rem;
             border-radius: 4px;
             color: var(--secondary-label);
@@ -761,9 +766,7 @@
             font-size: 0.82rem;
         }
 
-        /* ==========================================================================
-           5. AESTHETIC INTEGRITY: Glassmorphic Indexing Modal
-           ========================================================================== */
+        /* Apple Glassmorphic Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
@@ -786,13 +789,13 @@
         }
 
         .glass-modal {
-            background: rgba(24, 24, 28, 0.88);
-            border: 1px solid var(--separator-glass);
+            background: rgba(28, 28, 30, 0.90);
+            border: 1px solid var(--separator-hairline);
             border-radius: 18px;
             width: 90%;
             max-width: 500px;
             padding: 2rem;
-            box-shadow: var(--glass-specular), var(--shadow-elevated);
+            box-shadow: var(--specular-reflection), var(--shadow-elevated);
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -823,7 +826,7 @@
         .clean-progress-track {
             width: 100%;
             height: 6px;
-            background: rgba(255, 255, 255, 0.08);
+            background: var(--system-gray5);
             border-radius: var(--radius-pill);
             overflow: hidden;
         }
@@ -837,7 +840,7 @@
         }
 
         .modal-status-pill {
-            background: var(--material-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.65rem 0.85rem;
@@ -856,7 +859,7 @@
         }
 
         .stage-pill {
-            background: var(--material-ultra-thin);
+            background: var(--quaternary-system-fill);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.5rem 0.75rem;
@@ -868,17 +871,17 @@
         .stage-pill.active {
             color: var(--system-blue);
             border-color: rgba(10, 132, 255, 0.35);
-            background: var(--system-blue-subtle);
+            background: var(--system-blue-tint);
         }
 
         .stage-pill.complete {
             color: var(--system-green);
             border-color: rgba(48, 209, 88, 0.35);
-            background: var(--system-green-subtle);
+            background: var(--system-green-tint);
         }
 
         button.modal-close-btn {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--secondary-system-fill);
             color: var(--label);
             border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
@@ -887,18 +890,18 @@
             font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             display: none;
             transition: all 0.2s var(--spring-easing);
         }
 
         button.modal-close-btn:hover {
-            background: rgba(255, 255, 255, 0.16);
+            background: var(--system-fill);
         }
     </style>
 </head>
 <body>
-    <!-- 1. Clarity & Deference: Navigation Bar -->
+    <!-- Top Navigation Bar -->
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
@@ -912,7 +915,7 @@
         </div>
     </nav>
 
-    <!-- 2. Consistency: Repository Toolbar -->
+    <!-- Translucent Repository Toolbar -->
     <div class="toolbar">
         <div class="toolbar-group">
             <span class="toolbar-label">Repository:</span>
@@ -952,7 +955,7 @@
         </div>
     </div>
 
-    <!-- 3. Direct Manipulation: Main Workspace -->
+    <!-- Main Workspace -->
     <main>
         <!-- Suggestions Row -->
         <div class="suggestions-row" id="suggestionsBox">
@@ -1004,7 +1007,7 @@
             </div>
         </div>
 
-        <!-- 4. Feedback: Latency Telemetry Row -->
+        <!-- Latency Telemetry Row -->
         <div class="telemetry-row" id="latencyDashboard">
             <div class="telemetry-item">
                 <div class="telemetry-label">Dense Vector</div>
@@ -1043,7 +1046,7 @@
         </div>
     </main>
 
-    <!-- 5. Depth: Glassmorphic Indexing Modal -->
+    <!-- Glassmorphic Indexing Modal -->
     <div class="glass-modal-backdrop" id="indexingModal">
         <div class="glass-modal">
             <div class="modal-header-clean">
