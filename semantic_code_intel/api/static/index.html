@@ -11,13 +11,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           Figma UI Design Principles & Apple HIG Spatial Design System
-           References:
-           - figma.com/resource-library/ui-design-principles
-           - developer.apple.com/design/human-interface-guidelines
+           True Pitch-Black Minimalist Glassmorphic Design System
+           Apple HIG + Figma Principles (OLED True Black Palette)
            ========================================================================== */
         :root {
-            /* 1. Spatial Grid System (8-Point Grid) */
+            /* 1. Spatial Grid (8-Point Grid) */
             --space-1: 4px;
             --space-2: 8px;
             --space-3: 12px;
@@ -27,51 +25,52 @@
             --space-8: 32px;
             --space-12: 48px;
 
-            /* 2. Visual Hierarchy & Color Contrast Tokens */
+            /* 2. True Black Canvas & Surface Palette */
+            --bg-canvas: #000000;
+            --surface-nav: rgba(0, 0, 0, 0.88);
+            --surface-toolbar: rgba(6, 6, 8, 0.75);
+            --surface-panel: rgba(10, 10, 12, 0.65);
+            --surface-card: rgba(8, 8, 10, 0.75);
+            --surface-code: #030304;
+            --surface-input: rgba(255, 255, 255, 0.04);
+            --surface-hover: rgba(255, 255, 255, 0.08);
+            --surface-active: rgba(255, 255, 255, 0.12);
+            --surface-subtle: rgba(255, 255, 255, 0.03);
+
+            /* 3. Hairlines & Subtle Edge Highlights */
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-medium: rgba(255, 255, 255, 0.14);
+            --border-focus: #0A84FF;
+            --specular-reflection: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+
+            /* 4. Apple Dynamic Accent Colors */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
-            --system-blue-tint: rgba(10, 132, 255, 0.15);
+            --system-blue-tint: rgba(10, 132, 255, 0.14);
             --system-green: #30D158;
-            --system-green-tint: rgba(48, 209, 88, 0.15);
+            --system-green-tint: rgba(48, 209, 88, 0.14);
             --system-orange: #FF9F0A;
-            --system-orange-tint: rgba(255, 159, 10, 0.15);
+            --system-orange-tint: rgba(255, 159, 10, 0.14);
             --system-red: #FF453A;
-            --system-red-tint: rgba(255, 69, 58, 0.15);
+            --system-red-tint: rgba(255, 69, 58, 0.14);
 
-            /* Semantic Labels (High Contrast Hierarchy) */
+            /* 5. Typography & High-Contrast Labels */
             --label-primary: #FFFFFF;
-            --label-secondary: rgba(235, 235, 245, 0.65);
-            --label-tertiary: rgba(235, 235, 245, 0.35);
-            --label-quaternary: rgba(235, 235, 245, 0.18);
+            --label-secondary: rgba(255, 255, 255, 0.68);
+            --label-tertiary: rgba(255, 255, 255, 0.38);
+            --label-quaternary: rgba(255, 255, 255, 0.18);
 
-            /* Surface Materials & Depth Layering */
-            --bg-canvas: #000000;
-            --surface-nav: rgba(26, 26, 30, 0.78);
-            --surface-panel: rgba(26, 26, 30, 0.50);
-            --surface-card: rgba(26, 26, 30, 0.42);
-            --surface-input: rgba(255, 255, 255, 0.06);
-            --surface-hover: rgba(255, 255, 255, 0.10);
-            --surface-active: rgba(255, 255, 255, 0.15);
-            --surface-subtle-fill: rgba(255, 255, 255, 0.035);
-
-            /* Hairlines & Separation */
-            --border-subtle: rgba(255, 255, 255, 0.08);
-            --border-medium: rgba(255, 255, 255, 0.12);
-            --border-focus: var(--system-blue);
-            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
-
-            /* Typography */
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
-            /* Radii & Elevation */
+            /* 6. Precision Radii & Easing */
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 16px;
             --radius-pill: 980px;
-            --blur-standard: blur(32px) saturate(190%);
-            --shadow-elevated: 0 20px 60px rgba(0, 0, 0, 0.75);
-            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --blur-standard: blur(36px) saturate(190%);
+            --shadow-elevated: 0 24px 64px rgba(0, 0, 0, 0.9);
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.6);
             --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -85,9 +84,6 @@
 
         body {
             background-color: var(--bg-canvas);
-            background-image: 
-                radial-gradient(circle at 50% -10%, rgba(10, 132, 255, 0.14) 0%, transparent 60%),
-                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
             color: var(--label-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
@@ -96,9 +92,7 @@
             letter-spacing: -0.012em;
         }
 
-        /* ==========================================================================
-           1. NAVIGATION BAR (Consistency & Simplicity)
-           ========================================================================== */
+        /* Top Navigation Bar */
         nav {
             position: sticky;
             top: 0;
@@ -107,7 +101,7 @@
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border-bottom: 1px solid var(--border-subtle);
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             padding: var(--space-3) var(--space-8);
             display: flex;
             justify-content: space-between;
@@ -132,7 +126,7 @@
             font-weight: 500;
             color: var(--label-tertiary);
             padding: 2px var(--space-2);
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-pill);
         }
@@ -147,7 +141,7 @@
             display: inline-flex;
             align-items: center;
             gap: var(--space-2);
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             padding: 3px var(--space-3);
             border-radius: var(--radius-pill);
@@ -167,15 +161,13 @@
             background: var(--system-orange);
         }
 
-        /* ==========================================================================
-           2. REPOSITORY CONTROL TOOLBAR (Gestalt Grouping & Alignment)
-           ========================================================================== */
+        /* Repository Control Toolbar */
         .toolbar {
-            background: rgba(22, 22, 26, 0.55);
+            background: var(--surface-toolbar);
             backdrop-filter: var(--blur-standard);
             -webkit-backdrop-filter: var(--blur-standard);
             border-bottom: 1px solid var(--border-subtle);
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             padding: var(--space-3) var(--space-8);
             display: flex;
             justify-content: space-between;
@@ -218,7 +210,7 @@
             border-radius: var(--radius-md);
             outline: none;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
@@ -242,7 +234,7 @@
             pointer-events: none;
             width: 8px;
             height: 5px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(235,235,245,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
         }
 
         input.apple-input-custom {
@@ -257,7 +249,7 @@
             border-radius: var(--radius-md);
             outline: none;
             display: none;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
         }
 
@@ -288,7 +280,7 @@
         }
 
         button.apple-btn-secondary {
-            background: var(--surface-hover);
+            background: var(--surface-input);
             color: var(--label-primary);
             border: 1px solid var(--border-subtle);
             font-family: var(--font-sans);
@@ -297,13 +289,13 @@
             padding: 0.45rem var(--space-4);
             border-radius: var(--radius-md);
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         button.apple-btn-secondary:hover {
-            background: var(--surface-active);
+            background: var(--surface-hover);
             border-color: var(--border-medium);
         }
 
@@ -311,9 +303,7 @@
             transform: scale(0.98);
         }
 
-        /* ==========================================================================
-           3. MAIN WORKSPACE & SEARCH CONTROLS (Hierarchy & Affordance)
-           ========================================================================== */
+        /* Main Workspace Container */
         main {
             flex: 1;
             max-width: 1040px;
@@ -331,7 +321,7 @@
             -webkit-backdrop-filter: var(--blur-standard);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--shadow-card);
+            box-shadow: var(--specular-reflection), var(--shadow-card);
             padding: var(--space-6);
             display: flex;
             flex-direction: column;
@@ -361,7 +351,7 @@
             font-family: var(--font-sans);
             font-size: 0.95rem;
             outline: none;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
         }
 
@@ -380,7 +370,7 @@
             position: absolute;
             right: 0.85rem;
             pointer-events: none;
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: 4px;
             padding: 2px var(--space-2);
@@ -430,7 +420,7 @@
 
         .segmented-control {
             display: inline-flex;
-            background: rgba(0, 0, 0, 0.45);
+            background: #020203;
             padding: 3px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-subtle);
@@ -452,13 +442,13 @@
         .segment-btn.active {
             background: var(--surface-hover);
             color: var(--label-primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
         }
 
         /* Top K Filter Control */
         .topk-control {
             display: inline-flex;
-            background: rgba(0, 0, 0, 0.45);
+            background: #020203;
             padding: 3px;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-subtle);
@@ -513,7 +503,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.18);
+            background-color: rgba(255, 255, 255, 0.12);
             transition: 0.2s var(--spring-easing);
             border-radius: 34px;
         }
@@ -528,7 +518,7 @@
             background-color: #FFFFFF;
             transition: 0.2s var(--spring-easing);
             border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
         input:checked + .slider {
@@ -550,7 +540,7 @@
         }
 
         .suggestion-pill {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             color: var(--label-secondary);
             padding: 0.28rem var(--space-3);
@@ -565,11 +555,9 @@
             border-color: var(--border-medium);
         }
 
-        /* ==========================================================================
-           4. FEEDBACK & TELEMETRY DASHBOARD
-           ========================================================================== */
+        /* Telemetry Dashboard */
         .telemetry-row {
-            background: rgba(28, 28, 30, 0.35);
+            background: rgba(8, 8, 10, 0.65);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 0.85rem var(--space-6);
@@ -614,9 +602,7 @@
             display: none;
         }
 
-        /* ==========================================================================
-           5. CODE CARDS & XCODE GUTTERS (Visual Hierarchy & Clarity)
-           ========================================================================== */
+        /* Code Cards & Xcode-Style Line Number Gutters */
         .results-list {
             display: flex;
             flex-direction: column;
@@ -629,7 +615,7 @@
             -webkit-backdrop-filter: var(--blur-standard);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--shadow-card);
+            box-shadow: var(--specular-reflection), var(--shadow-card);
             overflow: hidden;
             transition: all 0.2s var(--spring-easing);
         }
@@ -640,7 +626,7 @@
         }
 
         .code-header {
-            background: rgba(255, 255, 255, 0.025);
+            background: rgba(255, 255, 255, 0.02);
             border-bottom: 1px solid var(--border-subtle);
             padding: 0.65rem var(--space-4);
             display: flex;
@@ -670,7 +656,7 @@
         }
 
         .btn-copy {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             color: var(--label-secondary);
             font-family: var(--font-sans);
@@ -695,7 +681,7 @@
         }
 
         .score-tag {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             padding: 0.15rem 0.45rem;
             border-radius: 4px;
@@ -711,7 +697,7 @@
         /* Xcode-Style Line Numbers Gutter */
         .code-block-container {
             display: flex;
-            background: rgba(0, 0, 0, 0.45);
+            background: var(--surface-code);
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
@@ -751,7 +737,7 @@
         }
 
         .scope-badge {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             padding: 2px var(--space-2);
             border-radius: 4px;
             color: var(--label-secondary);
@@ -773,13 +759,13 @@
 
         .skeleton-bar {
             height: 14px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             border-radius: 4px;
         }
 
         @keyframes pulseShimmer {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
 
         .empty-placeholder {
@@ -799,16 +785,14 @@
             font-size: 0.82rem;
         }
 
-        /* ==========================================================================
-           6. PROGRESS MODAL (Progressive Disclosure & State Easing)
-           ========================================================================== */
+        /* Glassmorphic Indexing Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.78);
+            background: rgba(0, 0, 0, 0.88);
             backdrop-filter: blur(28px) saturate(190%);
             -webkit-backdrop-filter: blur(28px) saturate(190%);
             z-index: 1000;
@@ -824,13 +808,13 @@
         }
 
         .glass-modal {
-            background: rgba(28, 28, 30, 0.90);
+            background: #08080a;
             border: 1px solid var(--border-medium);
             border-radius: 18px;
             width: 90%;
             max-width: 500px;
             padding: var(--space-6);
-            box-shadow: var(--glass-specular), var(--shadow-elevated);
+            box-shadow: var(--specular-reflection), var(--shadow-elevated);
             display: flex;
             flex-direction: column;
             gap: var(--space-5);
@@ -875,7 +859,7 @@
         }
 
         .modal-status-pill {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 0.65rem 0.85rem;
@@ -894,7 +878,7 @@
         }
 
         .stage-pill {
-            background: var(--surface-subtle-fill);
+            background: var(--surface-subtle);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             padding: 0.5rem 0.75rem;
@@ -925,7 +909,7 @@
             font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
+            box-shadow: var(--specular-reflection);
             display: none;
             transition: all 0.2s var(--spring-easing);
         }
@@ -1374,7 +1358,6 @@
             
             searchBtn.textContent = 'Searching...';
 
-            // Figma UI feedback: Render skeleton loaders
             container.innerHTML = `
                 <div class="skeleton-card">
                     <div class="skeleton-bar" style="width: 40%;"></div>
