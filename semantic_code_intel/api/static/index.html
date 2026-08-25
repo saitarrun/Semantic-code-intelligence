@@ -190,7 +190,7 @@
             align-items: center;
             gap: 0.85rem;
             flex: 1;
-            max-width: 680px;
+            min-width: 380px;
         }
 
         .toolbar-label {
@@ -202,7 +202,8 @@
 
         .select-wrapper {
             position: relative;
-            flex: 1;
+            min-width: 270px;
+            flex-shrink: 0;
         }
 
         select.apple-select {
@@ -220,6 +221,7 @@
             cursor: pointer;
             box-shadow: var(--specular-reflection);
             transition: all 0.2s var(--spring-easing);
+            white-space: nowrap;
         }
 
         select.apple-select:hover {
@@ -245,8 +247,8 @@
         }
 
         input.apple-input-custom {
-            margin-top: 0.5rem;
-            width: 100%;
+            flex: 1;
+            min-width: 240px;
             background: var(--tertiary-system-fill);
             border: 1px solid var(--separator-subtle);
             color: var(--label);
@@ -257,10 +259,12 @@
             outline: none;
             display: none;
             box-shadow: var(--specular-reflection);
+            transition: all 0.2s var(--spring-easing);
         }
 
         input.apple-input-custom:focus {
             border-color: var(--system-blue);
+            box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
         .toolbar-meta {
