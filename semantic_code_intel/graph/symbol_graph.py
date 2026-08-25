@@ -1,5 +1,6 @@
 """
-Symbol Call-Graph and Code Dependency Analysis Engine.
+Clean, High-Precision AST Symbol Call-Graph and Dependency Engine.
+Excludes non-code docs and strips all symbols/emojis for a minimalist, professional graph.
 """
 
 from __future__ import annotations
@@ -10,6 +11,37 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 
 from semantic_code_intel.config import CodeIntelConfig
 from semantic_code_intel.indexing.metadata_store import MetadataStore
+
+CODE_EXTENSIONS = {
+    ".py", ".go", ".rs", ".ts", ".tsx", ".js", ".jsx",
+    ".java", ".c", ".cpp", ".h", ".hpp", ".cs", ".swift",
+    ".kt", ".scala", ".rb", ".php"
+}
+
+EMOJI_PATTERN = re.compile(
+    "["
+    "\U0001F1E0-\U0001F1FF"
+    "\U0001F300-\U0001F5FF"
+    "\U0001F600-\U0001F64F"
+    "\U0001F680-\U0001F6FF"
+    "\U0001F700-\U0001F77F"
+    "\U0001F780-\U0001F7FF"
+    "\U0001F800-\U0001F8FF"
+    "\U0001F900-\U0001F9FF"
+    "\U0001FA00-\U0001FA6F"
+    "\U0001FA70-\U0001FAFF"
+    "\U00002702-\U000027B0"
+    "\U000024C2-\U0001F251"
+    "]+",
+    flags=re.UNICODE
+)
+
+
+def sanitize_label(name: str) -> str:
+    """Removes emojis, symbols, and formatting noise from identifiers."""
+    cleaned = EMOJI_PATTERN.sub("", name)
+    cleaned = re.sub(r'[^a-zA-Z0-9_\.\-\(\)]', ' ', cleaned).strip()
+    return re.sub(r'\s+', ' ', cleaned)
 
 
 class SymbolGraphEngine:
@@ -23,11 +55,11 @@ class SymbolGraphEngine:
         self,
         target_symbol: Optional[str] = None,
         max_depth: int = 2,
-        limit_nodes: int = 60
+        limit_nodes: int = 40
     ) -> Dict[str, Any]:
         """
-        Extracts symbol definition, call, and import nodes and edges.
-        If target_symbol is provided, builds a subgraph focused on that symbol.
+        Extracts clean symbol definition and call nodes.
+        Filters out documentation/markdown files and anonymous blocks.
         """
         chunks = self.metadata_store.get_all_chunks()
         if not chunks:
@@ -37,67 +69,84 @@ class SymbolGraphEngine:
         edges_list: List[Dict[str, Any]] = []
         edges_set: Set[Tuple[str, str, str]] = set()
 
-        # 1. Map all defined symbols
-        defined_symbols: Dict[str, Dict[str, Any]] = {}
-        file_symbols: Dict[str, List[str]] = {}
-
+        # 1. Collect only valid code chunks from programming files
+        valid_chunks = []
         for ch in chunks:
+            ext = Path(ch.file_path).suffix.lower()
+            if ext not in CODE_EXTENSIONS:
+                continue
+            if not ch.symbol_name:
+                continue
+            if ch.symbol_name.startswith("block_L"):
+                continue  # Skip anonymous line chunks
+            valid_chunks.append(ch)
+
+        # 2. Register defined symbols and file parent nodes
+        defined_symbols: Dict[str, Dict[str, Any]] = {}
+
+        for ch in valid_chunks:
             f_path = ch.file_path
             f_node_id = f"file:{f_path}"
 
+            clean_file_name = sanitize_label(Path(f_path).name)
             if f_node_id not in nodes_dict:
                 nodes_dict[f_node_id] = {
                     "id": f_node_id,
-                    "label": Path(f_path).name,
+                    "label": clean_file_name,
                     "full_path": f_path,
                     "type": "file",
                     "group": 1,
                     "lines": ch.end_line
                 }
 
-            if ch.symbol_name:
-                sym_id = f"sym:{f_path}:{ch.symbol_name}"
-                defined_symbols[ch.symbol_name] = {
-                    "id": sym_id,
-                    "name": ch.symbol_name,
-                    "type": ch.symbol_type or "function",
-                    "file_path": f_path,
-                    "start_line": ch.start_line,
-                    "end_line": ch.end_line,
-                    "code": ch.content[:200]
-                }
-                nodes_dict[sym_id] = {
-                    "id": sym_id,
-                    "label": f"{ch.symbol_name}()",
-                    "name": ch.symbol_name,
-                    "type": ch.symbol_type or "symbol",
-                    "file": f_path,
-                    "start_line": ch.start_line,
-                    "group": 2
-                }
+            clean_sym_name = sanitize_label(ch.symbol_name)
+            if not clean_sym_name:
+                continue
 
-                # Edge: File contains symbol
-                edge_key = (f_node_id, sym_id, "defines")
-                if edge_key not in edges_set:
-                    edges_set.add(edge_key)
-                    edges_list.append({
-                        "source": f_node_id,
-                        "target": sym_id,
-                        "relation": "defines"
-                    })
+            sym_id = f"sym:{f_path}:{clean_sym_name}"
+            sym_type = ch.symbol_type or "function"
+            
+            defined_symbols[clean_sym_name] = {
+                "id": sym_id,
+                "name": clean_sym_name,
+                "type": sym_type,
+                "file_path": f_path,
+                "start_line": ch.start_line,
+                "end_line": ch.end_line,
+                "content": ch.content
+            }
 
-                file_symbols.setdefault(f_path, []).append(ch.symbol_name)
+            nodes_dict[sym_id] = {
+                "id": sym_id,
+                "label": f"{clean_sym_name}()" if sym_type == "function" else clean_sym_name,
+                "name": clean_sym_name,
+                "type": sym_type,
+                "file": clean_file_name,
+                "full_path": f_path,
+                "start_line": ch.start_line,
+                "group": 2
+            }
 
-        # 2. Extract call and reference links by scanning code text against known symbols
-        for ch in chunks:
-            caller_sym = ch.symbol_name
+            # Edge: File -> defines -> Symbol
+            edge_key = (f_node_id, sym_id, "defines")
+            if edge_key not in edges_set:
+                edges_set.add(edge_key)
+                edges_list.append({
+                    "source": f_node_id,
+                    "target": sym_id,
+                    "relation": "defines"
+                })
+
+        # 3. Detect symbol-to-symbol call links
+        for ch in valid_chunks:
+            caller_sym = sanitize_label(ch.symbol_name) if ch.symbol_name else None
             caller_id = f"sym:{ch.file_path}:{caller_sym}" if caller_sym else f"file:{ch.file_path}"
 
             for target_name, target_info in defined_symbols.items():
                 if target_name == caller_sym:
-                    continue  # Skip self
+                    continue  # Skip self call
 
-                # Fast regex check: word boundary matching target symbol
+                # Word-boundary regex matching
                 pattern = r'\b' + re.escape(target_name) + r'\b'
                 if re.search(pattern, ch.content):
                     target_id = target_info["id"]
@@ -110,9 +159,9 @@ class SymbolGraphEngine:
                             "relation": "calls"
                         })
 
-        # 3. Filter if target_symbol is specified
+        # 4. Target symbol filtering
         if target_symbol:
-            target_symbol = target_symbol.strip()
+            target_symbol = sanitize_label(target_symbol.strip())
             focus_ids: Set[str] = set()
 
             for n_id, n_data in nodes_dict.items():
@@ -121,7 +170,6 @@ class SymbolGraphEngine:
                     focus_ids.add(n_id)
 
             if focus_ids:
-                # Traverse neighbors up to max_depth
                 connected_ids = set(focus_ids)
                 current_frontier = set(focus_ids)
 
@@ -152,7 +200,7 @@ class SymbolGraphEngine:
                     }
                 }
 
-        # Global overview
+        # Global top nodes
         all_nodes = list(nodes_dict.values())[:limit_nodes]
         active_ids = {n["id"] for n in all_nodes}
         all_edges = [

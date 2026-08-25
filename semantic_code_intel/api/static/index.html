@@ -25,8 +25,8 @@
             --space-12: 48px;
 
             /* Glassmorphic Surfaces */
-            --glass-bg-nav: rgba(10, 10, 14, 0.72);
-            --glass-bg-toolbar: rgba(12, 12, 16, 0.55);
+            --glass-bg-nav: rgba(10, 10, 14, 0.75);
+            --glass-bg-toolbar: rgba(12, 12, 16, 0.60);
             --glass-bg-panel: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
             --glass-bg-card: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.008) 100%);
             --glass-bg-input: rgba(255, 255, 255, 0.045);
@@ -50,7 +50,6 @@
             --system-orange: #FF9F0A;
             --system-orange-tint: rgba(255, 159, 10, 0.14);
             --system-purple: #BF5AF2;
-            --system-purple-tint: rgba(191, 90, 242, 0.14);
 
             /* Labels */
             --label-primary: #FFFFFF;
@@ -867,18 +866,63 @@
             text-decoration: underline;
         }
 
-        /* Graph Visualization Canvas */
-        .graph-container {
-            background: rgba(0, 0, 0, 0.6);
+        /* ==========================================================================
+           Minimalist High-Clarity Call Graph Visualizer
+           ========================================================================== */
+        .graph-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .graph-meta-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--label-tertiary);
+            padding: 0 var(--space-2);
+        }
+
+        .graph-view-card {
+            background: rgba(8, 8, 10, 0.85);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            height: 480px;
-            width: 100%;
-            position: relative;
+            box-shadow: var(--glass-specular), var(--glass-shadow);
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            height: 540px;
+            position: relative;
+        }
+
+        #graphSvg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .graph-node-pill {
+            cursor: pointer;
+            transition: all 0.2s var(--spring-easing);
+        }
+
+        .graph-node-pill:hover rect {
+            stroke: var(--system-blue);
+            stroke-width: 2px;
+            filter: drop-shadow(0 0 8px rgba(10, 132, 255, 0.5));
+        }
+
+        .graph-edge-path {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.12);
+            stroke-width: 1.2px;
+            transition: stroke 0.2s ease, stroke-width 0.2s ease;
+        }
+
+        .graph-edge-path.highlighted {
+            stroke: var(--system-blue);
+            stroke-width: 2px;
         }
 
         /* Unified Diff Container */
@@ -1046,10 +1090,10 @@
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
-            <span class="nav-badge">v0.2.0 • MCP & Graph Ready</span>
+            <span class="nav-badge">v0.2.0</span>
         </div>
         <div class="nav-status">
-            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Click to toggle background file watcher">
+            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Toggle automatic background indexing">
                 <span class="status-dot" id="watcherDot"></span>
                 <span id="watcherStatusText">Watcher: Off</span>
             </div>
@@ -1214,25 +1258,32 @@
 
         <!-- 3. SYMBOL CALL-GRAPH TAB -->
         <div id="tab-graph" class="tab-content-view hidden">
-            <div class="glass-panel">
-                <div class="search-row">
-                    <div class="search-input-wrapper">
-                        <input
-                            type="text"
-                            id="graphSymbolInput"
-                            class="apple-search-input"
-                            placeholder="Filter by symbol (e.g. 'LeaderElector', 'parse_file', 'HybridIndexer') or leave empty for global"
-                        />
+            <div class="graph-workspace">
+                <div class="glass-panel">
+                    <div class="search-row">
+                        <div class="search-input-wrapper">
+                            <input
+                                type="text"
+                                id="graphSymbolInput"
+                                class="apple-search-input"
+                                placeholder="Filter by symbol name (e.g. 'LeaderElector', 'parse_file') or leave empty for overview"
+                            />
+                        </div>
+                        <button class="apple-btn-primary" onclick="loadSymbolGraph()">Render Graph</button>
                     </div>
-                    <button class="apple-btn-primary" onclick="loadSymbolGraph()">Render Graph</button>
                 </div>
-            </div>
 
-            <div class="graph-container" id="graphCanvas">
-                <div style="color: var(--label-tertiary); font-size: 0.85rem;" id="graphPlaceholder">
-                    Click "Render Graph" to inspect callers, callees, and dependencies.
+                <div class="graph-meta-bar" id="graphMetaBar">
+                    <span id="graphNodeCount">0 symbols</span>
+                    <span>Scroll to zoom • Drag to pan • Click node to focus</span>
                 </div>
-                <svg id="graphSvg" style="width: 100%; height: 100%; display: none;"></svg>
+
+                <div class="graph-view-card">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--label-tertiary); font-size: 0.85rem;" id="graphPlaceholder">
+                        Click "Render Graph" to inspect code architecture.
+                    </div>
+                    <svg id="graphSvg"></svg>
+                </div>
             </div>
         </div>
 
@@ -1741,14 +1792,17 @@
             }
         }
 
-        /* --- SYMBOL GRAPH VISUALIZER --- */
+        /* ==========================================================================
+           Minimalist High-Clarity Call Graph Rendering
+           ========================================================================== */
         async function loadSymbolGraph() {
             const target = getActiveTarget();
             const symbol = document.getElementById('graphSymbolInput').value.trim();
             const placeholder = document.getElementById('graphPlaceholder');
             const svg = document.getElementById('graphSvg');
+            const metaCount = document.getElementById('graphNodeCount');
 
-            placeholder.textContent = 'Analyzing symbol references and building AST call graph...';
+            placeholder.textContent = 'Building AST call graph...';
             placeholder.style.display = 'block';
             svg.style.display = 'none';
 
@@ -1757,85 +1811,148 @@
                 const data = await res.json();
 
                 if (!data.nodes || data.nodes.length === 0) {
-                    placeholder.textContent = 'No graph nodes found. Ensure repository is indexed.';
+                    placeholder.textContent = 'No symbols found for this repository. Ensure it is indexed.';
+                    metaCount.textContent = '0 symbols';
                     return;
                 }
 
                 placeholder.style.display = 'none';
                 svg.style.display = 'block';
-                renderSvgGraph(data);
+                metaCount.textContent = `${data.nodes.length} symbols • ${data.edges.length} connections`;
+                renderHierarchicalGraph(data);
             } catch (err) {
                 placeholder.textContent = `Graph error: ${err.message}`;
             }
         }
 
-        function renderSvgGraph(data) {
+        function renderHierarchicalGraph(data) {
             const svg = document.getElementById('graphSvg');
             svg.innerHTML = '';
 
-            const width = svg.clientWidth || 900;
-            const height = svg.clientHeight || 480;
+            const container = svg.parentElement;
+            const width = container.clientWidth || 980;
+            const height = container.clientHeight || 540;
 
-            const nodes = data.nodes;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            const files = data.nodes.filter(n => n.group === 1);
+            const symbols = data.nodes.filter(n => n.group === 2);
             const edges = data.edges;
 
-            // Simple radial node positioning
-            const centerX = width / 2;
-            const centerY = height / 2;
-            const radius = Math.min(width, height) * 0.38;
+            // Two-column layered layout
+            const col1X = 50;
+            const col2X = width - 360;
+            const cardWidth = 280;
+            const cardHeight = 36;
 
             const nodePositions = {};
-            nodes.forEach((n, i) => {
-                const angle = (i / nodes.length) * 2 * Math.PI;
-                nodePositions[n.id] = {
-                    x: centerX + radius * Math.cos(angle),
-                    y: centerY + radius * Math.sin(angle),
-                    data: n
-                };
+
+            // Place File Nodes (Left Column)
+            const fileSpacing = Math.min(52, (height - 60) / Math.max(files.length, 1));
+            files.forEach((f, i) => {
+                const y = 40 + i * fileSpacing;
+                nodePositions[f.id] = { x: col1X, y: y, data: f, width: cardWidth, height: cardHeight };
             });
 
-            // Draw Edges
+            // Place Symbol Nodes (Right Column)
+            const symSpacing = Math.min(48, (height - 60) / Math.max(symbols.length, 1));
+            symbols.forEach((s, i) => {
+                const y = 30 + i * symSpacing;
+                nodePositions[s.id] = { x: col2X, y: y, data: s, width: cardWidth, height: cardHeight };
+            });
+
+            // Group for edges
+            const edgesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            svg.appendChild(edgesGroup);
+
+            // Draw Clean Bezier Curves
             edges.forEach(e => {
                 const p1 = nodePositions[e.source];
                 const p2 = nodePositions[e.target];
-                if (p1 && p2) {
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", p1.x);
-                    line.setAttribute("y1", p1.y);
-                    line.setAttribute("x2", p2.x);
-                    line.setAttribute("y2", p2.y);
-                    line.setAttribute("stroke", "rgba(255, 255, 255, 0.15)");
-                    line.setAttribute("stroke-width", "1.2");
-                    svg.appendChild(line);
-                }
+                if (!p1 || !p2) return;
+
+                const startX = p1.x + p1.width;
+                const startY = p1.y + p1.height / 2;
+                const endX = p2.x;
+                const endY = p2.y + p2.height / 2;
+
+                const controlX1 = startX + (endX - startX) * 0.5;
+                const controlX2 = startX + (endX - startX) * 0.5;
+
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                path.setAttribute("d", `M ${startX} ${startY} C ${controlX1} ${startY}, ${controlX2} ${endY}, ${endX} ${endY}`);
+                path.setAttribute("class", "graph-edge-path");
+                path.setAttribute("data-source", e.source);
+                path.setAttribute("data-target", e.target);
+                edgesGroup.appendChild(path);
             });
 
-            // Draw Nodes
-            nodes.forEach(n => {
-                const pos = nodePositions[n.id];
-                if (!pos) return;
+            // Group for node pills
+            const nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            svg.appendChild(nodesGroup);
 
+            Object.values(nodePositions).forEach(n => {
                 const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-                
-                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                circle.setAttribute("cx", pos.x);
-                circle.setAttribute("cy", pos.y);
-                circle.setAttribute("r", n.group === 1 ? "7" : "5");
-                circle.setAttribute("fill", n.group === 1 ? "#0A84FF" : "#30D158");
-                circle.setAttribute("stroke", "rgba(255, 255, 255, 0.3)");
-                circle.setAttribute("stroke-width", "1.5");
+                g.setAttribute("class", "graph-node-pill");
+                g.setAttribute("transform", `translate(${n.x}, ${n.y})`);
 
+                const isFile = n.data.group === 1;
+
+                // Pill Background
+                const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                rect.setAttribute("width", n.width);
+                rect.setAttribute("height", n.height);
+                rect.setAttribute("rx", "6");
+                rect.setAttribute("fill", isFile ? "rgba(10, 132, 255, 0.12)" : "rgba(48, 209, 88, 0.08)");
+                rect.setAttribute("stroke", isFile ? "rgba(10, 132, 255, 0.35)" : "rgba(48, 209, 88, 0.25)");
+                rect.setAttribute("stroke-width", "1");
+                g.appendChild(rect);
+
+                // Indicator Tag
+                const tag = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                tag.setAttribute("cx", "14");
+                tag.setAttribute("cy", n.height / 2);
+                tag.setAttribute("r", "4");
+                tag.setAttribute("fill", isFile ? "var(--system-blue)" : "var(--system-green)");
+                g.appendChild(tag);
+
+                // Node Label
                 const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-                text.setAttribute("x", pos.x + 9);
-                text.setAttribute("y", pos.y + 4);
-                text.setAttribute("fill", "rgba(255, 255, 255, 0.85)");
-                text.setAttribute("font-size", "11px");
+                text.setAttribute("x", "26");
+                text.setAttribute("y", n.height / 2 + 4);
+                text.setAttribute("fill", "var(--label-primary)");
                 text.setAttribute("font-family", "monospace");
-                text.textContent = n.label;
+                text.setAttribute("font-size", "12px");
+                text.setAttribute("font-weight", isFile ? "600" : "500");
 
-                g.appendChild(circle);
+                let displayLabel = n.data.label || "";
+                if (displayLabel.length > 28) displayLabel = displayLabel.substring(0, 26) + "...";
+                text.textContent = displayLabel;
                 g.appendChild(text);
-                svg.appendChild(g);
+
+                // Interactive Hover Highlighting
+                g.addEventListener('mouseenter', () => {
+                    document.querySelectorAll('.graph-edge-path').forEach(p => {
+                        const isConnected = p.dataset.source === n.data.id || p.dataset.target === n.data.id;
+                        p.classList.toggle('highlighted', isConnected);
+                    });
+                });
+
+                g.addEventListener('mouseleave', () => {
+                    document.querySelectorAll('.graph-edge-path').forEach(p => {
+                        p.classList.remove('highlighted');
+                    });
+                });
+
+                g.addEventListener('click', () => {
+                    if (n.data.name) {
+                        document.getElementById('searchInput').value = n.data.name;
+                        switchTab('search');
+                        performSearch();
+                    }
+                });
+
+                nodesGroup.appendChild(g);
             });
         }
 
