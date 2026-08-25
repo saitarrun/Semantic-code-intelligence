@@ -31,6 +31,36 @@ def test_mcp_server_protocol():
     assert "code_intel_search" in tool_names
     assert "code_intel_symbol_graph" in tool_names
     assert "code_intel_index" in tool_names
+    assert "code_intel_read_file" in tool_names
+
+    # Notifications do not receive JSON-RPC responses; ping does.
+    assert server.handle_request({"jsonrpc": "2.0", "method": "notifications/initialized"}) is None
+    ping = server.handle_request({"jsonrpc": "2.0", "id": 3, "method": "ping"})
+    assert ping["result"] == {}
+
+
+def test_mcp_read_file_is_bounded_to_repository(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / "example.py").write_text("one\ntwo\nthree\n", encoding="utf-8")
+    outside = tmp_path / "secret.txt"
+    outside.write_text("secret", encoding="utf-8")
+    server = CodeIntelMCPServer(repo_path=repo)
+
+    result = server.handle_request({
+        "jsonrpc": "2.0", "id": 1, "method": "tools/call",
+        "params": {"name": "code_intel_read_file", "arguments": {
+            "path": "example.py", "start_line": 2, "end_line": 3,
+        }},
+    })
+    assert result["result"]["structuredContent"]["content"] == "two\nthree"
+
+    denied = server.handle_request({
+        "jsonrpc": "2.0", "id": 2, "method": "tools/call",
+        "params": {"name": "code_intel_read_file", "arguments": {"path": str(outside)}},
+    })
+    assert denied["result"]["isError"] is True
+    assert "inside the configured repository" in denied["result"]["content"][0]["text"]
 
 
 def test_symbol_graph_and_diff_patcher():

@@ -266,10 +266,13 @@ def benchmark_cmd(
 
 
 @app.command(name="mcp")
-def mcp_cmd():
+def mcp_cmd(
+    target_dir: Path = typer.Option(Path("."), "--dir", "-d", help="Default repository exposed to MCP tools"),
+    index_dir: Optional[Path] = typer.Option(None, "--index-dir", "-i", help="Optional index storage directory"),
+):
     """Start the Model Context Protocol (MCP) JSON-RPC 2.0 stdio server."""
     from semantic_code_intel.mcp.server import run_mcp_server
-    run_mcp_server()
+    run_mcp_server(repo_path=target_dir, index_dir=index_dir)
 
 
 @app.command(name="watch")

@@ -315,33 +315,73 @@ Bind to `127.0.0.1` unless remote access is intentionally required. Patch and fi
 
 ## MCP integration
 
-Start the stdio MCP server:
+The MCP server lets VS Code, Cursor, Claude Code, and other compatible coding agents search the indexed codebase and retrieve exact source ranges. Install and index the project first:
 
 ```bash
-code-intel mcp
+git clone https://github.com/saitarrun/Semantic-code-intelligence.git
+cd Semantic-code-intelligence
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+code-intel index --dir /absolute/path/to/your/project
 ```
 
-Example MCP client configuration:
+Use the absolute executable path printed by `which code-intel` in the examples below.
+
+### VS Code
+
+Create `.vscode/mcp.json` in the project you want the agent to search:
 
 ```json
 {
-  "mcpServers": {
-    "semantic-code-intelligence": {
-      "command": "/absolute/path/to/semantic-code-intelligence/.venv/bin/code-intel",
-      "args": ["mcp"],
-      "cwd": "/absolute/path/to/project"
+  "servers": {
+    "semanticCodeIntelligence": {
+      "type": "stdio",
+      "command": "/absolute/path/to/Semantic-code-intelligence/.venv/bin/code-intel",
+      "args": ["mcp", "--dir", "${workspaceFolder}"],
+      "cwd": "${workspaceFolder}"
     }
   }
 }
 ```
 
+Run **MCP: List Servers** from the Command Palette, start `semanticCodeIntelligence`, and approve its tools. If its old tool list is cached, run **MCP: Reset Cached Tools**.
+
+### Cursor
+
+Create `.cursor/mcp.json` in the target project:
+
+```json
+{
+  "mcpServers": {
+    "semantic-code-intelligence": {
+      "command": "/absolute/path/to/Semantic-code-intelligence/.venv/bin/code-intel",
+      "args": ["mcp", "--dir", "${workspaceFolder}"]
+    }
+  }
+}
+```
+
+### Claude Code
+
+Register the local stdio server from the project you want to search:
+
+```bash
+claude mcp add --transport stdio --scope project semantic-code-intelligence -- \
+  /absolute/path/to/Semantic-code-intelligence/.venv/bin/code-intel mcp --dir /absolute/path/to/your/project
+claude mcp get semantic-code-intelligence
+```
+
+For another MCP-compatible agent, configure the same executable as a local stdio server with arguments `mcp --dir /absolute/path/to/your/project`. The server writes only JSON-RPC messages to stdout, as required by stdio clients.
+
 Available MCP tools:
 
-- `code_intel_search`
-- `code_intel_symbol_graph`
-- `code_intel_index`
+- `code_intel_search`: hybrid, dense, or sparse retrieval with exact lines and reliability metadata
+- `code_intel_symbol_graph`: dependency and call-graph data for a repository or symbol
+- `code_intel_index`: build or refresh an index from the coding agent
+- `code_intel_read_file`: safely read up to 400 lines within the configured repository
 
-The target project must be indexed before search or graph requests.
+The target project must be indexed before search requests. By default, its index is stored at `<project>/.code_intel_index`; pass `--index-dir /path/to/index` to the MCP command when using a separate index directory. Model downloads remain opt-in: set `CODE_INTEL_ALLOW_MODEL_DOWNLOADS=1` if the embedding or reranker model is not already cached.
 
 ## LSP and filesystem watcher
 

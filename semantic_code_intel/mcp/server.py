@@ -1,14 +1,11 @@
-"""
-Model Context Protocol (MCP) Server for Semantic Code Intelligence.
-Exposes JSON-RPC 2.0 tool endpoints for Cursor, Claude Desktop, Antigravity, and AI Agents.
-"""
+"""Model Context Protocol server for Semantic Code Intelligence."""
 
 from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from semantic_code_intel.config import CodeIntelConfig
 from semantic_code_intel.graph.symbol_graph import SymbolGraphEngine
@@ -17,225 +14,177 @@ from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
 
 
 class CodeIntelMCPServer:
-    """Standard MCP JSON-RPC 2.0 Server over stdio."""
+    """MCP JSON-RPC 2.0 server transported over newline-delimited stdio."""
 
+    PROTOCOL_VERSION = "2024-11-05"
     TOOLS = [
         {
             "name": "code_intel_search",
-            "description": "Performs sub-second hybrid code search (dense FAISS + sparse BM25 + Cross-Encoder reranking) to retrieve exact line citations and code implementations.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "query": {
-                        "type": "string",
-                        "description": "Natural language query or symbol to search for (e.g. 'Where is LeaderElector lease renew loop?')"
-                    },
-                    "repo_path": {
-                        "type": "string",
-                        "description": "Path to the repository folder to search. Defaults to current directory.",
-                        "default": "."
-                    },
-                    "top_k": {
-                        "type": "integer",
-                        "description": "Number of relevant code chunks to return.",
-                        "default": 5
-                    },
-                    "rerank": {
-                        "type": "boolean",
-                        "description": "Whether to apply Cross-Encoder sequence classification reranking.",
-                        "default": True
-                    }
-                },
-                "required": ["query"]
-            }
+            "description": "Search indexed code with hybrid semantic and lexical retrieval, exact citations, match reasons, and reliability scoring.",
+            "inputSchema": {"type": "object", "properties": {
+                "query": {"type": "string", "description": "Question, behavior, or symbol to find."},
+                "repo_path": {"type": "string", "description": "Repository root; defaults to the server --dir."},
+                "index_dir": {"type": "string", "description": "Optional index storage directory."},
+                "top_k": {"type": "integer", "minimum": 1, "maximum": 50, "default": 5},
+                "rerank": {"type": "boolean", "default": True},
+                "mode": {"type": "string", "enum": ["hybrid", "dense", "sparse"], "default": "hybrid"},
+            }, "required": ["query"]},
         },
         {
             "name": "code_intel_symbol_graph",
-            "description": "Retrieves the symbol dependency and call graph for a function, class, or file.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "symbol": {
-                        "type": "string",
-                        "description": "Symbol name to center the call graph around (optional)."
-                    },
-                    "repo_path": {
-                        "type": "string",
-                        "description": "Path to the repository directory.",
-                        "default": "."
-                    }
-                }
-            }
+            "description": "Return repository dependency/call-graph data, optionally centered on a symbol.",
+            "inputSchema": {"type": "object", "properties": {
+                "symbol": {"type": "string", "description": "Optional function, class, or symbol name."},
+                "repo_path": {"type": "string", "description": "Repository root; defaults to the server --dir."},
+                "index_dir": {"type": "string", "description": "Optional index storage directory."},
+            }},
         },
         {
             "name": "code_intel_index",
-            "description": "Indexes or re-indexes a local repository codebase into FAISS and BM25.",
-            "inputSchema": {
-                "type": "object",
-                "properties": {
-                    "target_dir": {
-                        "type": "string",
-                        "description": "Target folder path to index.",
-                        "default": "."
-                    },
-                    "force": {
-                        "type": "boolean",
-                        "description": "Whether to force a clean re-index from scratch.",
-                        "default": False
-                    }
-                },
-                "required": ["target_dir"]
-            }
-        }
+            "description": "Build or refresh the semantic and lexical indexes for a local repository.",
+            "inputSchema": {"type": "object", "properties": {
+                "repo_path": {"type": "string", "description": "Repository root; defaults to the server --dir."},
+                "index_dir": {"type": "string", "description": "Optional index storage directory."},
+                "force": {"type": "boolean", "default": False},
+            }},
+        },
+        {
+            "name": "code_intel_read_file",
+            "description": "Read a bounded line range from a source file inside the configured repository.",
+            "inputSchema": {"type": "object", "properties": {
+                "path": {"type": "string", "description": "Repository-relative or absolute file path."},
+                "repo_path": {"type": "string", "description": "Repository root; defaults to the server --dir."},
+                "start_line": {"type": "integer", "minimum": 1, "default": 1},
+                "end_line": {"type": "integer", "minimum": 1, "description": "Inclusive; at most 400 lines are returned."},
+            }, "required": ["path"]},
+        },
     ]
 
-    def __init__(self):
-        self.config = CodeIntelConfig()
+    def __init__(self, repo_path: Optional[Path] = None, index_dir: Optional[Path] = None):
+        self.repo_path = (repo_path or Path.cwd()).expanduser().resolve()
+        self.index_dir = index_dir.expanduser().resolve() if index_dir else None
 
-    def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
-        req_id = request.get("id")
-        method = request.get("method")
-        params = request.get("params", {})
+    def _config(self, args: Dict[str, Any]) -> CodeIntelConfig:
+        repo = Path(args.get("repo_path") or self.repo_path).expanduser().resolve()
+        if not repo.is_dir():
+            raise ValueError(f"Repository directory does not exist: {repo}")
+        raw_index = args.get("index_dir")
+        index = Path(raw_index).expanduser().resolve() if raw_index else self.index_dir
+        return CodeIntelConfig(project_root=repo, index_dir=index)
 
+    @staticmethod
+    def _result(req_id: Any, payload: Any, *, is_error: bool = False) -> Dict[str, Any]:
+        text = payload if isinstance(payload, str) else json.dumps(payload, indent=2)
+        result: Dict[str, Any] = {"content": [{"type": "text", "text": text}]}
+        if is_error:
+            result["isError"] = True
+        elif not isinstance(payload, str):
+            result["structuredContent"] = payload
+        return {"jsonrpc": "2.0", "id": req_id, "result": result}
+
+    def handle_request(self, request: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        req_id, method = request.get("id"), request.get("method")
+        params = request.get("params") or {}
+        if method == "notifications/initialized" or (req_id is None and str(method).startswith("notifications/")):
+            return None
+        if method == "initialize":
+            return {"jsonrpc": "2.0", "id": req_id, "result": {
+                "protocolVersion": self.PROTOCOL_VERSION,
+                "capabilities": {"tools": {"listChanged": False}},
+                "serverInfo": {"name": "semantic-code-intelligence", "version": "0.1.0"},
+            }}
+        if method == "ping":
+            return {"jsonrpc": "2.0", "id": req_id, "result": {}}
         if method == "tools/list":
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "result": {"tools": self.TOOLS}
-            }
-
-        elif method == "tools/call":
-            tool_name = params.get("name")
-            tool_args = params.get("arguments", {})
-            return self._dispatch_tool(req_id, tool_name, tool_args)
-
-        elif method == "initialize":
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "result": {
-                    "protocolVersion": "2024-11-05",
-                    "capabilities": {"tools": {}},
-                    "serverInfo": {
-                        "name": "semantic-code-intelligence",
-                        "version": "0.1.0"
-                    }
-                }
-            }
-
-        return {
-            "jsonrpc": "2.0",
-            "id": req_id,
-            "error": {"code": -32601, "message": f"Method '{method}' not found"}
-        }
+            return {"jsonrpc": "2.0", "id": req_id, "result": {"tools": self.TOOLS}}
+        if method == "tools/call":
+            return self._dispatch_tool(req_id, params.get("name", ""), params.get("arguments") or {})
+        return {"jsonrpc": "2.0", "id": req_id, "error": {"code": -32601, "message": f"Method '{method}' not found"}}
 
     def _dispatch_tool(self, req_id: Any, name: str, args: Dict[str, Any]) -> Dict[str, Any]:
         try:
+            cfg = self._config(args)
             if name == "code_intel_search":
-                repo = args.get("repo_path", ".")
-                query = args.get("query", "")
-                top_k = args.get("top_k", 5)
-                rerank = args.get("rerank", True)
-
-                cfg = CodeIntelConfig(project_root=Path(repo).resolve())
-                pipeline = HybridRetrievalPipeline(cfg)
-                resp = pipeline.search(query=query, top_k=top_k, rerank=rerank)
-
-                formatted = [
-                    {
-                        "citation": r.citation,
-                        "file_path": r.file_path,
-                        "lines": f"{r.start_line}-{r.end_line}",
-                        "symbol": r.symbol_name,
-                        "score": round(r.score, 4),
-                        "code": r.code
-                    }
-                    for r in resp.results
-                ]
-
-                return {
-                    "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {
-                        "content": [
-                            {"type": "text", "text": json.dumps(formatted, indent=2)}
-                        ]
-                    }
-                }
-
-            elif name == "code_intel_symbol_graph":
-                repo = args.get("repo_path", ".")
-                symbol = args.get("symbol")
-                cfg = CodeIntelConfig(project_root=Path(repo).resolve())
-                graph_eng = SymbolGraphEngine(cfg)
-                graph_data = graph_eng.extract_graph(target_symbol=symbol)
-
-                return {
-                    "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {
-                        "content": [
-                            {"type": "text", "text": json.dumps(graph_data, indent=2)}
-                        ]
-                    }
-                }
-
-            elif name == "code_intel_index":
-                target = args.get("target_dir", ".")
-                force = args.get("force", False)
-                cfg = CodeIntelConfig(project_root=Path(target).resolve())
-                indexer = HybridIndexer(cfg)
-                metrics = indexer.index_codebase(force=force)
-
-                return {
-                    "jsonrpc": "2.0",
-                    "id": req_id,
-                    "result": {
-                        "content": [
-                            {
-                                "type": "text",
-                                "text": f"Successfully indexed {metrics.total_files} files ({metrics.total_lines} LOC, {metrics.total_chunks} chunks) in {metrics.indexing_time_seconds:.2f}s."
-                            }
-                        ]
-                    }
-                }
-
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "error": {"code": -32601, "message": f"Unknown tool: {name}"}
-            }
-        except Exception as e:
-            return {
-                "jsonrpc": "2.0",
-                "id": req_id,
-                "error": {"code": -32000, "message": str(e)}
-            }
+                query = str(args.get("query", "")).strip()
+                if not query:
+                    raise ValueError("query must not be empty")
+                top_k = int(args.get("top_k", 5))
+                if not 1 <= top_k <= 50:
+                    raise ValueError("top_k must be between 1 and 50")
+                response = HybridRetrievalPipeline(cfg).query(
+                    query_text=query, top_k=top_k,
+                    use_reranker=bool(args.get("rerank", True)),
+                    mode=str(args.get("mode", "hybrid")),
+                )
+                return self._result(req_id, {
+                    "query": response.query,
+                    "reliability": response.reliability,
+                    "reliability_score": response.reliability_score,
+                    "reliability_reasons": response.reliability_reasons,
+                    "total_candidates_considered": response.total_candidates_considered,
+                    "results": [{
+                        "citation": result.citation,
+                        "file_path": result.chunk.file_path,
+                        "absolute_path": result.chunk.absolute_path,
+                        "start_line": result.chunk.start_line,
+                        "end_line": result.chunk.end_line,
+                        "symbol": result.chunk.symbol_name,
+                        "symbol_type": result.chunk.symbol_type,
+                        "language": result.chunk.language,
+                        "score": round(result.score, 6),
+                        "match_reasons": result.match_reasons,
+                        "code": result.chunk.content,
+                    } for result in response.results],
+                })
+            if name == "code_intel_symbol_graph":
+                return self._result(req_id, SymbolGraphEngine(cfg).extract_graph(target_symbol=args.get("symbol")))
+            if name == "code_intel_index":
+                metrics = HybridIndexer(cfg).index_codebase(
+                    target_dir=cfg.project_root, force_reindex=bool(args.get("force", False)))
+                return self._result(req_id, {
+                    "message": "Repository indexed successfully.", "repo_path": str(cfg.project_root),
+                    "index_dir": str(cfg.get_index_dir()), **metrics,
+                })
+            if name == "code_intel_read_file":
+                requested = Path(str(args.get("path", ""))).expanduser()
+                target = requested.resolve() if requested.is_absolute() else (cfg.project_root / requested).resolve()
+                try:
+                    target.relative_to(cfg.project_root)
+                except ValueError as exc:
+                    raise ValueError("path must remain inside the configured repository") from exc
+                if not target.is_file():
+                    raise ValueError(f"File does not exist: {target}")
+                start, end = int(args.get("start_line", 1)), int(args.get("end_line", int(args.get("start_line", 1)) + 399))
+                if start < 1 or end < start:
+                    raise ValueError("line range is invalid")
+                end = min(end, start + 399)
+                lines = target.read_text(encoding="utf-8", errors="replace").splitlines()
+                return self._result(req_id, {
+                    "path": str(target.relative_to(cfg.project_root)), "start_line": start,
+                    "end_line": min(end, len(lines)), "content": "\n".join(lines[start - 1:end]),
+                })
+            return self._result(req_id, f"Unknown tool: {name}", is_error=True)
+        except Exception as exc:
+            return self._result(req_id, str(exc), is_error=True)
 
     def run_stdio(self) -> None:
-        """Reads JSON-RPC lines from standard input and writes responses to standard output."""
+        """Read JSON-RPC lines from stdin and write responses only to stdout."""
         for line in sys.stdin:
-            line = line.strip()
-            if not line:
+            if not line.strip():
                 continue
             try:
-                req = json.loads(line)
-                res = self.handle_request(req)
-                sys.stdout.write(json.dumps(res) + "\n")
-                sys.stdout.flush()
-            except Exception as e:
-                err = {
-                    "jsonrpc": "2.0",
-                    "id": None,
-                    "error": {"code": -32700, "message": f"Parse error: {e}"}
-                }
-                sys.stdout.write(json.dumps(err) + "\n")
+                response = self.handle_request(json.loads(line))
+                if response is not None:
+                    sys.stdout.write(json.dumps(response) + "\n")
+                    sys.stdout.flush()
+            except Exception as exc:
+                sys.stdout.write(json.dumps({"jsonrpc": "2.0", "id": None,
+                    "error": {"code": -32700, "message": f"Parse error: {exc}"}}) + "\n")
                 sys.stdout.flush()
 
 
-def run_mcp_server():
-    server = CodeIntelMCPServer()
-    server.run_stdio()
+def run_mcp_server(repo_path: Optional[Path] = None, index_dir: Optional[Path] = None) -> None:
+    CodeIntelMCPServer(repo_path=repo_path, index_dir=index_dir).run_stdio()
 
 
 if __name__ == "__main__":
