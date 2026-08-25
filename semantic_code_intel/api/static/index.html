@@ -10,37 +10,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
+        /* ==========================================================================
+           Apple Human Interface Guidelines (HIG) Design Tokens & System Colors
+           Reference: developer.apple.com/design/human-interface-guidelines/design-principles
+           ========================================================================== */
         :root {
+            /* Semantic Backgrounds (macOS / iOS Dark System Palette) */
             --system-bg: #000000;
-            --surface-primary: rgba(255, 255, 255, 0.04);
-            --surface-secondary: rgba(255, 255, 255, 0.02);
-            --surface-card: rgba(26, 26, 30, 0.65);
-            --surface-input: rgba(255, 255, 255, 0.06);
-            --surface-border: rgba(255, 255, 255, 0.09);
-            --surface-border-subtle: rgba(255, 255, 255, 0.05);
-            --surface-border-focus: rgba(10, 132, 255, 0.55);
+            --secondary-system-bg: #1c1c1e;
+            --tertiary-system-bg: #2c2c2e;
             
-            --apple-blue: #0a84ff;
-            --apple-blue-hover: #0071e3;
-            --apple-blue-subtle: rgba(10, 132, 255, 0.12);
-            --apple-green: #30d158;
-            --apple-orange: #ff9f0a;
-            --apple-red: #ff453a;
+            /* Apple Vibrancy & Translucent Materials */
+            --material-regular: rgba(30, 30, 35, 0.72);
+            --material-thin: rgba(255, 255, 255, 0.04);
+            --material-ultra-thin: rgba(255, 255, 255, 0.02);
+            --material-input: rgba(255, 255, 255, 0.06);
+            --material-hover: rgba(255, 255, 255, 0.09);
+            --material-active: rgba(255, 255, 255, 0.14);
             
-            --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.72);
-            --text-tertiary: rgba(255, 255, 255, 0.45);
-            --text-quaternary: rgba(255, 255, 255, 0.25);
+            /* Apple Hairlines & Separators */
+            --separator: rgba(84, 84, 88, 0.45);
+            --separator-subtle: rgba(255, 255, 255, 0.08);
+            --separator-glass: rgba(255, 255, 255, 0.12);
+            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
             
+            /* Apple Dynamic System Colors (Dark Mode) */
+            --system-blue: #0a84ff;
+            --system-blue-hover: #0071e3;
+            --system-blue-subtle: rgba(10, 132, 255, 0.15);
+            --system-green: #30d158;
+            --system-green-subtle: rgba(48, 209, 88, 0.12);
+            --system-orange: #ff9f0a;
+            --system-orange-subtle: rgba(255, 159, 10, 0.12);
+            --system-red: #ff453a;
+            
+            /* Apple Label Hierarchy */
+            --label: #ffffff;
+            --secondary-label: rgba(235, 235, 245, 0.65);
+            --tertiary-label: rgba(235, 235, 245, 0.42);
+            --quaternary-label: rgba(235, 235, 245, 0.22);
+            
+            /* Typography */
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
             
-            --glass-blur: blur(30px) saturate(190%);
-            --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+            /* Depth, Radii & Easing */
+            --blur-standard: blur(32px) saturate(190%);
+            --shadow-elevated: 0 16px 48px 0 rgba(0, 0, 0, 0.6);
+            --shadow-card: 0 4px 20px 0 rgba(0, 0, 0, 0.35);
             --radius-large: 16px;
             --radius-medium: 10px;
             --radius-small: 6px;
             --radius-pill: 980px;
+            --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
@@ -54,25 +76,28 @@
         body {
             background-color: var(--system-bg);
             background-image: 
-                radial-gradient(circle at 50% -10%, rgba(10, 132, 255, 0.12) 0%, transparent 60%),
-                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
-            color: var(--text-primary);
+                radial-gradient(circle at 50% -8%, rgba(10, 132, 255, 0.14) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.015) 0%, transparent 50%);
+            color: var(--label);
             font-family: var(--font-sans);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            letter-spacing: -0.011em;
+            letter-spacing: -0.012em;
         }
 
-        /* Glass Top Navigation Bar */
+        /* ==========================================================================
+           1. CLARITY & DEFERENCE: Translucent Navigation Bar
+           ========================================================================== */
         nav {
             position: sticky;
             top: 0;
             z-index: 50;
-            background: rgba(14, 14, 18, 0.75);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--surface-border-subtle);
+            background: var(--material-regular);
+            backdrop-filter: var(--blur-standard);
+            -webkit-backdrop-filter: var(--blur-standard);
+            border-bottom: 1px solid var(--separator-subtle);
+            box-shadow: var(--glass-specular);
             padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -89,16 +114,16 @@
             font-size: 0.95rem;
             font-weight: 600;
             letter-spacing: -0.02em;
-            color: var(--text-primary);
+            color: var(--label);
         }
 
         .nav-badge {
             font-size: 0.72rem;
             font-weight: 500;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             padding: 0.18rem 0.6rem;
-            background: var(--surface-primary);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-pill);
             letter-spacing: 0.02em;
         }
@@ -108,37 +133,41 @@
             align-items: center;
             gap: 0.6rem;
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
         }
 
-        .status-indicator {
+        .status-pill-indicator {
             display: inline-flex;
             align-items: center;
-            gap: 0.4rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--surface-border-subtle);
-            padding: 0.2rem 0.65rem;
+            gap: 0.45rem;
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
+            padding: 0.2rem 0.7rem;
             border-radius: var(--radius-pill);
             font-size: 0.75rem;
+            font-weight: 500;
         }
 
         .status-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--apple-green);
+            background: var(--system-green);
         }
 
         .status-dot.idle {
-            background: var(--apple-orange);
+            background: var(--system-orange);
         }
 
-        /* Repository Control Toolbar */
+        /* ==========================================================================
+           2. CONSISTENCY & USER CONTROL: Repository Toolbar
+           ========================================================================== */
         .toolbar {
-            background: rgba(18, 18, 22, 0.55);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--surface-border-subtle);
+            background: rgba(18, 18, 22, 0.6);
+            backdrop-filter: var(--blur-standard);
+            -webkit-backdrop-filter: var(--blur-standard);
+            border-bottom: 1px solid var(--separator-subtle);
+            box-shadow: var(--glass-specular);
             padding: 0.8rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -158,7 +187,7 @@
         .toolbar-label {
             font-size: 0.8rem;
             font-weight: 500;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             white-space: nowrap;
         }
 
@@ -170,9 +199,9 @@
         select.apple-select {
             width: 100%;
             appearance: none;
-            background: var(--surface-input);
-            border: 1px solid var(--surface-border);
-            color: var(--text-primary);
+            background: var(--material-input);
+            border: 1px solid var(--separator-subtle);
+            color: var(--label);
             font-family: var(--font-sans);
             font-size: 0.85rem;
             font-weight: 500;
@@ -180,12 +209,19 @@
             border-radius: var(--radius-medium);
             outline: none;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glass-specular);
+            transition: all 0.2s var(--spring-easing);
+        }
+
+        select.apple-select:hover {
+            background: var(--material-hover);
+            border-color: var(--separator-glass);
         }
 
         select.apple-select:focus {
-            border-color: var(--surface-border-focus);
-            background: rgba(255, 255, 255, 0.09);
+            border-color: var(--system-blue);
+            background: var(--material-active);
+            box-shadow: 0 0 0 3px var(--system-blue-subtle);
         }
 
         .select-arrow {
@@ -202,19 +238,20 @@
         input.apple-input-custom {
             margin-top: 0.5rem;
             width: 100%;
-            background: var(--surface-input);
-            border: 1px solid var(--surface-border);
-            color: var(--text-primary);
+            background: var(--material-input);
+            border: 1px solid var(--separator-subtle);
+            color: var(--label);
             font-family: var(--font-mono);
             font-size: 0.8rem;
             padding: 0.48rem 0.85rem;
             border-radius: var(--radius-medium);
             outline: none;
             display: none;
+            box-shadow: var(--glass-specular);
         }
 
         input.apple-input-custom:focus {
-            border-color: var(--surface-border-focus);
+            border-color: var(--system-blue);
         }
 
         .toolbar-meta {
@@ -222,7 +259,7 @@
             align-items: center;
             gap: 1.25rem;
             font-size: 0.8rem;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
         }
 
         .meta-stat {
@@ -231,7 +268,7 @@
         }
 
         .meta-stat-val {
-            color: var(--text-primary);
+            color: var(--label);
             font-weight: 500;
             font-family: var(--font-mono);
             font-size: 0.78rem;
@@ -240,28 +277,31 @@
 
         button.apple-btn-secondary {
             background: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
-            border: 1px solid var(--surface-border);
+            color: var(--label);
+            border: 1px solid var(--separator-subtle);
             font-family: var(--font-sans);
             font-size: 0.8rem;
             font-weight: 500;
             padding: 0.45rem 0.95rem;
             border-radius: var(--radius-medium);
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glass-specular);
+            transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         button.apple-btn-secondary:hover {
             background: rgba(255, 255, 255, 0.14);
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: var(--separator-glass);
         }
 
         button.apple-btn-secondary:active {
             transform: scale(0.98);
         }
 
-        /* Main Workspace Container */
+        /* ==========================================================================
+           3. DIRECT MANIPULATION: Main Workspace & Search Controls
+           ========================================================================== */
         main {
             flex: 1;
             max-width: 1040px;
@@ -273,15 +313,14 @@
             gap: 1.75rem;
         }
 
-        /* Search Section Card */
         .glass-panel {
-            background: var(--surface-primary);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--surface-border);
+            background: var(--material-thin);
+            backdrop-filter: var(--blur-standard);
+            -webkit-backdrop-filter: var(--blur-standard);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-large);
+            box-shadow: var(--glass-specular), var(--shadow-card);
             padding: 1.5rem;
-            box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
             gap: 1.15rem;
@@ -302,43 +341,44 @@
 
         input.apple-search-input {
             width: 100%;
-            background: var(--surface-input);
-            border: 1px solid var(--surface-border);
+            background: var(--material-input);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.85rem 3.5rem 0.85rem 1.15rem;
-            color: var(--text-primary);
+            color: var(--label);
             font-family: var(--font-sans);
             font-size: 0.95rem;
             outline: none;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: var(--glass-specular);
+            transition: all 0.2s var(--spring-easing);
         }
 
         input.apple-search-input::placeholder {
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             font-weight: 400;
         }
 
         input.apple-search-input:focus {
-            border-color: var(--surface-border-focus);
-            background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.18);
+            border-color: var(--system-blue);
+            background: var(--material-active);
+            box-shadow: 0 0 0 3px var(--system-blue-subtle);
         }
 
         .search-shortcut-badge {
             position: absolute;
             right: 0.85rem;
             pointer-events: none;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
             border-radius: 4px;
             padding: 0.15rem 0.45rem;
             font-size: 0.7rem;
             font-family: var(--font-mono);
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
         }
 
         button.apple-btn-primary {
-            background: var(--apple-blue);
+            background: var(--system-blue);
             color: #ffffff;
             border: none;
             border-radius: var(--radius-medium);
@@ -347,19 +387,20 @@
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+            transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         button.apple-btn-primary:hover {
-            background: var(--apple-blue-hover);
+            background: var(--system-blue-hover);
         }
 
         button.apple-btn-primary:active {
             transform: scale(0.98);
         }
 
-        /* Apple Controls Row */
+        /* Segmented Mode Controls */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -375,31 +416,30 @@
             flex-wrap: wrap;
         }
 
-        /* Apple Segmented Control */
         .segmented-control {
             display: inline-flex;
             background: rgba(0, 0, 0, 0.45);
             padding: 3px;
             border-radius: var(--radius-medium);
-            border: 1px solid var(--surface-border-subtle);
+            border: 1px solid var(--separator-subtle);
         }
 
         .segment-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             font-family: var(--font-sans);
             font-size: 0.78rem;
             font-weight: 500;
             padding: 0.35rem 0.85rem;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.15s var(--spring-easing);
         }
 
         .segment-btn.active {
             background: rgba(255, 255, 255, 0.14);
-            color: var(--text-primary);
+            color: var(--label);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
 
@@ -409,13 +449,13 @@
             background: rgba(0, 0, 0, 0.45);
             padding: 3px;
             border-radius: var(--radius-medium);
-            border: 1px solid var(--surface-border-subtle);
+            border: 1px solid var(--separator-subtle);
         }
 
         .topk-btn {
             background: transparent;
             border: none;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             font-family: var(--font-sans);
             font-size: 0.78rem;
             font-weight: 500;
@@ -427,7 +467,7 @@
 
         .topk-btn.active {
             background: rgba(255, 255, 255, 0.14);
-            color: var(--text-primary);
+            color: var(--label);
         }
 
         /* Apple Switch Control */
@@ -436,7 +476,7 @@
             align-items: center;
             gap: 0.65rem;
             font-size: 0.82rem;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             cursor: pointer;
             user-select: none;
         }
@@ -462,7 +502,7 @@
             right: 0;
             bottom: 0;
             background-color: rgba(255, 255, 255, 0.15);
-            transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: 0.2s var(--spring-easing);
             border-radius: 34px;
         }
 
@@ -474,13 +514,13 @@
             left: 2px;
             bottom: 2px;
             background-color: white;
-            transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: 0.2s var(--spring-easing);
             border-radius: 50%;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         input:checked + .slider {
-            background-color: var(--apple-blue);
+            background-color: var(--system-blue);
         }
 
         input:checked + .slider:before {
@@ -494,13 +534,13 @@
             gap: 0.5rem;
             flex-wrap: wrap;
             font-size: 0.78rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
         }
 
         .suggestion-pill {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--surface-border-subtle);
-            color: var(--text-secondary);
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
+            color: var(--secondary-label);
             padding: 0.28rem 0.75rem;
             border-radius: var(--radius-pill);
             cursor: pointer;
@@ -508,15 +548,17 @@
         }
 
         .suggestion-pill:hover {
-            background: rgba(255, 255, 255, 0.09);
-            color: var(--text-primary);
-            border-color: rgba(255, 255, 255, 0.15);
+            background: var(--material-hover);
+            color: var(--label);
+            border-color: var(--separator-glass);
         }
 
-        /* Latency Metrics Dashboard */
+        /* ==========================================================================
+           4. FEEDBACK: Latency Telemetry & Result Cards
+           ========================================================================== */
         .telemetry-row {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-ultra-thin);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.85rem 1.5rem;
             display: flex;
@@ -533,7 +575,7 @@
             font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             margin-bottom: 0.15rem;
         }
 
@@ -541,22 +583,21 @@
             font-family: var(--font-mono);
             font-size: 0.85rem;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             font-variant-numeric: tabular-nums;
         }
 
         .telemetry-value.accent {
-            color: var(--apple-blue);
+            color: var(--system-blue);
             font-weight: 600;
         }
 
-        /* Search Results Feed */
         .results-summary-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-size: 0.8rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             padding: 0 0.25rem;
             display: none;
         }
@@ -568,23 +609,24 @@
         }
 
         .code-card {
-            background: var(--surface-primary);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--surface-border);
+            background: var(--material-thin);
+            backdrop-filter: var(--blur-standard);
+            -webkit-backdrop-filter: var(--blur-standard);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-large);
+            box-shadow: var(--glass-specular), var(--shadow-card);
             overflow: hidden;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s var(--spring-easing);
         }
 
         .code-card:hover {
-            border-color: rgba(255, 255, 255, 0.18);
+            border-color: var(--separator-glass);
             transform: translateY(-1px);
         }
 
         .code-header {
             background: rgba(255, 255, 255, 0.025);
-            border-bottom: 1px solid var(--surface-border-subtle);
+            border-bottom: 1px solid var(--separator-subtle);
             padding: 0.65rem 1.15rem;
             display: flex;
             justify-content: space-between;
@@ -595,14 +637,14 @@
             font-family: var(--font-mono);
             font-size: 0.82rem;
             font-weight: 500;
-            color: var(--text-primary);
+            color: var(--label);
             display: flex;
             align-items: center;
             gap: 0.6rem;
         }
 
         .citation-index {
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             font-size: 0.75rem;
         }
 
@@ -613,9 +655,9 @@
         }
 
         .btn-copy {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--surface-border-subtle);
-            color: var(--text-secondary);
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
+            color: var(--secondary-label);
             font-family: var(--font-sans);
             font-size: 0.72rem;
             padding: 0.2rem 0.55rem;
@@ -625,8 +667,8 @@
         }
 
         .btn-copy:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
+            background: var(--material-hover);
+            color: var(--label);
         }
 
         .code-scores {
@@ -634,27 +676,27 @@
             gap: 0.45rem;
             font-family: var(--font-mono);
             font-size: 0.72rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
         }
 
         .score-tag {
-            background: rgba(255, 255, 255, 0.035);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-ultra-thin);
+            border: 1px solid var(--separator-subtle);
             padding: 0.15rem 0.45rem;
             border-radius: 4px;
             font-variant-numeric: tabular-nums;
         }
 
         .score-tag.active-score {
-            color: var(--apple-green);
+            color: var(--system-green);
             border-color: rgba(48, 209, 88, 0.25);
-            background: rgba(48, 209, 88, 0.06);
+            background: var(--system-green-subtle);
         }
 
-        /* Xcode-Style Gutter Code Block */
+        /* Xcode-Style Line Numbers Gutter */
         .code-block-container {
             display: flex;
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
@@ -663,10 +705,10 @@
 
         .line-numbers-gutter {
             padding: 1rem 0.85rem;
-            color: var(--text-quaternary);
+            color: var(--quaternary-label);
             text-align: right;
             user-select: none;
-            border-right: 1px solid var(--surface-border-subtle);
+            border-right: 1px solid var(--separator-subtle);
             font-variant-numeric: tabular-nums;
         }
 
@@ -684,20 +726,20 @@
 
         .code-footer {
             background: rgba(255, 255, 255, 0.015);
-            border-top: 1px solid var(--surface-border-subtle);
+            border-top: 1px solid var(--separator-subtle);
             padding: 0.55rem 1.15rem;
             font-size: 0.75rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .scope-badge {
-            background: rgba(255, 255, 255, 0.04);
+            background: var(--material-thin);
             padding: 0.15rem 0.5rem;
             border-radius: 4px;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             font-family: var(--font-mono);
             font-size: 0.72rem;
         }
@@ -705,13 +747,13 @@
         .empty-placeholder {
             text-align: center;
             padding: 4rem 2rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
         }
 
         .empty-title {
             font-size: 0.95rem;
             font-weight: 500;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             margin-bottom: 0.35rem;
         }
 
@@ -719,7 +761,9 @@
             font-size: 0.82rem;
         }
 
-        /* Apple Glassmorphic Indexing Modal */
+        /* ==========================================================================
+           5. AESTHETIC INTEGRITY: Glassmorphic Indexing Modal
+           ========================================================================== */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
@@ -727,13 +771,13 @@
             width: 100vw;
             height: 100vh;
             background: rgba(0, 0, 0, 0.78);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
             z-index: 1000;
             display: none;
             justify-content: center;
             align-items: center;
-            animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: modalFadeIn 0.2s var(--spring-easing);
         }
 
         @keyframes modalFadeIn {
@@ -742,13 +786,13 @@
         }
 
         .glass-modal {
-            background: rgba(24, 24, 28, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(24, 24, 28, 0.88);
+            border: 1px solid var(--separator-glass);
             border-radius: 18px;
             width: 90%;
             max-width: 500px;
             padding: 2rem;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+            box-shadow: var(--glass-specular), var(--shadow-elevated);
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -763,7 +807,7 @@
         .modal-heading {
             font-size: 1.15rem;
             font-weight: 600;
-            color: var(--text-primary);
+            color: var(--label);
         }
 
         .modal-pct-clean {
@@ -771,7 +815,7 @@
             font-size: 2.2rem;
             font-weight: 600;
             letter-spacing: -0.03em;
-            color: var(--apple-blue);
+            color: var(--system-blue);
             line-height: 1;
             font-variant-numeric: tabular-nums;
         }
@@ -787,19 +831,19 @@
         .clean-progress-bar {
             height: 100%;
             width: 0%;
-            background: var(--apple-blue);
+            background: var(--system-blue);
             border-radius: var(--radius-pill);
-            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 0.25s var(--spring-easing);
         }
 
         .modal-status-pill {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-thin);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.65rem 0.85rem;
             font-family: var(--font-mono);
             font-size: 0.78rem;
-            color: var(--text-secondary);
+            color: var(--secondary-label);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -812,39 +856,40 @@
         }
 
         .stage-pill {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--surface-border-subtle);
+            background: var(--material-ultra-thin);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.5rem 0.75rem;
             font-size: 0.75rem;
-            color: var(--text-tertiary);
+            color: var(--tertiary-label);
             transition: all 0.2s ease;
         }
 
         .stage-pill.active {
-            color: var(--apple-blue);
-            border-color: rgba(10, 132, 255, 0.3);
-            background: rgba(10, 132, 255, 0.08);
+            color: var(--system-blue);
+            border-color: rgba(10, 132, 255, 0.35);
+            background: var(--system-blue-subtle);
         }
 
         .stage-pill.complete {
-            color: var(--apple-green);
-            border-color: rgba(48, 209, 88, 0.3);
-            background: rgba(48, 209, 88, 0.08);
+            color: var(--system-green);
+            border-color: rgba(48, 209, 88, 0.35);
+            background: var(--system-green-subtle);
         }
 
         button.modal-close-btn {
             background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            border: 1px solid var(--surface-border);
+            color: var(--label);
+            border: 1px solid var(--separator-subtle);
             border-radius: var(--radius-medium);
             padding: 0.75rem;
             font-family: var(--font-sans);
             font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
+            box-shadow: var(--glass-specular);
             display: none;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s var(--spring-easing);
         }
 
         button.modal-close-btn:hover {
@@ -853,21 +898,21 @@
     </style>
 </head>
 <body>
-    <!-- Top Navigation -->
+    <!-- 1. Clarity & Deference: Navigation Bar -->
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
             <span class="nav-badge">Hybrid RAG</span>
         </div>
         <div class="nav-status">
-            <div class="status-indicator">
+            <div class="status-pill-indicator">
                 <span class="status-dot" id="systemStatusDot"></span>
                 <span id="systemStatusText">Ready</span>
             </div>
         </div>
     </nav>
 
-    <!-- Translucent Repository Toolbar -->
+    <!-- 2. Consistency: Repository Toolbar -->
     <div class="toolbar">
         <div class="toolbar-group">
             <span class="toolbar-label">Repository:</span>
@@ -907,7 +952,7 @@
         </div>
     </div>
 
-    <!-- Main Workspace -->
+    <!-- 3. Direct Manipulation: Main Workspace -->
     <main>
         <!-- Suggestions Row -->
         <div class="suggestions-row" id="suggestionsBox">
@@ -959,7 +1004,7 @@
             </div>
         </div>
 
-        <!-- Latency Telemetry Row -->
+        <!-- 4. Feedback: Latency Telemetry Row -->
         <div class="telemetry-row" id="latencyDashboard">
             <div class="telemetry-item">
                 <div class="telemetry-label">Dense Vector</div>
@@ -998,13 +1043,13 @@
         </div>
     </main>
 
-    <!-- Apple Glassmorphic Indexing Modal -->
+    <!-- 5. Depth: Glassmorphic Indexing Modal -->
     <div class="glass-modal-backdrop" id="indexingModal">
         <div class="glass-modal">
             <div class="modal-header-clean">
                 <div>
                     <div class="modal-heading">Indexing Repository</div>
-                    <div style="font-size: 0.78rem; color: var(--text-tertiary); margin-top: 0.2rem;" id="modalTargetSubtitle">Processing codebase</div>
+                    <div style="font-size: 0.78rem; color: var(--tertiary-label); margin-top: 0.2rem;" id="modalTargetSubtitle">Processing codebase</div>
                 </div>
                 <div class="modal-pct-clean" id="percentageClean">0%</div>
             </div>
@@ -1055,7 +1100,7 @@
             ]
         };
 
-        // Keyboard Shortcut: Press '/' to focus search, 'Esc' to dismiss modal
+        // Keyboard Shortcut: '/' focuses search, 'Esc' dismisses
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
                 e.preventDefault();
@@ -1374,8 +1419,6 @@
 
             container.innerHTML = data.results.map((r, idx) => {
                 const snippetId = `code_snippet_${idx}`;
-                
-                // Build line numbers gutter
                 const start = r.start_line || 1;
                 const end = r.end_line || start;
                 let gutterHtml = '';
