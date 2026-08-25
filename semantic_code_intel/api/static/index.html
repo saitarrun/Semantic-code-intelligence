@@ -740,6 +740,13 @@
             display: flex;
             align-items: center;
             gap: var(--space-2);
+            cursor: pointer;
+            transition: color 0.15s ease;
+        }
+
+        .code-citation:hover {
+            color: var(--system-blue);
+            text-decoration: underline;
         }
 
         .citation-index {
@@ -1742,7 +1749,7 @@
             </div>
 
             <div class="inspector-meta-row">
-                <span id="inspectorFileCitation">file.py:L1-L20</span>
+                <span id="inspectorFileCitation" onclick="openCurrentInspectorFile()" style="cursor: pointer; color: var(--system-blue); text-decoration: underline;" title="Click to open in editor">file.py:L1-L20</span>
                 <span id="inspectorScopeText">Language: python</span>
             </div>
 
@@ -1765,6 +1772,8 @@
             </div>
 
             <div class="inspector-footer">
+                <button class="apple-btn-secondary" onclick="openCurrentInspectorFinder()">Reveal in Finder</button>
+                <button class="apple-btn-secondary" onclick="openCurrentInspectorFile()">Open in Editor</button>
                 <button class="apple-btn-secondary" id="btnInspectorSearch" onclick="searchCurrentInspectorSymbol()">Search in Index</button>
                 <button class="apple-btn-primary" id="btnInspectorCopy" onclick="copyInspectorCode()">Copy Code</button>
             </div>
@@ -2173,7 +2182,7 @@
                 return `
                 <div class="code-card">
                     <div class="code-header">
-                        <div class="code-citation">
+                        <div class="code-citation" onclick="openFileInEditor('${r.file_path}', ${start})" title="Click to open in Editor (${r.file_path}:${start})">
                             <span class="citation-index">${idx + 1}.</span>
                             <span>${r.citation}</span>
                         </div>
@@ -2184,6 +2193,8 @@
                                 ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
                                 ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
                             </div>
+                            <button class="btn-copy" onclick="openFileInFinder('${r.file_path}')" title="Reveal in Finder">Finder</button>
+                            <button class="btn-copy" onclick="openFileInEditor('${r.file_path}', ${start})" title="Open in Editor">Editor</button>
                             <button class="btn-copy" onclick="copySnippet('${snippetId}', this)">Copy</button>
                         </div>
                     </div>
@@ -2602,6 +2613,60 @@
                 btn.textContent = 'Copied';
                 setTimeout(() => { btn.textContent = 'Copy Message'; }, 1800);
             });
+        }
+
+        /* --- OPEN IN EDITOR / FINDER ACTIONS --- */
+        async function openFileInEditor(filePath, line = 1) {
+            const target = getActiveTarget();
+            try {
+                const res = await fetch('/api/open', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        repo_path: target,
+                        file_path: filePath,
+                        line: line,
+                        action: 'editor'
+                    })
+                });
+                const data = await res.json();
+                if (!data.success && data.error) {
+                    console.warn(data.error);
+                }
+            } catch (e) {
+                console.error('Failed to open in editor', e);
+            }
+        }
+
+        async function openFileInFinder(filePath) {
+            const target = getActiveTarget();
+            try {
+                await fetch('/api/open', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        repo_path: target,
+                        file_path: filePath,
+                        line: 1,
+                        action: 'finder'
+                    })
+                });
+            } catch (e) {
+                console.error('Failed to open in Finder', e);
+            }
+        }
+
+        function openCurrentInspectorFile() {
+            if (!currentInspectorData) return;
+            const fPath = currentInspectorData.full_path || currentInspectorData.file;
+            const line = currentInspectorData.start_line || 1;
+            openFileInEditor(fPath, line);
+        }
+
+        function openCurrentInspectorFinder() {
+            if (!currentInspectorData) return;
+            const fPath = currentInspectorData.full_path || currentInspectorData.file;
+            openFileInFinder(fPath);
         }
 
         function formatMarkdown(text) {

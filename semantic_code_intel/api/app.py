@@ -565,3 +565,53 @@ async def lsp_inspect(
         "hover": hover
     }
 
+
+class OpenFileRequest(BaseModel):
+    file_path: str
+    repo_path: Optional[str] = None
+    line: Optional[int] = 1
+    action: Optional[str] = "editor"  # "editor" or "finder"
+
+
+@app.post("/api/open")
+async def open_file(req: OpenFileRequest):
+    """Open a file at a specific line in the default editor (Cursor, VS Code) or macOS Finder."""
+    import subprocess
+    t_path, _ = resolve_paths(req.repo_path)
+    
+    # Resolve target file path
+    target = (Path(t_path) / req.file_path).resolve()
+    if not target.exists():
+        # Try absolute path fallback
+        target = Path(req.file_path).resolve()
+
+    if not target.exists():
+        raise HTTPException(status_code=404, detail=f"File not found: {req.file_path}")
+
+    line_num = max(1, req.line or 1)
+
+    try:
+        if req.action == "finder":
+            subprocess.run(["open", "-R", str(target)], check=False)
+            return {"success": True, "message": f"Revealed {target.name} in Finder", "path": str(target)}
+        else:
+            line_spec = f"{target}:{line_num}"
+            # Try Cursor first
+            res = subprocess.run(["cursor", "-g", line_spec], capture_output=True, text=True, check=False)
+            if res.returncode != 0:
+                # Try VS Code
+                res = subprocess.run(["code", "-g", line_spec], capture_output=True, text=True, check=False)
+            if res.returncode != 0:
+                # Fallback to system default text editor
+                subprocess.run(["open", str(target)], check=False)
+
+            return {
+                "success": True,
+                "message": f"Opened {target.name}:{line_num} in editor",
+                "path": str(target),
+                "line": line_num
+            }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
