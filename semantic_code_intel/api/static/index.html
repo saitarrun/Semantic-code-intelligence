@@ -14,28 +14,33 @@
             --system-bg: #000000;
             --surface-primary: rgba(255, 255, 255, 0.04);
             --surface-secondary: rgba(255, 255, 255, 0.02);
-            --surface-elevated: rgba(30, 30, 35, 0.65);
+            --surface-card: rgba(26, 26, 30, 0.65);
             --surface-input: rgba(255, 255, 255, 0.06);
-            --surface-border: rgba(255, 255, 255, 0.1);
-            --surface-border-subtle: rgba(255, 255, 255, 0.06);
-            --surface-border-focus: rgba(10, 132, 255, 0.6);
+            --surface-border: rgba(255, 255, 255, 0.09);
+            --surface-border-subtle: rgba(255, 255, 255, 0.05);
+            --surface-border-focus: rgba(10, 132, 255, 0.55);
             
             --apple-blue: #0a84ff;
             --apple-blue-hover: #0071e3;
+            --apple-blue-subtle: rgba(10, 132, 255, 0.12);
             --apple-green: #30d158;
             --apple-orange: #ff9f0a;
             --apple-red: #ff453a;
             
             --text-primary: #ffffff;
-            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-secondary: rgba(255, 255, 255, 0.72);
             --text-tertiary: rgba(255, 255, 255, 0.45);
-            --text-quaternary: rgba(255, 255, 255, 0.28);
+            --text-quaternary: rgba(255, 255, 255, 0.25);
             
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
             
-            --glass-blur: blur(28px) saturate(190%);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+            --glass-blur: blur(30px) saturate(190%);
+            --glass-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+            --radius-large: 16px;
+            --radius-medium: 10px;
+            --radius-small: 6px;
+            --radius-pill: 980px;
         }
 
         * {
@@ -49,8 +54,8 @@
         body {
             background-color: var(--system-bg);
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
+                radial-gradient(circle at 50% -10%, rgba(10, 132, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
             color: var(--text-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
@@ -59,16 +64,16 @@
             letter-spacing: -0.011em;
         }
 
-        /* Glass Navigation Bar */
+        /* Glass Top Navigation Bar */
         nav {
             position: sticky;
             top: 0;
             z-index: 50;
-            background: rgba(18, 18, 20, 0.72);
+            background: rgba(14, 14, 18, 0.75);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border-bottom: 1px solid var(--surface-border-subtle);
-            padding: 0.85rem 2rem;
+            padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -91,18 +96,30 @@
             font-size: 0.72rem;
             font-weight: 500;
             color: var(--text-tertiary);
-            padding: 0.18rem 0.55rem;
+            padding: 0.18rem 0.6rem;
             background: var(--surface-primary);
             border: 1px solid var(--surface-border-subtle);
-            border-radius: 980px;
+            border-radius: var(--radius-pill);
+            letter-spacing: 0.02em;
         }
 
         .nav-status {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             font-size: 0.8rem;
             color: var(--text-secondary);
+        }
+
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border-subtle);
+            padding: 0.2rem 0.65rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.75rem;
         }
 
         .status-dot {
@@ -116,13 +133,13 @@
             background: var(--apple-orange);
         }
 
-        /* Glass Repository Toolbar */
+        /* Repository Control Toolbar */
         .toolbar {
-            background: rgba(22, 22, 26, 0.45);
+            background: rgba(18, 18, 22, 0.55);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border-bottom: 1px solid var(--surface-border-subtle);
-            padding: 0.75rem 2rem;
+            padding: 0.8rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -159,8 +176,8 @@
             font-family: var(--font-sans);
             font-size: 0.85rem;
             font-weight: 500;
-            padding: 0.45rem 2.2rem 0.45rem 0.85rem;
-            border-radius: 8px;
+            padding: 0.48rem 2.2rem 0.48rem 0.9rem;
+            border-radius: var(--radius-medium);
             outline: none;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -173,7 +190,7 @@
 
         .select-arrow {
             position: absolute;
-            right: 0.85rem;
+            right: 0.9rem;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
@@ -190,8 +207,8 @@
             color: var(--text-primary);
             font-family: var(--font-mono);
             font-size: 0.8rem;
-            padding: 0.45rem 0.85rem;
-            border-radius: 8px;
+            padding: 0.48rem 0.85rem;
+            border-radius: var(--radius-medium);
             outline: none;
             display: none;
         }
@@ -218,6 +235,7 @@
             font-weight: 500;
             font-family: var(--font-mono);
             font-size: 0.78rem;
+            font-variant-numeric: tabular-nums;
         }
 
         button.apple-btn-secondary {
@@ -227,8 +245,8 @@
             font-family: var(--font-sans);
             font-size: 0.8rem;
             font-weight: 500;
-            padding: 0.42rem 0.85rem;
-            border-radius: 8px;
+            padding: 0.45rem 0.95rem;
+            border-radius: var(--radius-medium);
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             white-space: nowrap;
@@ -239,13 +257,17 @@
             border-color: rgba(255, 255, 255, 0.2);
         }
 
+        button.apple-btn-secondary:active {
+            transform: scale(0.98);
+        }
+
         /* Main Workspace Container */
         main {
             flex: 1;
-            max-width: 1080px;
+            max-width: 1040px;
             width: 100%;
             margin: 0 auto;
-            padding: 2.5rem 1.5rem;
+            padding: 2.25rem 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1.75rem;
@@ -257,25 +279,33 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--surface-border);
-            border-radius: 16px;
-            padding: 1.75rem;
+            border-radius: var(--radius-large);
+            padding: 1.5rem;
             box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.15rem;
         }
 
         .search-row {
             display: flex;
             gap: 0.75rem;
+            position: relative;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
         }
 
         input.apple-search-input {
-            flex: 1;
+            width: 100%;
             background: var(--surface-input);
             border: 1px solid var(--surface-border);
-            border-radius: 10px;
-            padding: 0.85rem 1.15rem;
+            border-radius: var(--radius-medium);
+            padding: 0.85rem 3.5rem 0.85rem 1.15rem;
             color: var(--text-primary);
             font-family: var(--font-sans);
             font-size: 0.95rem;
@@ -291,20 +321,34 @@
         input.apple-search-input:focus {
             border-color: var(--surface-border-focus);
             background: rgba(255, 255, 255, 0.08);
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.18);
+        }
+
+        .search-shortcut-badge {
+            position: absolute;
+            right: 0.85rem;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--surface-border-subtle);
+            border-radius: 4px;
+            padding: 0.15rem 0.45rem;
+            font-size: 0.7rem;
+            font-family: var(--font-mono);
+            color: var(--text-tertiary);
         }
 
         button.apple-btn-primary {
             background: var(--apple-blue);
             color: #ffffff;
             border: none;
-            border-radius: 10px;
-            padding: 0.85rem 1.65rem;
+            border-radius: var(--radius-medium);
+            padding: 0.85rem 1.75rem;
             font-family: var(--font-sans);
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            white-space: nowrap;
         }
 
         button.apple-btn-primary:hover {
@@ -315,7 +359,7 @@
             transform: scale(0.98);
         }
 
-        /* Apple Segmented Controls */
+        /* Apple Controls Row */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -324,11 +368,19 @@
             gap: 1rem;
         }
 
+        .controls-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        /* Apple Segmented Control */
         .segmented-control {
             display: inline-flex;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.45);
             padding: 3px;
-            border-radius: 8px;
+            border-radius: var(--radius-medium);
             border: 1px solid var(--surface-border-subtle);
         }
 
@@ -351,6 +403,33 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
 
+        /* Top K Filter Control */
+        .topk-control {
+            display: inline-flex;
+            background: rgba(0, 0, 0, 0.45);
+            padding: 3px;
+            border-radius: var(--radius-medium);
+            border: 1px solid var(--surface-border-subtle);
+        }
+
+        .topk-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .topk-btn.active {
+            background: rgba(255, 255, 255, 0.14);
+            color: var(--text-primary);
+        }
+
         /* Apple Switch Control */
         .switch-control {
             display: flex;
@@ -365,8 +444,8 @@
         .apple-switch {
             position: relative;
             display: inline-block;
-            width: 38px;
-            height: 22px;
+            width: 36px;
+            height: 20px;
         }
 
         .apple-switch input {
@@ -383,21 +462,21 @@
             right: 0;
             bottom: 0;
             background-color: rgba(255, 255, 255, 0.15);
-            transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             border-radius: 34px;
         }
 
         .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
+            height: 16px;
+            width: 16px;
             left: 2px;
             bottom: 2px;
             background-color: white;
-            transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         input:checked + .slider {
@@ -423,7 +502,7 @@
             border: 1px solid var(--surface-border-subtle);
             color: var(--text-secondary);
             padding: 0.28rem 0.75rem;
-            border-radius: 980px;
+            border-radius: var(--radius-pill);
             cursor: pointer;
             transition: all 0.15s ease;
         }
@@ -438,7 +517,7 @@
         .telemetry-row {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--surface-border-subtle);
-            border-radius: 12px;
+            border-radius: var(--radius-medium);
             padding: 0.85rem 1.5rem;
             display: flex;
             justify-content: space-between;
@@ -451,7 +530,7 @@
         }
 
         .telemetry-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 0.06em;
             color: var(--text-tertiary);
@@ -460,9 +539,10 @@
 
         .telemetry-value {
             font-family: var(--font-mono);
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             font-weight: 500;
             color: var(--text-secondary);
+            font-variant-numeric: tabular-nums;
         }
 
         .telemetry-value.accent {
@@ -470,7 +550,17 @@
             font-weight: 600;
         }
 
-        /* Results Display */
+        /* Search Results Feed */
+        .results-summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-tertiary);
+            padding: 0 0.25rem;
+            display: none;
+        }
+
         .results-list {
             display: flex;
             flex-direction: column;
@@ -482,18 +572,18 @@
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--surface-border);
-            border-radius: 14px;
+            border-radius: var(--radius-large);
             overflow: hidden;
             transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .code-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.18);
             transform: translateY(-1px);
         }
 
         .code-header {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.025);
             border-bottom: 1px solid var(--surface-border-subtle);
             padding: 0.65rem 1.15rem;
             display: flex;
@@ -516,34 +606,80 @@
             font-size: 0.75rem;
         }
 
+        .code-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.72rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: var(--radius-small);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
         .code-scores {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.45rem;
             font-family: var(--font-mono);
             font-size: 0.72rem;
             color: var(--text-tertiary);
         }
 
         .score-tag {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.035);
             border: 1px solid var(--surface-border-subtle);
             padding: 0.15rem 0.45rem;
             border-radius: 4px;
+            font-variant-numeric: tabular-nums;
         }
 
         .score-tag.active-score {
             color: var(--apple-green);
-            border-color: rgba(48, 209, 88, 0.3);
+            border-color: rgba(48, 209, 88, 0.25);
+            background: rgba(48, 209, 88, 0.06);
         }
 
-        .code-body pre {
-            margin: 0;
-            padding: 1.15rem;
-            background: rgba(0, 0, 0, 0.3) !important;
+        /* Xcode-Style Gutter Code Block */
+        .code-block-container {
+            display: flex;
+            background: rgba(0, 0, 0, 0.35);
+            overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
             line-height: 1.6;
+        }
+
+        .line-numbers-gutter {
+            padding: 1rem 0.85rem;
+            color: var(--text-quaternary);
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid var(--surface-border-subtle);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .code-content-wrapper {
+            padding: 1rem 1.15rem;
+            flex: 1;
             overflow-x: auto;
+        }
+
+        .code-content-wrapper pre {
+            margin: 0;
+            background: transparent !important;
+            padding: 0 !important;
         }
 
         .code-footer {
@@ -554,6 +690,16 @@
             color: var(--text-tertiary);
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .scope-badge {
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
         }
 
         .empty-placeholder {
@@ -580,7 +726,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.75);
+            background: rgba(0, 0, 0, 0.78);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             z-index: 1000;
@@ -596,13 +742,13 @@
         }
 
         .glass-modal {
-            background: rgba(28, 28, 32, 0.8);
+            background: rgba(24, 24, 28, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 18px;
             width: 90%;
-            max-width: 520px;
+            max-width: 500px;
             padding: 2rem;
-            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -627,13 +773,14 @@
             letter-spacing: -0.03em;
             color: var(--apple-blue);
             line-height: 1;
+            font-variant-numeric: tabular-nums;
         }
 
         .clean-progress-track {
             width: 100%;
             height: 6px;
             background: rgba(255, 255, 255, 0.08);
-            border-radius: 980px;
+            border-radius: var(--radius-pill);
             overflow: hidden;
         }
 
@@ -641,14 +788,14 @@
             height: 100%;
             width: 0%;
             background: var(--apple-blue);
-            border-radius: 980px;
+            border-radius: var(--radius-pill);
             transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .modal-status-pill {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--surface-border-subtle);
-            border-radius: 8px;
+            border-radius: var(--radius-medium);
             padding: 0.65rem 0.85rem;
             font-family: var(--font-mono);
             font-size: 0.78rem;
@@ -667,7 +814,7 @@
         .stage-pill {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--surface-border-subtle);
-            border-radius: 8px;
+            border-radius: var(--radius-medium);
             padding: 0.5rem 0.75rem;
             font-size: 0.75rem;
             color: var(--text-tertiary);
@@ -690,7 +837,7 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-primary);
             border: 1px solid var(--surface-border);
-            border-radius: 10px;
+            border-radius: var(--radius-medium);
             padding: 0.75rem;
             font-family: var(--font-sans);
             font-size: 0.88rem;
@@ -706,15 +853,17 @@
     </style>
 </head>
 <body>
-    <!-- Apple Minimalist Top Navigation -->
+    <!-- Top Navigation -->
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
             <span class="nav-badge">Hybrid RAG</span>
         </div>
         <div class="nav-status">
-            <span class="status-dot" id="systemStatusDot"></span>
-            <span id="systemStatusText">Ready</span>
+            <div class="status-indicator">
+                <span class="status-dot" id="systemStatusDot"></span>
+                <span id="systemStatusText">Ready</span>
+            </div>
         </div>
     </nav>
 
@@ -769,22 +918,34 @@
         <!-- Glass Search Card -->
         <div class="glass-panel">
             <div class="search-row">
-                <input
-                    type="text"
-                    id="searchInput"
-                    class="apple-search-input"
-                    placeholder="Search code logic, function names, error workflows..."
-                    autocomplete="off"
-                />
+                <div class="search-input-wrapper">
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="apple-search-input"
+                        placeholder="Search code logic, function names, error workflows..."
+                        autocomplete="off"
+                    />
+                    <span class="search-shortcut-badge">/</span>
+                </div>
                 <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
             </div>
 
             <div class="controls-row">
-                <!-- Apple Segmented Mode Controls -->
-                <div class="segmented-control">
-                    <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
-                    <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
-                    <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
+                <div class="controls-left">
+                    <!-- Segmented Mode Control -->
+                    <div class="segmented-control">
+                        <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
+                        <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
+                        <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
+                    </div>
+
+                    <!-- Top K Result Limit Filter -->
+                    <div class="topk-control">
+                        <button class="topk-btn" data-topk="3" onclick="setTopK(3)">3</button>
+                        <button class="topk-btn active" data-topk="5" onclick="setTopK(5)">5</button>
+                        <button class="topk-btn" data-topk="10" onclick="setTopK(10)">10</button>
+                    </div>
                 </div>
 
                 <!-- Apple Switch for Reranker -->
@@ -798,7 +959,7 @@
             </div>
         </div>
 
-        <!-- Latency Dashboard -->
+        <!-- Latency Telemetry Row -->
         <div class="telemetry-row" id="latencyDashboard">
             <div class="telemetry-item">
                 <div class="telemetry-label">Dense Vector</div>
@@ -822,6 +983,12 @@
             </div>
         </div>
 
+        <!-- Results Header Summary -->
+        <div class="results-summary-row" id="resultsSummaryRow">
+            <span id="resultsCountText">Showing 0 results</span>
+            <span id="resultsLatencyText"></span>
+        </div>
+
         <!-- Results List -->
         <div class="results-list" id="resultsContainer">
             <div class="empty-placeholder">
@@ -831,7 +998,7 @@
         </div>
     </main>
 
-    <!-- Glassmorphic Indexing Modal -->
+    <!-- Apple Glassmorphic Indexing Modal -->
     <div class="glass-modal-backdrop" id="indexingModal">
         <div class="glass-modal">
             <div class="modal-header-clean">
@@ -863,6 +1030,7 @@
 
     <script>
         let currentMode = 'hybrid';
+        let currentTopK = 5;
 
         const SAMPLE_QUERIES = {
             '.': [
@@ -886,6 +1054,17 @@
                 'Syntax token color styling map'
             ]
         };
+
+        // Keyboard Shortcut: Press '/' to focus search, 'Esc' to dismiss modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            } else if (e.key === 'Escape') {
+                closeIndexingModal();
+                document.getElementById('searchInput').blur();
+            }
+        });
 
         function getActiveTarget() {
             const selectVal = document.getElementById('repoDropdown').value;
@@ -1091,6 +1270,13 @@
             });
         }
 
+        function setTopK(val) {
+            currentTopK = val;
+            document.querySelectorAll('.topk-btn').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.topk) === val);
+            });
+        }
+
         document.getElementById('searchInput').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') performSearch();
         });
@@ -1112,7 +1298,7 @@
                     body: JSON.stringify({
                         query: query,
                         repo_path: target,
-                        top_k: 5,
+                        top_k: currentTopK,
                         mode: currentMode,
                         rerank: rerank
                     })
@@ -1133,9 +1319,20 @@
             }
         }
 
+        function copySnippet(id, btnEl) {
+            const codeEl = document.getElementById(id);
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.innerText).then(() => {
+                const original = btnEl.textContent;
+                btnEl.textContent = 'Copied';
+                setTimeout(() => { btnEl.textContent = original; }, 1800);
+            });
+        }
+
         function renderResults(data) {
             const container = document.getElementById('resultsContainer');
             const latencyDash = document.getElementById('latencyDashboard');
+            const summaryRow = document.getElementById('resultsSummaryRow');
 
             if (data.index_status === 'not_indexed') {
                 container.innerHTML = `
@@ -1145,6 +1342,7 @@
                     </div>
                 `;
                 latencyDash.style.display = 'none';
+                summaryRow.style.display = 'none';
                 return;
             }
 
@@ -1157,6 +1355,10 @@
                 
                 const total = (data.latency_ms.total_end_to_end_ms || data.latency_ms.total_ms || 0).toFixed(1);
                 document.getElementById('totalLatency').textContent = `${total} ms`;
+
+                summaryRow.style.display = 'flex';
+                document.getElementById('resultsCountText').textContent = `Showing ${data.results.length} results`;
+                document.getElementById('resultsLatencyText').textContent = `Retrieved in ${total} ms`;
             }
 
             if (!data.results || data.results.length === 0) {
@@ -1166,32 +1368,51 @@
                         <div class="empty-desc">Try modifying the search query or changing retrieval modes.</div>
                     </div>
                 `;
+                summaryRow.style.display = 'none';
                 return;
             }
 
-            container.innerHTML = data.results.map((r, idx) => `
+            container.innerHTML = data.results.map((r, idx) => {
+                const snippetId = `code_snippet_${idx}`;
+                
+                // Build line numbers gutter
+                const start = r.start_line || 1;
+                const end = r.end_line || start;
+                let gutterHtml = '';
+                for (let l = start; l <= end; l++) {
+                    gutterHtml += `<div>${l}</div>`;
+                }
+
+                return `
                 <div class="code-card">
                     <div class="code-header">
                         <div class="code-citation">
                             <span class="citation-index">${idx + 1}.</span>
                             <span>${r.citation}</span>
                         </div>
-                        <div class="code-scores">
-                            <span class="score-tag active-score">Score: ${r.score}</span>
-                            ${r.rerank_score !== null ? `<span class="score-tag">Rerank: ${r.rerank_score}</span>` : ''}
-                            ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
-                            ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
+                        <div class="code-actions">
+                            <div class="code-scores">
+                                <span class="score-tag active-score">Score: ${r.score}</span>
+                                ${r.rerank_score !== null ? `<span class="score-tag">Rerank: ${r.rerank_score}</span>` : ''}
+                                ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
+                                ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
+                            </div>
+                            <button class="btn-copy" onclick="copySnippet('${snippetId}', this)">Copy</button>
                         </div>
                     </div>
-                    <div class="code-body">
-                        <pre><code class="language-${r.language}">${escapeHtml(r.code)}</code></pre>
+                    <div class="code-block-container">
+                        <div class="line-numbers-gutter">${gutterHtml}</div>
+                        <div class="code-content-wrapper">
+                            <pre><code id="${snippetId}" class="language-${r.language}">${escapeHtml(r.code)}</code></pre>
+                        </div>
                     </div>
                     <div class="code-footer">
-                        <span>Scope: ${r.symbol_name ? `${r.symbol_name} (${r.symbol_type || 'symbol'})` : r.file_path}</span>
+                        <span>Scope: ${r.symbol_name ? `<span class="scope-badge">${r.symbol_name}</span> (${r.symbol_type || 'symbol'})` : r.file_path}</span>
                         <span>Lines ${r.start_line} – ${r.end_line}</span>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
 
             document.querySelectorAll('pre code').forEach((el) => {
                 hljs.highlightElement(el);
