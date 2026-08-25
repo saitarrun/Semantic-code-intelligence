@@ -5,7 +5,7 @@ Dense embedding generation with native Transformers, mean-pooling, and hardware 
 from __future__ import annotations
 
 import logging
-from typing import List, Optional
+from typing import Callable, List, Optional
 import numpy as np
 import torch
 import torch.nn.functional as F
@@ -45,7 +45,8 @@ class EmbeddingEngine:
         self,
         texts: List[str],
         batch_size: Optional[int] = None,
-        show_progress_bar: bool = False
+        show_progress_bar: bool = False,
+        progress_callback: Optional[Callable[[int, int], None]] = None
     ) -> np.ndarray:
         """
         Encode a list of text strings into normalized float32 numpy embeddings.
@@ -57,8 +58,9 @@ class EmbeddingEngine:
         self._ensure_loaded()
         batch_sz = batch_size or self.config.batch_size
         all_embeddings: List[np.ndarray] = []
+        total_texts = len(texts)
 
-        for i in range(0, len(texts), batch_sz):
+        for i in range(0, total_texts, batch_sz):
             batch_texts = texts[i : i + batch_sz]
             encoded = self._tokenizer(
                 batch_texts,
@@ -75,6 +77,10 @@ class EmbeddingEngine:
                     pooled = F.normalize(pooled, p=2, dim=1)
 
             all_embeddings.append(pooled.cpu().numpy().astype(np.float32))
+
+            if progress_callback:
+                processed = min(i + batch_sz, total_texts)
+                progress_callback(processed, total_texts)
 
         return np.vstack(all_embeddings)
 

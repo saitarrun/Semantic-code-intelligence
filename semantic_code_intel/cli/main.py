@@ -77,7 +77,8 @@ def index_cmd(
     ) as progress:
         task = progress.add_task("[green]Scanning & parsing codebase...", total=None)
 
-        def progress_cb(desc: str, current: int, total: int):
+        def progress_cb(stage: str, current: int, total: int, message: str = "", percentage: float = 0.0):
+            desc = message or f"{stage.capitalize()} {current}/{total}"
             progress.update(task, description=f"[green]{desc}[/]", total=total, completed=current)
 
         metrics = indexer.index_codebase(

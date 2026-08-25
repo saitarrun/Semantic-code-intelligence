@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semantic Code Intelligence Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
@@ -14,10 +14,10 @@
             --bg-card: #161f2c;
             --bg-input: #0d131a;
             --border-color: #263342;
-            --border-hover: #3b82f6;
+            --border-hover: #38bdf8;
             --accent: #38bdf8;
-            --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8);
-            --accent-glow: rgba(56, 189, 248, 0.2);
+            --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
+            --accent-glow: rgba(56, 189, 248, 0.25);
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
@@ -53,7 +53,7 @@
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 50;
         }
 
         .brand {
@@ -64,6 +64,12 @@
 
         .brand-logo {
             font-size: 1.6rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
         }
 
         .brand-title {
@@ -204,27 +210,25 @@
         }
 
         .btn-index {
-            background: #2563eb;
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
             color: #ffffff;
             border: none;
-            padding: 0.5rem 1rem;
+            padding: 0.55rem 1.15rem;
             border-radius: 8px;
             font-weight: 700;
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             cursor: pointer;
             transition: all 0.2s ease;
             white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
 
         .btn-index:hover {
-            background: #1d4ed8;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-        }
-
-        .btn-index:disabled {
-            background: #1e293b;
-            color: var(--text-muted);
-            cursor: not-allowed;
+            filter: brightness(1.15);
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            transform: translateY(-1px);
         }
 
         main {
@@ -252,7 +256,7 @@
             background: var(--bg-card);
             border: 1px solid var(--border-color);
             color: var(--text-secondary);
-            padding: 0.3rem 0.75rem;
+            padding: 0.35rem 0.85rem;
             border-radius: 16px;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -486,18 +490,208 @@
             margin-bottom: 1rem;
         }
 
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(9, 13, 19, 0.3);
-            border-radius: 50%;
-            border-top-color: #090d13;
-            animation: spin 0.8s linear infinite;
+        /* ============================================================ */
+        /* REAL-TIME INDEXING ANIMATION MODAL                           */
+        /* ============================================================ */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(4, 7, 12, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease-out;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-card {
+            background: #111823;
+            border: 1px solid #38bdf855;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 580px;
+            padding: 2.2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(56, 189, 248, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modal-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--accent-gradient);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .modal-icon-spinner {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.6rem;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 rgba(56, 189, 248, 0.2); }
+            100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.6); }
+        }
+
+        .modal-title-box h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .modal-title-box p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Large Percentage Display */
+        .percentage-display-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+
+        .percentage-big {
+            font-family: var(--font-code);
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .current-stage-tag {
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        /* Animated Progress Bar */
+        .progress-track {
+            width: 100%;
+            height: 14px;
+            background: #090d13;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
+            background-size: 300% 100%;
+            border-radius: 10px;
+            transition: width 0.25s ease-out;
+            animation: gradientShift 3s linear infinite;
+            box-shadow: 0 0 16px rgba(56, 189, 248, 0.8);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        /* Live Status Text */
+        .progress-status-text {
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Step Checklist */
+        .stages-checklist {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .stage-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.78rem;
+            font-family: var(--font-code);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .stage-card.active {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .stage-card.done {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.08);
+        }
+
+        .btn-modal-close {
+            background: var(--accent-gradient);
+            color: #090d13;
+            font-weight: 800;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-modal-close:hover {
+            filter: brightness(1.15);
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
     </style>
 </head>
@@ -551,7 +745,7 @@
                 <span>Chunks:</span>
                 <span class="stat-num" id="statChunks">--</span>
             </div>
-            <button class="btn-index" id="btnReindex" onclick="triggerIndexCurrentRepo()">↻ Re-Index</button>
+            <button class="btn-index" id="btnReindex" onclick="startAnimatedIndexing()">⚡ Index / Re-Index</button>
         </div>
     </div>
 
@@ -619,6 +813,55 @@
             </div>
         </div>
     </main>
+
+    <!-- REAL-TIME INDEXING ANIMATION MODAL -->
+    <div class="modal-backdrop" id="indexingModal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-icon-spinner" id="modalSpinnerIcon">⚡</div>
+                <div class="modal-title-box">
+                    <h3 id="modalTitle">Indexing Repository...</h3>
+                    <p id="modalSubtitle">Building hybrid dense + sparse search indices</p>
+                </div>
+            </div>
+
+            <div class="percentage-display-row">
+                <div class="percentage-big" id="percentageBig">0%</div>
+                <div class="current-stage-tag" id="currentStageTag">Scanning AST</div>
+            </div>
+
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFillBar"></div>
+            </div>
+
+            <div class="progress-status-text" id="progressStatusText">
+                Discovering and parsing repository files...
+            </div>
+
+            <div class="stages-checklist">
+                <div class="stage-card" id="stageCardScan">
+                    <span id="iconScan">⏳</span>
+                    <span>1. Polyglot AST Parsing</span>
+                </div>
+                <div class="stage-card" id="stageCardEmbed">
+                    <span id="iconEmbed">⏳</span>
+                    <span>2. Dense Embeddings</span>
+                </div>
+                <div class="stage-card" id="stageCardBM25">
+                    <span id="iconBM25">⏳</span>
+                    <span>3. BM25 Lexical Index</span>
+                </div>
+                <div class="stage-card" id="stageCardPersist">
+                    <span id="iconPersist">⏳</span>
+                    <span>4. FAISS & SQLite Store</span>
+                </div>
+            </div>
+
+            <button class="btn-modal-close" id="btnModalClose" onclick="closeIndexingModal()">
+                ✓ Indexing Complete — Start Searching
+            </button>
+        </div>
+    </div>
 
     <script>
         let currentMode = 'hybrid';
@@ -718,26 +961,121 @@
             }
         }
 
-        async function triggerIndexCurrentRepo() {
+        /* ============================================================ */
+        /* REAL-TIME ANIMATED SSE INDEXING CONTROLLER                   */
+        /* ============================================================ */
+        function startAnimatedIndexing() {
             const target = getActiveTarget();
-            const btn = document.getElementById('btnReindex');
-            btn.textContent = '⏳ Indexing...';
-            btn.disabled = true;
+            const modal = document.getElementById('indexingModal');
+            const closeBtn = document.getElementById('btnModalClose');
+            const fillBar = document.getElementById('progressFillBar');
+            const pctText = document.getElementById('percentageBig');
+            const statusText = document.getElementById('progressStatusText');
+            const stageTag = document.getElementById('currentStageTag');
+            const spinner = document.getElementById('modalSpinnerIcon');
 
-            try {
-                const res = await fetch('/api/index', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ target_dir: target, force: true })
-                });
-                const data = await res.json();
-                alert(`✓ Successfully indexed repository!\n• Files: ${data.metrics.total_files}\n• Lines of Code: ${data.metrics.total_lines}\n• Chunks: ${data.metrics.total_chunks}`);
-                await loadRepoStats();
-            } catch (err) {
-                alert('Indexing error: ' + err);
-            } finally {
-                btn.disabled = false;
+            // Reset UI
+            modal.style.display = 'flex';
+            closeBtn.style.display = 'none';
+            fillBar.style.width = '0%';
+            pctText.textContent = '0%';
+            statusText.textContent = `Connecting to indexer for ${target}...`;
+            stageTag.textContent = 'Initializing';
+            spinner.textContent = '⚡';
+
+            resetStageCards();
+
+            // Connect to SSE stream
+            const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=true`;
+            const eventSource = new EventSource(sseUrl);
+
+            eventSource.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                const pct = Math.min(Math.max(data.percentage || 0, 0), 100);
+
+                fillBar.style.width = `${pct}%`;
+                pctText.textContent = `${Math.round(pct)}%`;
+                statusText.textContent = data.message || 'Processing...';
+
+                // Update stage indicator
+                updateStageUI(data.stage, pct);
+
+                if (data.stage === 'done') {
+                    eventSource.close();
+                    spinner.textContent = '🎉';
+                    document.getElementById('modalTitle').textContent = 'Indexing Successfully Completed!';
+                    document.getElementById('modalSubtitle').textContent = `Target: ${target}`;
+                    closeBtn.style.display = 'block';
+                    loadRepoStats();
+                } else if (data.stage === 'error') {
+                    eventSource.close();
+                    spinner.textContent = '⚠️';
+                    document.getElementById('modalTitle').textContent = 'Indexing Error';
+                    statusText.style.color = 'var(--danger)';
+                    closeBtn.style.display = 'block';
+                    closeBtn.textContent = 'Close';
+                }
+            };
+
+            eventSource.onerror = function(err) {
+                console.error('SSE Error:', err);
+                eventSource.close();
+                closeBtn.style.display = 'block';
+                closeBtn.textContent = 'Close';
+            };
+        }
+
+        function updateStageUI(stage, pct) {
+            const cardScan = document.getElementById('stageCardScan');
+            const cardEmbed = document.getElementById('stageCardEmbed');
+            const cardBM25 = document.getElementById('stageCardBM25');
+            const cardPersist = document.getElementById('stageCardPersist');
+            const stageTag = document.getElementById('currentStageTag');
+
+            if (stage === 'parsing') {
+                stageTag.textContent = '1. AST Parsing';
+                cardScan.className = 'stage-card active';
+                document.getElementById('iconScan').textContent = '⚙️';
+            } else if (stage === 'persisting') {
+                stageTag.textContent = '2. SQLite Hydration';
+                cardScan.className = 'stage-card done';
+                document.getElementById('iconScan').textContent = '✓';
+            } else if (stage === 'embedding') {
+                stageTag.textContent = '3. Dense Embeddings';
+                cardScan.className = 'stage-card done';
+                cardEmbed.className = 'stage-card active';
+                document.getElementById('iconScan').textContent = '✓';
+                document.getElementById('iconEmbed').textContent = '🧠';
+            } else if (stage === 'indexing' || stage === 'bm25') {
+                stageTag.textContent = '4. Sparse Indexing';
+                cardScan.className = 'stage-card done';
+                cardEmbed.className = 'stage-card done';
+                cardBM25.className = 'stage-card active';
+                document.getElementById('iconScan').textContent = '✓';
+                document.getElementById('iconEmbed').textContent = '✓';
+                document.getElementById('iconBM25').textContent = '📖';
+            } else if (stage === 'done') {
+                stageTag.textContent = 'Completed';
+                cardScan.className = 'stage-card done';
+                cardEmbed.className = 'stage-card done';
+                cardBM25.className = 'stage-card done';
+                cardPersist.className = 'stage-card done';
+                document.getElementById('iconScan').textContent = '✓';
+                document.getElementById('iconEmbed').textContent = '✓';
+                document.getElementById('iconBM25').textContent = '✓';
+                document.getElementById('iconPersist').textContent = '✓';
             }
+        }
+
+        function resetStageCards() {
+            ['Scan', 'Embed', 'BM25', 'Persist'].forEach(name => {
+                document.getElementById(`stageCard${name}`).className = 'stage-card';
+                document.getElementById(`icon${name}`).textContent = '⏳';
+            });
+        }
+
+        function closeIndexingModal() {
+            document.getElementById('indexingModal').style.display = 'none';
         }
 
         function setMode(mode) {
@@ -800,7 +1138,7 @@
                         <div class="empty-icon">📂</div>
                         <h3>Repository Not Indexed</h3>
                         <p>The repository at <code>${data.repo_path}</code> is not indexed yet.</p>
-                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index This Repo</strong> in the top toolbar to index it.</p>
+                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index / Re-Index</strong> in the top toolbar to index it.</p>
                     </div>
                 `;
                 latencyDash.style.display = 'none';

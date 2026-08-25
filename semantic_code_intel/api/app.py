@@ -1,16 +1,20 @@
 """
 FastAPI REST API and Web Interface Server for Semantic Code Intelligence Platform.
-Supports dynamic repository selection, indexing, and querying from the UI.
+Supports real-time SSE progress streaming, dynamic repository selection, indexing, and querying.
 """
 
 from __future__ import annotations
 
+import asyncio
+import json
 import logging
+import queue
+import threading
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -39,7 +43,6 @@ STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-# Dynamic pipeline cache by repository/index path
 _PIPELINES: Dict[str, HybridRetrievalPipeline] = {}
 _ACTIVE_REPO_PATH: Path = Path.cwd()
 _ACTIVE_INDEX_PATH: Optional[Path] = None
@@ -48,7 +51,6 @@ _ACTIVE_INDEX_PATH: Optional[Path] = None
 config: CodeIntelConfig = DEFAULT_CONFIG
 pipeline: Optional[HybridRetrievalPipeline] = None
 
-# Default known repositories
 KNOWN_PRESETS = [
     {
         "name": "Current Platform Codebase (Python)",
@@ -57,19 +59,19 @@ KNOWN_PRESETS = [
         "description": "Semantic Code Intelligence engine source code"
     },
     {
-        "name": "Kubernetes client-go (Go - 406k LOC)",
+        "name": "Kubernetes client-go (Go — 406k LOC)",
         "path": "./oss_evaluation/client-go",
         "index_dir": "./oss_evaluation/k8s_index",
         "description": "Kubernetes official Go distributed systems client"
     },
     {
-        "name": "FastAPI (Python - 112k LOC)",
+        "name": "FastAPI (Python — 112k LOC)",
         "path": "./oss_evaluation/fastapi",
         "index_dir": "./oss_evaluation/fastapi_index",
         "description": "FastAPI web framework core"
     },
     {
-        "name": "Textualize Rich (Python - 67k LOC)",
+        "name": "Textualize Rich (Python — 67k LOC)",
         "path": "./oss_evaluation/rich",
         "index_dir": "./oss_evaluation/rich_index",
         "description": "Rich terminal UI and formatting engine"
@@ -121,7 +123,7 @@ def get_pipeline(target_dir: Optional[str] = None, index_dir: Optional[str] = No
     return _PIPELINES[cache_key]
 
 
-# Pydantic Request/Response Models
+# Request/Response Models
 class SearchRequest(BaseModel):
     query: str = Field(..., description="Query string or question")
     top_k: int = Field(default=5, ge=1, le=50)
@@ -248,9 +250,82 @@ async def get_stats(repo_path: Optional[str] = None, index_path: Optional[str] =
     }
 
 
+@app.get("/api/index/stream")
+async def stream_index(
+    target_dir: str = Query(default="."),
+    index_dir: Optional[str] = Query(default=None),
+    force: bool = Query(default=False)
+):
+    """
+    Stream live Server-Sent Events (SSE) showing granular percentage, stage,
+    and message updates during repository indexing.
+    """
+    global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH
+    t_path, i_path = resolve_paths(target_dir, index_dir)
+
+    if not t_path.exists():
+        raise HTTPException(status_code=404, detail=f"Target directory not found: {t_path}")
+
+    event_q = queue.Queue()
+
+    def progress_callback(stage: str, current: int, total: int, message: str = "", percentage: float = 0.0):
+        event_q.put({
+            "stage": stage,
+            "current": current,
+            "total": total,
+            "message": message,
+            "percentage": percentage
+        })
+
+    def run_indexer():
+        try:
+            cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
+            indexer = HybridIndexer(cfg)
+            metrics = indexer.index_codebase(
+                target_dir=t_path,
+                force_reindex=force,
+                progress_callback=progress_callback
+            )
+            # Invalidate pipeline cache
+            cache_key = f"{t_path}::{cfg.get_index_dir()}"
+            if cache_key in _PIPELINES:
+                del _PIPELINES[cache_key]
+
+            event_q.put({
+                "stage": "done",
+                "current": int(metrics.get("total_chunks", 0)),
+                "total": int(metrics.get("total_chunks", 0)),
+                "message": f"Successfully indexed {int(metrics.get('total_lines', 0)):,} lines of code across {int(metrics.get('total_files', 0)):,} files in {metrics.get('elapsed_seconds', 0):.2f}s!",
+                "percentage": 100.0,
+                "metrics": metrics
+            })
+        except Exception as e:
+            logger.exception("Indexing failed in background thread")
+            event_q.put({
+                "stage": "error",
+                "message": f"Indexing error: {str(e)}",
+                "percentage": 0.0
+            })
+        finally:
+            event_q.put(None)  # Sentinel to end stream
+
+    threading.Thread(target=run_indexer, daemon=True).start()
+
+    async def event_generator():
+        while True:
+            await asyncio.sleep(0.05)
+            while not event_q.empty():
+                item = event_q.get()
+                if item is None:
+                    return
+                yield f"data: {json.dumps(item)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
 @app.post("/api/index")
 async def trigger_index(req: IndexRequest):
-    """Index any codebase directory specified by path."""
+    """Synchronous indexing fallback endpoint."""
     global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH
     t_path, i_path = resolve_paths(req.target_dir, req.index_dir)
     
@@ -261,7 +336,6 @@ async def trigger_index(req: IndexRequest):
     indexer = HybridIndexer(cfg)
     metrics = indexer.index_codebase(t_path, force_reindex=req.force)
     
-    # Invalidate cache for this repo
     cache_key = f"{t_path}::{cfg.get_index_dir()}"
     if cache_key in _PIPELINES:
         del _PIPELINES[cache_key]
