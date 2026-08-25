@@ -346,6 +346,7 @@ async def search_code(req: SearchRequest):
         SearchResultItem(
             chunk_id=r.chunk.chunk_id,
             file_path=r.chunk.file_path,
+            absolute_path=r.chunk.absolute_path,
             start_line=r.chunk.start_line,
             end_line=r.chunk.end_line,
             language=r.chunk.language,
@@ -538,35 +539,56 @@ async def open_file(req: OpenFileRequest):
 
     line_num = max(1, req.line or 1)
 
-    try:
-        if req.action == "finder":
-            subprocess.run(["open", "-R", str(target)], check=False)
-            return {"success": True, "message": f"Revealed {target.name} in Finder", "path": str(target)}
-        else:
-            line_spec = f"{target}:{line_num}"
-            opened = False
+    def launch(command: List[str]) -> tuple[bool, str]:
+        try:
+            result = subprocess.run(
+                command, capture_output=True, text=True, check=False, timeout=10
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            return False, str(exc)
+        detail = (result.stderr or result.stdout or "").strip()
+        return result.returncode == 0, detail
 
-            # 1. Check Cursor CLI
-            if shutil.which("cursor"):
-                res = subprocess.run(["cursor", "-g", line_spec], capture_output=True, text=True, check=False)
-                if res.returncode == 0:
-                    opened = True
+    if req.action == "finder":
+        if not shutil.which("open"):
+            return {"success": False, "error": "Finder integration requires macOS `open`."}
+        succeeded, detail = launch(["open", "-R", str(target)])
+        if not succeeded:
+            return {"success": False, "error": detail or "Finder could not reveal the file."}
+        return {
+            "success": True,
+            "message": f"Revealed {target.name} in Finder",
+            "path": str(target),
+            "application": "Finder",
+        }
 
-            # 2. Check VS Code CLI
-            if not opened and shutil.which("code"):
-                res = subprocess.run(["code", "-g", line_spec], capture_output=True, text=True, check=False)
-                if res.returncode == 0:
-                    opened = True
+    line_spec = f"{target}:{line_num}"
+    attempts: List[str] = []
+    editor_commands = []
+    if shutil.which("cursor"):
+        editor_commands.append(("Cursor", ["cursor", "--goto", line_spec]))
+    if shutil.which("code"):
+        editor_commands.append(("Visual Studio Code", ["code", "--reuse-window", "--goto", line_spec]))
+    if shutil.which("open") and Path("/Applications/Visual Studio Code.app").exists():
+        editor_commands.append((
+            "Visual Studio Code",
+            ["open", "-a", "Visual Studio Code", "--args", "--reuse-window", "--goto", line_spec],
+        ))
 
-            # 3. Fallback: macOS system open
-            if not opened:
-                subprocess.run(["open", str(target)], check=False)
-
+    for editor_name, command in editor_commands:
+        succeeded, detail = launch(command)
+        if succeeded:
             return {
                 "success": True,
-                "message": f"Opened {target.name}:{line_num}",
+                "message": f"Opened {target.name}:{line_num} in {editor_name}",
                 "path": str(target),
-                "line": line_num
+                "line": line_num,
+                "application": editor_name,
             }
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+        attempts.append(f"{editor_name}: {detail or 'launcher returned an error'}")
+
+    return {
+        "success": False,
+        "error": "No supported editor could open the file. Install the Cursor or VS Code shell command.",
+        "attempts": attempts,
+    }

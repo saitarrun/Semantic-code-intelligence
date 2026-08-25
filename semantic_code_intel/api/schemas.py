@@ -19,6 +19,7 @@ class SearchRequest(BaseModel):
 class SearchResultItem(BaseModel):
     chunk_id: str
     file_path: str
+    absolute_path: str
     start_line: int
     end_line: int
     language: str

@@ -952,6 +952,29 @@
             background: var(--system-orange);
         }
 
+        .action-toast {
+            position: fixed;
+            right: 1.25rem;
+            bottom: 1.25rem;
+            z-index: 1000;
+            max-width: min(430px, calc(100vw - 2.5rem));
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--glass-border-medium);
+            border-radius: var(--radius-md);
+            background: rgba(24, 24, 28, 0.96);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65);
+            color: var(--label-primary);
+            font-size: 0.8rem;
+            line-height: 1.45;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.18s ease, transform 0.18s ease;
+            pointer-events: none;
+        }
+
+        .action-toast.visible { opacity: 1; transform: translateY(0); }
+        .action-toast.error { border-color: rgba(255, 69, 58, 0.55); color: #ffb4ae; }
+
         .synthesis-card a {
             color: var(--system-blue);
             text-decoration: none;
@@ -2225,6 +2248,7 @@
 
             container.innerHTML = reliabilityHtml + data.results.map((r, idx) => {
                 const snippetId = `code_snippet_${idx}`;
+                const openPath = r.absolute_path || r.file_path;
                 const start = r.start_line || 1;
                 const end = r.end_line || start;
                 let gutterHtml = '';
@@ -2235,7 +2259,7 @@
                 return `
                 <div class="code-card">
                     <div class="code-header">
-                        <div class="code-citation" onclick="openFileInEditor('${r.file_path}', ${start})" title="Click to open in Editor (${r.file_path}:${start})">
+                        <div class="code-citation" onclick="openFileInEditor('${openPath}', ${start})" title="Click to open in Editor (${r.file_path}:${start})">
                             <span class="citation-index">${idx + 1}.</span>
                             <span>${r.citation}</span>
                         </div>
@@ -2247,8 +2271,8 @@
                                 ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
                                 ${(r.match_reasons || []).map(reason => `<span class="score-tag active-score">${escapeHtml(reason)}</span>`).join('')}
                             </div>
-                            <button class="btn-copy" onclick="openFileInFinder('${r.file_path}')" title="Reveal in Finder">Finder</button>
-                            <button class="btn-copy" onclick="openFileInEditor('${r.file_path}', ${start})" title="Open in Editor">Editor</button>
+                            <button class="btn-copy" onclick="openFileInFinder('${openPath}')" title="Reveal in Finder">Finder</button>
+                            <button class="btn-copy" onclick="openFileInEditor('${openPath}', ${start})" title="Open in Editor">Editor</button>
                             <button class="btn-copy" onclick="copySnippet('${snippetId}', this)">Copy</button>
                         </div>
                     </div>
@@ -2652,6 +2676,20 @@
         }
 
         /* --- OPEN IN EDITOR / FINDER ACTIONS --- */
+        function showActionToast(message, isError = false) {
+            let toast = document.getElementById('actionToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'actionToast';
+                document.body.appendChild(toast);
+            }
+            toast.className = `action-toast${isError ? ' error' : ''}`;
+            toast.textContent = message;
+            requestAnimationFrame(() => toast.classList.add('visible'));
+            clearTimeout(window.actionToastTimer);
+            window.actionToastTimer = setTimeout(() => toast.classList.remove('visible'), 4200);
+        }
+
         async function openFileInEditor(filePath, line = 1) {
             const target = getActiveTarget();
             try {
@@ -2666,18 +2704,17 @@
                     })
                 });
                 const data = await res.json();
-                if (!data.success && data.error) {
-                    console.warn(data.error);
-                }
+                showActionToast(data.message || data.error || 'Editor action failed.', !data.success);
             } catch (e) {
                 console.error('Failed to open in editor', e);
+                showActionToast(`Editor error: ${e.message}`, true);
             }
         }
 
         async function openFileInFinder(filePath) {
             const target = getActiveTarget();
             try {
-                await fetch('/api/open', {
+                const res = await fetch('/api/open', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -2687,8 +2724,11 @@
                         action: 'finder'
                     })
                 });
+                const data = await res.json();
+                showActionToast(data.message || data.error || 'Finder action failed.', !data.success);
             } catch (e) {
                 console.error('Failed to open in Finder', e);
+                showActionToast(`Finder error: ${e.message}`, true);
             }
         }
 
