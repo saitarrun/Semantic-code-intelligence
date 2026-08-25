@@ -3,877 +3,861 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semantic Code Intelligence Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <title>Code Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
-            --bg-primary: #090d13;
-            --bg-secondary: #121820;
-            --bg-card: #161f2c;
-            --bg-input: #0d131a;
-            --border-color: #263342;
-            --border-hover: #38bdf8;
-            --accent: #38bdf8;
-            --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
-            --accent-glow: rgba(56, 189, 248, 0.25);
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
-            --success: #22c55e;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --font-code: 'JetBrains Mono', monospace;
-            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --system-bg: #000000;
+            --surface-primary: rgba(255, 255, 255, 0.04);
+            --surface-secondary: rgba(255, 255, 255, 0.02);
+            --surface-elevated: rgba(30, 30, 35, 0.65);
+            --surface-input: rgba(255, 255, 255, 0.06);
+            --surface-border: rgba(255, 255, 255, 0.1);
+            --surface-border-subtle: rgba(255, 255, 255, 0.06);
+            --surface-border-focus: rgba(10, 132, 255, 0.6);
+            
+            --apple-blue: #0a84ff;
+            --apple-blue-hover: #0071e3;
+            --apple-green: #30d158;
+            --apple-orange: #ff9f0a;
+            --apple-red: #ff453a;
+            
+            --text-primary: #ffffff;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-quaternary: rgba(255, 255, 255, 0.28);
+            
+            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
+            --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+            
+            --glass-blur: blur(28px) saturate(190%);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--system-bg);
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(10, 132, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02) 0%, transparent 40%);
             color: var(--text-primary);
             font-family: var(--font-sans);
-            line-height: 1.5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            letter-spacing: -0.011em;
         }
 
-        header {
-            background-color: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 0.9rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Glass Navigation Bar */
+        nav {
             position: sticky;
             top: 0;
             z-index: 50;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .brand-logo {
-            font-size: 1.6rem;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-4px); }
-        }
-
-        .brand-title {
-            font-size: 1.2rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .brand-badge {
-            background: rgba(56, 189, 248, 0.1);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            color: var(--accent);
-            font-size: 0.75rem;
-            padding: 0.2rem 0.55rem;
-            border-radius: 12px;
-            font-family: var(--font-code);
-            font-weight: 600;
-        }
-
-        /* Prominent Repository Selector Bar */
-        .repo-toolbar {
-            background: #0f1622;
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(18, 18, 20, 0.72);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--surface-border-subtle);
             padding: 0.85rem 2rem;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            gap: 1.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            align-items: center;
         }
 
-        .repo-select-container {
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .nav-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        .nav-badge {
+            font-size: 0.72rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            padding: 0.18rem 0.55rem;
+            background: var(--surface-primary);
+            border: 1px solid var(--surface-border-subtle);
+            border-radius: 980px;
+        }
+
+        .nav-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--apple-green);
+        }
+
+        .status-dot.idle {
+            background: var(--apple-orange);
+        }
+
+        /* Glass Repository Toolbar */
+        .toolbar {
+            background: rgba(22, 22, 26, 0.45);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--surface-border-subtle);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-group {
             display: flex;
             align-items: center;
             gap: 0.85rem;
             flex: 1;
-            max-width: 750px;
+            max-width: 680px;
         }
 
-        .repo-label-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            background: var(--bg-card);
-            padding: 0.5rem 0.85rem;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
+        .toolbar-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
             white-space: nowrap;
         }
 
-        .repo-select-wrapper {
+        .select-wrapper {
             position: relative;
             flex: 1;
         }
 
-        .repo-dropdown {
+        select.apple-select {
             width: 100%;
-            background-color: var(--bg-input);
-            border: 1.5px solid #3b82f688;
-            color: #ffffff;
-            font-size: 0.95rem;
-            font-weight: 600;
-            padding: 0.55rem 1rem;
+            appearance: none;
+            background: var(--surface-input);
+            border: 1px solid var(--surface-border);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 0.45rem 2.2rem 0.45rem 0.85rem;
             border-radius: 8px;
             outline: none;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 0 12px rgba(56, 189, 248, 0.1);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .repo-dropdown:hover, .repo-dropdown:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 16px var(--accent-glow);
+        select.apple-select:focus {
+            border-color: var(--surface-border-focus);
+            background: rgba(255, 255, 255, 0.09);
         }
 
-        .custom-path-input {
+        .select-arrow {
+            position: absolute;
+            right: 0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            width: 8px;
+            height: 5px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.45)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
+        }
+
+        input.apple-input-custom {
             margin-top: 0.5rem;
             width: 100%;
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
+            background: var(--surface-input);
+            border: 1px solid var(--surface-border);
             color: var(--text-primary);
-            padding: 0.5rem 0.85rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-family: var(--font-code);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 0.45rem 0.85rem;
+            border-radius: 8px;
             outline: none;
             display: none;
         }
 
-        .custom-path-input:focus {
-            border-color: var(--accent);
+        input.apple-input-custom:focus {
+            border-color: var(--surface-border-focus);
         }
 
-        .repo-stats-group {
+        .toolbar-meta {
             display: flex;
             align-items: center;
             gap: 1.25rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-secondary);
         }
 
-        .stat-badge {
+        .meta-stat {
             display: flex;
-            align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
-        .stat-badge .stat-num {
-            color: #ffffff;
-            font-weight: 700;
-            font-family: var(--font-code);
+        .meta-stat-val {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
         }
 
-        .status-pill {
-            font-size: 0.75rem;
-            font-family: var(--font-code);
-            padding: 0.25rem 0.65rem;
-            border-radius: 12px;
-            font-weight: 700;
-        }
-
-        .status-ready {
-            background: rgba(34, 197, 94, 0.15);
-            color: var(--success);
-            border: 1px solid rgba(34, 197, 94, 0.35);
-        }
-
-        .status-unindexed {
-            background: rgba(245, 158, 11, 0.15);
-            color: var(--warning);
-            border: 1px solid rgba(245, 158, 11, 0.35);
-        }
-
-        .btn-index {
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: #ffffff;
-            border: none;
-            padding: 0.55rem 1.15rem;
+        button.apple-btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border: 1px solid var(--surface-border);
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.42rem 0.85rem;
             border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.85rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
             white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
         }
 
-        .btn-index:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
-            transform: translateY(-1px);
+        button.apple-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.14);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
+        /* Main Workspace Container */
         main {
             flex: 1;
-            max-width: 1200px;
+            max-width: 1080px;
             width: 100%;
             margin: 0 auto;
-            padding: 1.75rem 1.5rem;
+            padding: 2.5rem 1.5rem;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.75rem;
         }
 
-        /* Suggested Queries Chips */
-        .sample-queries-box {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            font-size: 0.82rem;
-            color: var(--text-muted);
-        }
-
-        .query-chip {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            padding: 0.35rem 0.85rem;
+        /* Search Section Card */
+        .glass-panel {
+            background: var(--surface-primary);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--surface-border);
             border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            font-family: var(--font-sans);
-        }
-
-        .query-chip:hover {
-            border-color: var(--accent);
-            color: var(--text-primary);
-            background: rgba(56, 189, 248, 0.1);
-        }
-
-        .search-panel {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.75rem;
+            box-shadow: var(--glass-shadow);
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            gap: 1.25rem;
         }
 
-        .search-box {
+        .search-row {
             display: flex;
             gap: 0.75rem;
         }
 
-        .search-input {
+        input.apple-search-input {
             flex: 1;
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.95rem 1.25rem;
+            background: var(--surface-input);
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 0.85rem 1.15rem;
             color: var(--text-primary);
-            font-size: 1rem;
             font-family: var(--font-sans);
+            font-size: 0.95rem;
             outline: none;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .search-input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
+        input.apple-search-input::placeholder {
+            color: var(--text-tertiary);
+            font-weight: 400;
         }
 
-        .btn-search {
-            background: var(--accent-gradient);
-            color: #090d13;
+        input.apple-search-input:focus {
+            border-color: var(--surface-border-focus);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.2);
+        }
+
+        button.apple-btn-primary {
+            background: var(--apple-blue);
+            color: #ffffff;
             border: none;
-            border-radius: 8px;
-            padding: 0.95rem 2rem;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: 10px;
+            padding: 0.85rem 1.65rem;
+            font-family: var(--font-sans);
+            font-size: 0.9rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .btn-search:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 4px 16px var(--accent-glow);
+        button.apple-btn-primary:hover {
+            background: var(--apple-blue-hover);
         }
 
-        .search-options {
+        button.apple-btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Apple Segmented Controls */
+        .controls-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
             flex-wrap: wrap;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
-        .mode-selectors {
-            display: flex;
-            gap: 0.5rem;
-            background: var(--bg-primary);
-            padding: 0.25rem;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
+        .segmented-control {
+            display: inline-flex;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 3px;
+            border-radius: 8px;
+            border: 1px solid var(--surface-border-subtle);
         }
 
-        .mode-btn {
+        .segment-btn {
             background: transparent;
             border: none;
             color: var(--text-secondary);
-            padding: 0.35rem 0.75rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
             font-weight: 500;
+            padding: 0.35rem 0.85rem;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .mode-btn.active {
-            background: var(--bg-card);
-            color: var(--accent);
-            font-weight: 700;
+        .segment-btn.active {
+            background: rgba(255, 255, 255, 0.14);
+            color: var(--text-primary);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
         }
 
-        .toggle-group {
+        /* Apple Switch Control */
+        .switch-control {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.65rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
             cursor: pointer;
             user-select: none;
         }
 
-        .latency-dashboard {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.85rem 1.25rem;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            font-size: 0.85rem;
+        .apple-switch {
+            position: relative;
+            display: inline-block;
+            width: 38px;
+            height: 22px;
         }
 
-        .latency-metric {
+        .apple-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.15);
+            transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        input:checked + .slider {
+            background-color: var(--apple-blue);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(16px);
+        }
+
+        /* Suggested Queries Row */
+        .suggestions-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            font-size: 0.78rem;
+            color: var(--text-tertiary);
+        }
+
+        .suggestion-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border-subtle);
+            color: var(--text-secondary);
+            padding: 0.28rem 0.75rem;
+            border-radius: 980px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .suggestion-pill:hover {
+            background: rgba(255, 255, 255, 0.09);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Latency Metrics Dashboard */
+        .telemetry-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--surface-border-subtle);
+            border-radius: 12px;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            display: none;
+        }
+
+        .telemetry-item {
             text-align: center;
         }
 
-        .latency-label {
-            color: var(--text-muted);
-            font-size: 0.75rem;
+        .telemetry-label {
+            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.06em;
+            color: var(--text-tertiary);
+            margin-bottom: 0.15rem;
         }
 
-        .latency-val {
-            font-family: var(--font-code);
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--accent);
+        .telemetry-value {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-secondary);
         }
 
-        .latency-val.fast {
-            color: var(--success);
+        .telemetry-value.accent {
+            color: var(--apple-blue);
+            font-weight: 600;
         }
 
-        .results-container {
+        /* Results Display */
+        .results-list {
             display: flex;
             flex-direction: column;
             gap: 1.25rem;
         }
 
-        .result-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+        .code-card {
+            background: var(--surface-primary);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--surface-border);
+            border-radius: 14px;
             overflow: hidden;
-            transition: border-color 0.2s ease, transform 0.15s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .result-card:hover {
-            border-color: #38bdf866;
+        .code-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
         }
 
-        .result-header {
-            background-color: var(--bg-card);
-            padding: 0.7rem 1.1rem;
+        .code-header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--surface-border-subtle);
+            padding: 0.65rem 1.15rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--border-color);
         }
 
-        .result-citation {
-            font-family: var(--font-code);
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--accent);
+        .code-citation {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
 
-        .result-scores {
+        .citation-index {
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+        }
+
+        .code-scores {
             display: flex;
-            gap: 0.75rem;
-            font-family: var(--font-code);
-            font-size: 0.78rem;
-            color: var(--text-secondary);
+            gap: 0.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
         }
 
-        .score-pill {
-            background: var(--bg-primary);
-            padding: 0.2rem 0.5rem;
+        .score-tag {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border-subtle);
+            padding: 0.15rem 0.45rem;
             border-radius: 4px;
-            border: 1px solid var(--border-color);
         }
 
-        .score-pill.highlight {
-            color: var(--success);
-            border-color: #22c55e44;
+        .score-tag.active-score {
+            color: var(--apple-green);
+            border-color: rgba(48, 209, 88, 0.3);
         }
 
-        .result-body pre {
+        .code-body pre {
             margin: 0;
-            padding: 1.1rem;
-            background: var(--bg-primary) !important;
-            font-family: var(--font-code);
-            font-size: 0.88rem;
+            padding: 1.15rem;
+            background: rgba(0, 0, 0, 0.3) !important;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
             line-height: 1.6;
             overflow-x: auto;
         }
 
-        .result-footer {
-            padding: 0.55rem 1.1rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            font-size: 0.82rem;
-            color: var(--text-secondary);
+        .code-footer {
+            background: rgba(255, 255, 255, 0.015);
+            border-top: 1px solid var(--surface-border-subtle);
+            padding: 0.55rem 1.15rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
             display: flex;
             justify-content: space-between;
         }
 
-        .empty-state {
+        .empty-placeholder {
             text-align: center;
-            padding: 3.5rem 2rem;
-            color: var(--text-muted);
+            padding: 4rem 2rem;
+            color: var(--text-tertiary);
         }
 
-        .empty-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
+        .empty-title {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
         }
 
-        /* ============================================================ */
-        /* REAL-TIME INDEXING ANIMATION MODAL                           */
-        /* ============================================================ */
-        .modal-backdrop {
+        .empty-desc {
+            font-size: 0.82rem;
+        }
+
+        /* Apple Glassmorphic Indexing Modal */
+        .glass-modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(4, 7, 12, 0.88);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             z-index: 1000;
             display: none;
             justify-content: center;
             align-items: center;
-            animation: fadeIn 0.2s ease-out;
+            animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .modal-card {
-            background: #111823;
-            border: 1px solid #38bdf866;
-            border-radius: 16px;
-            width: 92%;
-            max-width: 580px;
-            padding: 2.2rem;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.2);
+        .glass-modal {
+            background: rgba(28, 28, 32, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            width: 90%;
+            max-width: 520px;
+            padding: 2rem;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
             display: flex;
             flex-direction: column;
-            gap: 1.4rem;
-            position: relative;
-            overflow: hidden;
+            gap: 1.5rem;
         }
 
-        .modal-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--accent-gradient);
-        }
-
-        .modal-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .modal-icon-spinner {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: rgba(56, 189, 248, 0.12);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.6rem;
-            animation: pulseGlow 2s infinite alternate;
-        }
-
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 rgba(56, 189, 248, 0.2); }
-            100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.6); }
-        }
-
-        .modal-title-box h3 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #ffffff;
-        }
-
-        .modal-title-box p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        /* Large Percentage Display */
-        .percentage-display-row {
+        .modal-header-clean {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
         }
 
-        .percentage-big {
-            font-family: var(--font-code);
-            font-size: 3rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: var(--accent-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .modal-heading {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .modal-pct-clean {
+            font-family: var(--font-mono);
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.03em;
+            color: var(--apple-blue);
             line-height: 1;
         }
 
-        .current-stage-tag {
-            font-family: var(--font-code);
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--accent);
-            background: rgba(56, 189, 248, 0.12);
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-        }
-
-        /* Animated Progress Bar */
-        .progress-track {
+        .clean-progress-track {
             width: 100%;
-            height: 14px;
-            background: #090d13;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 980px;
             overflow: hidden;
-            position: relative;
         }
 
-        .progress-fill {
+        .clean-progress-bar {
             height: 100%;
             width: 0%;
-            background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc, #38bdf8);
-            background-size: 300% 100%;
-            border-radius: 10px;
-            transition: width 0.25s ease-out;
-            animation: gradientShift 2.5s linear infinite;
-            box-shadow: 0 0 16px rgba(56, 189, 248, 0.8);
+            background: var(--apple-blue);
+            border-radius: 980px;
+            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            100% { background-position: 300% 50%; }
-        }
-
-        /* Live Status Text */
-        .progress-status-text {
-            font-family: var(--font-code);
-            font-size: 0.85rem;
-            color: var(--text-primary);
-            background: var(--bg-primary);
-            padding: 0.75rem 1rem;
+        .modal-status-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--surface-border-subtle);
             border-radius: 8px;
-            border: 1px solid var(--border-color);
+            padding: 0.65rem 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        /* Step Checklist */
-        .stages-checklist {
+        .modal-stages-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
+            gap: 0.65rem;
         }
 
-        .stage-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
+        .stage-pill {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--surface-border-subtle);
             border-radius: 8px;
-            padding: 0.6rem 0.85rem;
-            font-size: 0.78rem;
-            font-family: var(--font-code);
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
             transition: all 0.2s ease;
         }
 
-        .stage-card.active {
-            border-color: var(--accent);
+        .stage-pill.active {
+            color: var(--apple-blue);
+            border-color: rgba(10, 132, 255, 0.3);
+            background: rgba(10, 132, 255, 0.08);
+        }
+
+        .stage-pill.complete {
+            color: var(--apple-green);
+            border-color: rgba(48, 209, 88, 0.3);
+            background: rgba(48, 209, 88, 0.08);
+        }
+
+        button.modal-close-btn {
+            background: rgba(255, 255, 255, 0.1);
             color: var(--text-primary);
-            background: rgba(56, 189, 248, 0.1);
-        }
-
-        .stage-card.done {
-            border-color: var(--success);
-            color: var(--success);
-            background: rgba(34, 197, 94, 0.1);
-        }
-
-        .btn-modal-close {
-            background: var(--accent-gradient);
-            color: #090d13;
-            font-weight: 800;
-            border: none;
-            padding: 0.85rem;
-            border-radius: 8px;
+            border: 1px solid var(--surface-border);
+            border-radius: 10px;
+            padding: 0.75rem;
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 0.95rem;
             display: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .btn-modal-close:hover {
-            filter: brightness(1.15);
-            box-shadow: 0 4px 16px var(--accent-glow);
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(9, 13, 19, 0.3);
-            border-radius: 50%;
-            border-top-color: #090d13;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        button.modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="brand">
-            <span class="brand-logo">⚡</span>
-            <span class="brand-title">Semantic Code Intelligence</span>
-            <span class="brand-badge">FAISS + BM25 + CrossEncoder</span>
+    <!-- Apple Minimalist Top Navigation -->
+    <nav>
+        <div class="nav-brand">
+            <span class="nav-title">Code Intelligence</span>
+            <span class="nav-badge">Hybrid RAG</span>
         </div>
-        <div style="font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-code);">
-            Sub-Second Code Retrieval with Line Citations
+        <div class="nav-status">
+            <span class="status-dot" id="systemStatusDot"></span>
+            <span id="systemStatusText">Ready</span>
         </div>
-    </header>
+    </nav>
 
-    <!-- Prominent Repository Selection Bar -->
-    <div class="repo-toolbar">
-        <div class="repo-select-container">
-            <div class="repo-label-badge">
-                <span>📁 Select Repository:</span>
-            </div>
-            <div class="repo-select-wrapper">
-                <select class="repo-dropdown" id="repoDropdown" onchange="onRepoChanged()">
-                    <option value=".">⚡ Current Platform Codebase (Python)</option>
-                    <option value="./oss_evaluation/client-go">🚢 Kubernetes client-go (Go — 406k LOC)</option>
-                    <option value="./oss_evaluation/fastapi">⚡ FastAPI Framework (Python — 112k LOC)</option>
-                    <option value="./oss_evaluation/rich">🎨 Textualize Rich (Python — 67k LOC)</option>
-                    <option value="CUSTOM">📂 + Custom Local Directory...</option>
+    <!-- Translucent Repository Toolbar -->
+    <div class="toolbar">
+        <div class="toolbar-group">
+            <span class="toolbar-label">Repository:</span>
+            <div class="select-wrapper">
+                <select class="apple-select" id="repoDropdown" onchange="onRepoChanged()">
+                    <option value=".">Current Platform Codebase</option>
+                    <option value="./oss_evaluation/client-go">Kubernetes client-go (406k LOC)</option>
+                    <option value="./oss_evaluation/fastapi">FastAPI (112k LOC)</option>
+                    <option value="./oss_evaluation/rich">Textualize Rich (67k LOC)</option>
+                    <option value="CUSTOM">Custom Local Directory...</option>
                 </select>
-                <input
-                    type="text"
-                    id="customPathInput"
-                    class="custom-path-input"
-                    placeholder="/Users/xploit404/Projects/your-local-repo"
-                    onchange="onCustomPathChanged()"
-                />
+                <div class="select-arrow"></div>
             </div>
+            <input
+                type="text"
+                id="customPathInput"
+                class="apple-input-custom"
+                placeholder="/Users/xploit404/Projects/your-local-repo"
+                onchange="onCustomPathChanged()"
+            />
         </div>
 
-        <div class="repo-stats-group">
-            <span id="repoStatusBadge" class="status-pill status-ready">Ready</span>
-            <div class="stat-badge">
+        <div class="toolbar-meta">
+            <div class="meta-stat">
                 <span>Files:</span>
-                <span class="stat-num" id="statFiles">--</span>
+                <span class="meta-stat-val" id="statFiles">--</span>
             </div>
-            <div class="stat-badge">
+            <div class="meta-stat">
                 <span>LOC:</span>
-                <span class="stat-num" id="statLoc">--</span>
+                <span class="meta-stat-val" id="statLoc">--</span>
             </div>
-            <div class="stat-badge">
+            <div class="meta-stat">
                 <span>Chunks:</span>
-                <span class="stat-num" id="statChunks">--</span>
+                <span class="meta-stat-val" id="statChunks">--</span>
             </div>
-            <button class="btn-index" id="btnReindex" onclick="startAnimatedIndexing()">⚡ Index / Re-Index</button>
+            <button class="apple-btn-secondary" id="btnReindex" onclick="startAnimatedIndexing()">Index Repository</button>
         </div>
     </div>
 
+    <!-- Main Workspace -->
     <main>
-        <!-- Suggested Questions for the Active Repo -->
-        <div class="sample-queries-box" id="sampleQueriesBox">
-            <span>💡 Suggested Queries:</span>
-            <span id="sampleQueriesList"></span>
+        <!-- Suggestions Row -->
+        <div class="suggestions-row" id="suggestionsBox">
+            <span>Suggested:</span>
+            <span id="suggestionsList"></span>
         </div>
 
-        <div class="search-panel">
-            <div class="search-box">
+        <!-- Glass Search Card -->
+        <div class="glass-panel">
+            <div class="search-row">
                 <input
                     type="text"
                     id="searchInput"
-                    class="search-input"
-                    placeholder="Search codebase (e.g. 'Where is leader election lease loop?', 'JWT token verification')..."
+                    class="apple-search-input"
+                    placeholder="Search code logic, function names, error workflows..."
                     autocomplete="off"
                 />
-                <button class="btn-search" id="searchBtn" onclick="performSearch()">
-                    <span id="btnText">Search</span>
-                </button>
+                <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
             </div>
-            <div class="search-options">
-                <div class="mode-selectors">
-                    <button class="mode-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid (Dense + Sparse)</button>
-                    <button class="mode-btn" data-mode="dense" onclick="setMode('dense')">Dense FAISS</button>
-                    <button class="mode-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse BM25</button>
+
+            <div class="controls-row">
+                <!-- Apple Segmented Mode Controls -->
+                <div class="segmented-control">
+                    <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
+                    <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
+                    <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
                 </div>
-                <div class="toggle-group">
-                    <input type="checkbox" id="rerankToggle" checked />
-                    <label for="rerankToggle">Cross-Encoder Precision Reranking</label>
-                </div>
+
+                <!-- Apple Switch for Reranker -->
+                <label class="switch-control">
+                    <span class="apple-switch">
+                        <input type="checkbox" id="rerankToggle" checked>
+                        <span class="slider"></span>
+                    </span>
+                    <span>Cross-Encoder Reranking</span>
+                </label>
             </div>
         </div>
 
-        <div class="latency-dashboard" id="latencyDashboard" style="display: none;">
-            <div class="latency-metric">
-                <div class="latency-label">Dense Vector</div>
-                <div class="latency-val" id="denseLatency">-- ms</div>
+        <!-- Latency Dashboard -->
+        <div class="telemetry-row" id="latencyDashboard">
+            <div class="telemetry-item">
+                <div class="telemetry-label">Dense Vector</div>
+                <div class="telemetry-value" id="denseLatency">-- ms</div>
             </div>
-            <div class="latency-metric">
-                <div class="latency-label">BM25 Sparse</div>
-                <div class="latency-val" id="bm25Latency">-- ms</div>
+            <div class="telemetry-item">
+                <div class="telemetry-label">Sparse BM25</div>
+                <div class="telemetry-value" id="bm25Latency">-- ms</div>
             </div>
-            <div class="latency-metric">
-                <div class="latency-label">RRF Fusion</div>
-                <div class="latency-val" id="rrfLatency">-- ms</div>
+            <div class="telemetry-item">
+                <div class="telemetry-label">Rank Fusion</div>
+                <div class="telemetry-value" id="rrfLatency">-- ms</div>
             </div>
-            <div class="latency-metric">
-                <div class="latency-label">Cross-Encoder</div>
-                <div class="latency-val" id="rerankLatency">-- ms</div>
+            <div class="telemetry-item">
+                <div class="telemetry-label">Reranker</div>
+                <div class="telemetry-value" id="rerankLatency">-- ms</div>
             </div>
-            <div class="latency-metric">
-                <div class="latency-label">Total Time</div>
-                <div class="latency-val fast" id="totalLatency">-- ms</div>
+            <div class="telemetry-item">
+                <div class="telemetry-label">Total Latency</div>
+                <div class="telemetry-value accent" id="totalLatency">-- ms</div>
             </div>
         </div>
 
-        <div class="results-container" id="resultsContainer">
-            <div class="empty-state">
-                <div class="empty-icon">🔍</div>
-                <h3>Ready to Query</h3>
-                <p>Select a repository in the dropdown above and enter a search query.</p>
+        <!-- Results List -->
+        <div class="results-list" id="resultsContainer">
+            <div class="empty-placeholder">
+                <div class="empty-title">No Search Results</div>
+                <div class="empty-desc">Enter a query above to retrieve exact line citations.</div>
             </div>
         </div>
     </main>
 
-    <!-- REAL-TIME INDEXING ANIMATION MODAL -->
-    <div class="modal-backdrop" id="indexingModal">
-        <div class="modal-card">
-            <div class="modal-header">
-                <div class="modal-icon-spinner" id="modalSpinnerIcon">⚡</div>
-                <div class="modal-title-box">
-                    <h3 id="modalTitle">Indexing Repository...</h3>
-                    <p id="modalSubtitle">Building hybrid dense + sparse search indices</p>
+    <!-- Glassmorphic Indexing Modal -->
+    <div class="glass-modal-backdrop" id="indexingModal">
+        <div class="glass-modal">
+            <div class="modal-header-clean">
+                <div>
+                    <div class="modal-heading">Indexing Repository</div>
+                    <div style="font-size: 0.78rem; color: var(--text-tertiary); margin-top: 0.2rem;" id="modalTargetSubtitle">Processing codebase</div>
                 </div>
+                <div class="modal-pct-clean" id="percentageClean">0%</div>
             </div>
 
-            <div class="percentage-display-row">
-                <div class="percentage-big" id="percentageBig">0%</div>
-                <div class="current-stage-tag" id="currentStageTag">Scanning AST</div>
+            <div class="clean-progress-track">
+                <div class="clean-progress-bar" id="cleanProgressBar"></div>
             </div>
 
-            <div class="progress-track">
-                <div class="progress-fill" id="progressFillBar"></div>
+            <div class="modal-status-pill" id="modalStatusPill">
+                Initializing code parser...
             </div>
 
-            <div class="progress-status-text" id="progressStatusText">
-                Discovering and parsing repository files...
+            <div class="modal-stages-grid">
+                <div class="stage-pill" id="pillScan">1. AST Parsing</div>
+                <div class="stage-pill" id="pillPersist">2. SQLite Store</div>
+                <div class="stage-pill" id="pillEmbed">3. Dense Embeddings</div>
+                <div class="stage-pill" id="pillBM25">4. Lexical Index</div>
             </div>
 
-            <div class="stages-checklist">
-                <div class="stage-card" id="stageCardScan">
-                    <span id="iconScan">⏳</span>
-                    <span>1. Polyglot AST Parsing</span>
-                </div>
-                <div class="stage-card" id="stageCardEmbed">
-                    <span id="iconEmbed">⏳</span>
-                    <span>2. Dense Embeddings</span>
-                </div>
-                <div class="stage-card" id="stageCardBM25">
-                    <span id="iconBM25">⏳</span>
-                    <span>3. BM25 Lexical Index</span>
-                </div>
-                <div class="stage-card" id="stageCardPersist">
-                    <span id="iconPersist">⏳</span>
-                    <span>4. FAISS & SQLite Store</span>
-                </div>
-            </div>
-
-            <button class="btn-modal-close" id="btnModalClose" onclick="closeIndexingModal()">
-                ✓ Indexing Complete — Start Searching
-            </button>
+            <button class="modal-close-btn" id="btnModalClose" onclick="closeIndexingModal()">Done</button>
         </div>
     </div>
 
@@ -883,23 +867,23 @@
         const SAMPLE_QUERIES = {
             '.': [
                 'Where is ReciprocalRankFusion implemented?',
-                'How does the polyglot parser handle Go and TypeScript?',
-                'Where is CrossEncoder reranking executed?'
+                'How does polyglot parser extract AST chunks?',
+                'CrossEncoder sequence classification'
             ],
             './oss_evaluation/client-go': [
-                'Where is the LeaderElector acquire and renew lease loop implemented?',
-                'Where is the exponential backoff rate limiter calculated for workqueues?',
-                'How does Informer reflector watch and sync events?'
+                'Where is LeaderElector lease renew loop implemented?',
+                'Exponential backoff rate limiter calculation',
+                'Informer reflector watch and sync events'
             ],
             './oss_evaluation/fastapi': [
-                'How does OAuth2PasswordBearer extract bearer token headers?',
-                'Where is exception handling middleware configured in FastAPI app?',
-                'How are path parameters converted and validated with Pydantic?'
+                'OAuth2PasswordBearer extract bearer token',
+                'Exception handling middleware configuration',
+                'Path parameters validation with Pydantic'
             ],
             './oss_evaluation/rich': [
-                'Where is progress bar ETA time remaining calculated?',
-                'How does the Live display refresh renderables?',
-                'Where is syntax token color styling mapped?'
+                'Progress bar ETA time remaining calculated',
+                'Live display refresh renderables',
+                'Syntax token color styling map'
             ]
         };
 
@@ -913,11 +897,11 @@
 
         function updateSampleQueries() {
             const target = getActiveTarget();
-            const listEl = document.getElementById('sampleQueriesList');
-            const queries = SAMPLE_QUERIES[target] || ['Find authentication routes', 'Database connection pool', 'Error handling middleware'];
+            const listEl = document.getElementById('suggestionsList');
+            const queries = SAMPLE_QUERIES[target] || ['Authentication routes', 'Database connection pool', 'Error middleware'];
             
             listEl.innerHTML = queries.map(q => `
-                <span class="query-chip" onclick="setAndSearch('${q.replace(/'/g, "\\'")}')">${q}</span>
+                <span class="suggestion-pill" onclick="setAndSearch('${q.replace(/'/g, "\\'")}')">${q}</span>
             `).join('');
         }
 
@@ -948,7 +932,8 @@
 
         async function loadRepoStats() {
             const target = getActiveTarget();
-            const badge = document.getElementById('repoStatusBadge');
+            const dot = document.getElementById('systemStatusDot');
+            const statusText = document.getElementById('systemStatusText');
             const btn = document.getElementById('btnReindex');
 
             try {
@@ -957,51 +942,42 @@
                 const data = await res.json();
 
                 if (data.status === 'ready') {
-                    badge.textContent = 'Indexed & Ready';
-                    badge.className = 'status-pill status-ready';
+                    dot.className = 'status-dot';
+                    statusText.textContent = 'Indexed';
                     document.getElementById('statFiles').textContent = (data.total_files || 0).toLocaleString();
                     document.getElementById('statLoc').textContent = (data.total_lines || 0).toLocaleString();
                     document.getElementById('statChunks').textContent = (data.total_chunks || 0).toLocaleString();
-                    btn.textContent = '↻ Re-Index';
+                    btn.textContent = 'Re-Index';
                 } else {
-                    badge.textContent = 'Not Indexed';
-                    badge.className = 'status-pill status-unindexed';
+                    dot.className = 'status-dot idle';
+                    statusText.textContent = 'Unindexed';
                     document.getElementById('statFiles').textContent = '0';
                     document.getElementById('statLoc').textContent = '0';
                     document.getElementById('statChunks').textContent = '0';
-                    btn.textContent = '⚡ Index This Repo';
+                    btn.textContent = 'Index Repository';
                 }
             } catch (err) {
                 console.error('Failed to load stats', err);
             }
         }
 
-        /* ============================================================ */
-        /* REAL-TIME ANIMATED SSE INDEXING CONTROLLER                   */
-        /* ============================================================ */
         function startAnimatedIndexing() {
             const target = getActiveTarget();
             const modal = document.getElementById('indexingModal');
             const closeBtn = document.getElementById('btnModalClose');
-            const fillBar = document.getElementById('progressFillBar');
-            const pctText = document.getElementById('percentageBig');
-            const statusText = document.getElementById('progressStatusText');
-            const stageTag = document.getElementById('currentStageTag');
-            const spinner = document.getElementById('modalSpinnerIcon');
+            const fillBar = document.getElementById('cleanProgressBar');
+            const pctText = document.getElementById('percentageClean');
+            const statusText = document.getElementById('modalStatusPill');
 
-            // Reset UI
             modal.style.display = 'flex';
             closeBtn.style.display = 'none';
             fillBar.style.width = '0%';
             pctText.textContent = '0%';
             statusText.textContent = `Connecting to indexer for ${target}...`;
-            statusText.style.color = 'var(--text-primary)';
-            stageTag.textContent = 'Initializing';
-            spinner.textContent = '⚡';
+            document.getElementById('modalTargetSubtitle').textContent = target;
 
-            resetStageCards();
+            resetStagePills();
 
-            // Connect to live SSE stream
             const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=true`;
             let eventSource = null;
 
@@ -1017,52 +993,40 @@
                         pctText.textContent = `${Math.round(pct)}%`;
                         statusText.textContent = data.message || 'Processing...';
 
-                        updateStageUI(data.stage, pct);
+                        updateStagePills(data.stage);
 
                         if (data.stage === 'done') {
                             eventSource.close();
-                            spinner.textContent = '🎉';
-                            document.getElementById('modalTitle').textContent = 'Indexing Successfully Completed!';
-                            document.getElementById('modalSubtitle').textContent = `Target: ${target}`;
                             closeBtn.style.display = 'block';
                             loadRepoStats();
                         } else if (data.stage === 'error') {
                             eventSource.close();
-                            spinner.textContent = '⚠️';
-                            document.getElementById('modalTitle').textContent = 'Indexing Error';
                             statusText.textContent = data.message || 'An error occurred during indexing.';
-                            statusText.style.color = 'var(--danger)';
                             closeBtn.style.display = 'block';
-                            closeBtn.textContent = 'Close';
                         }
                     } catch (e) {
                         console.error('Error parsing SSE data:', e);
                     }
                 };
 
-                eventSource.onerror = function(err) {
-                    console.error('SSE Error:', err);
+                eventSource.onerror = function() {
                     if (eventSource) eventSource.close();
-                    
-                    // Fallback to fetch POST if SSE was interrupted
                     fallbackFetchIndex(target);
                 };
             } catch (err) {
-                console.error('Failed to open EventSource:', err);
                 fallbackFetchIndex(target);
             }
         }
 
         async function fallbackFetchIndex(target) {
-            const statusText = document.getElementById('progressStatusText');
+            const statusText = document.getElementById('modalStatusPill');
             const closeBtn = document.getElementById('btnModalClose');
-            const fillBar = document.getElementById('progressFillBar');
-            const pctText = document.getElementById('percentageBig');
-            const spinner = document.getElementById('modalSpinnerIcon');
+            const fillBar = document.getElementById('cleanProgressBar');
+            const pctText = document.getElementById('percentageClean');
 
-            statusText.textContent = 'Processing repository index in background...';
-            fillBar.style.width = '70%';
-            pctText.textContent = '70%';
+            statusText.textContent = 'Indexing in background...';
+            fillBar.style.width = '80%';
+            pctText.textContent = '80%';
 
             try {
                 const res = await fetch('/api/index', {
@@ -1071,69 +1035,48 @@
                     body: JSON.stringify({ target_dir: target, force: true })
                 });
                 const data = await res.json();
-                
                 fillBar.style.width = '100%';
                 pctText.textContent = '100%';
-                spinner.textContent = '🎉';
-                document.getElementById('modalTitle').textContent = 'Indexing Complete!';
-                statusText.textContent = `Indexed ${data.metrics.total_lines} LOC in ${data.metrics.total_files} files!`;
+                statusText.textContent = `Completed ${data.metrics.total_lines} LOC in ${data.metrics.total_files} files.`;
                 closeBtn.style.display = 'block';
-                closeBtn.textContent = '✓ Start Searching';
                 loadRepoStats();
             } catch (e) {
                 statusText.textContent = 'Indexing error: ' + (e.message || e);
-                statusText.style.color = 'var(--danger)';
                 closeBtn.style.display = 'block';
-                closeBtn.textContent = 'Close';
             }
         }
 
-        function updateStageUI(stage, pct) {
-            const cardScan = document.getElementById('stageCardScan');
-            const cardEmbed = document.getElementById('stageCardEmbed');
-            const cardBM25 = document.getElementById('stageCardBM25');
-            const cardPersist = document.getElementById('stageCardPersist');
-            const stageTag = document.getElementById('currentStageTag');
+        function updateStagePills(stage) {
+            const pillScan = document.getElementById('pillScan');
+            const pillPersist = document.getElementById('pillPersist');
+            const pillEmbed = document.getElementById('pillEmbed');
+            const pillBM25 = document.getElementById('pillBM25');
 
             if (stage === 'parsing') {
-                stageTag.textContent = '1. AST Parsing';
-                cardScan.className = 'stage-card active';
-                document.getElementById('iconScan').textContent = '⚙️';
+                pillScan.className = 'stage-pill active';
             } else if (stage === 'persisting') {
-                stageTag.textContent = '2. SQLite Hydration';
-                cardScan.className = 'stage-card done';
-                document.getElementById('iconScan').textContent = '✓';
+                pillScan.className = 'stage-pill complete';
+                pillPersist.className = 'stage-pill active';
             } else if (stage === 'embedding') {
-                stageTag.textContent = '3. Dense Embeddings';
-                cardScan.className = 'stage-card done';
-                cardEmbed.className = 'stage-card active';
-                document.getElementById('iconScan').textContent = '✓';
-                document.getElementById('iconEmbed').textContent = '🧠';
+                pillScan.className = 'stage-pill complete';
+                pillPersist.className = 'stage-pill complete';
+                pillEmbed.className = 'stage-pill active';
             } else if (stage === 'indexing' || stage === 'bm25') {
-                stageTag.textContent = '4. Sparse Indexing';
-                cardScan.className = 'stage-card done';
-                cardEmbed.className = 'stage-card done';
-                cardBM25.className = 'stage-card active';
-                document.getElementById('iconScan').textContent = '✓';
-                document.getElementById('iconEmbed').textContent = '✓';
-                document.getElementById('iconBM25').textContent = '📖';
+                pillScan.className = 'stage-pill complete';
+                pillPersist.className = 'stage-pill complete';
+                pillEmbed.className = 'stage-pill complete';
+                pillBM25.className = 'stage-pill active';
             } else if (stage === 'done') {
-                stageTag.textContent = 'Completed';
-                cardScan.className = 'stage-card done';
-                cardEmbed.className = 'stage-card done';
-                cardBM25.className = 'stage-card done';
-                cardPersist.className = 'stage-card done';
-                document.getElementById('iconScan').textContent = '✓';
-                document.getElementById('iconEmbed').textContent = '✓';
-                document.getElementById('iconBM25').textContent = '✓';
-                document.getElementById('iconPersist').textContent = '✓';
+                pillScan.className = 'stage-pill complete';
+                pillPersist.className = 'stage-pill complete';
+                pillEmbed.className = 'stage-pill complete';
+                pillBM25.className = 'stage-pill complete';
             }
         }
 
-        function resetStageCards() {
-            ['Scan', 'Embed', 'BM25', 'Persist'].forEach(name => {
-                document.getElementById(`stageCard${name}`).className = 'stage-card';
-                document.getElementById(`icon${name}`).textContent = '⏳';
+        function resetStagePills() {
+            ['Scan', 'Persist', 'Embed', 'BM25'].forEach(name => {
+                document.getElementById(`pill${name}`).className = 'stage-pill';
             });
         }
 
@@ -1143,7 +1086,7 @@
 
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(btn => {
+            document.querySelectorAll('.segment-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.dataset.mode === mode);
             });
         }
@@ -1157,8 +1100,8 @@
             if (!query) return;
 
             const target = getActiveTarget();
-            const btnText = document.getElementById('btnText');
-            btnText.innerHTML = '<span class="loading-spinner"></span>';
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.textContent = 'Searching...';
 
             const rerank = document.getElementById('rerankToggle').checked;
 
@@ -1180,14 +1123,13 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById('resultsContainer').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">⚠️</div>
-                        <h3>Search Error</h3>
-                        <p>${err.message}</p>
+                    <div class="empty-placeholder">
+                        <div class="empty-title">Search Error</div>
+                        <div class="empty-desc">${err.message}</div>
                     </div>
                 `;
             } finally {
-                btnText.textContent = 'Search';
+                searchBtn.textContent = 'Search';
             }
         }
 
@@ -1197,11 +1139,9 @@
 
             if (data.index_status === 'not_indexed') {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">📂</div>
-                        <h3>Repository Not Indexed</h3>
-                        <p>The repository at <code>${data.repo_path}</code> is not indexed yet.</p>
-                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index / Re-Index</strong> in the top toolbar to index it.</p>
+                    <div class="empty-placeholder">
+                        <div class="empty-title">Repository Not Indexed</div>
+                        <div class="empty-desc">The repository at <code>${data.repo_path}</code> must be indexed first.</div>
                     </div>
                 `;
                 latencyDash.style.display = 'none';
@@ -1216,42 +1156,39 @@
                 document.getElementById('rerankLatency').textContent = `${(data.latency_ms.reranker_ms || 0).toFixed(1)} ms`;
                 
                 const total = (data.latency_ms.total_end_to_end_ms || data.latency_ms.total_ms || 0).toFixed(1);
-                const totalEl = document.getElementById('totalLatency');
-                totalEl.textContent = `${total} ms`;
-                totalEl.className = total < 1000 ? 'latency-val fast' : 'latency-val';
+                document.getElementById('totalLatency').textContent = `${total} ms`;
             }
 
             if (!data.results || data.results.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-icon">🤷</div>
-                        <h3>No Exact Matches Found</h3>
-                        <p>Try rephrasing your search query or enabling Hybrid search mode.</p>
+                    <div class="empty-placeholder">
+                        <div class="empty-title">No Matches Found</div>
+                        <div class="empty-desc">Try modifying the search query or changing retrieval modes.</div>
                     </div>
                 `;
                 return;
             }
 
             container.innerHTML = data.results.map((r, idx) => `
-                <div class="result-card">
-                    <div class="result-header">
-                        <div class="result-citation">
-                            <span>#${idx + 1}</span>
-                            <span>📄 ${r.citation}</span>
+                <div class="code-card">
+                    <div class="code-header">
+                        <div class="code-citation">
+                            <span class="citation-index">${idx + 1}.</span>
+                            <span>${r.citation}</span>
                         </div>
-                        <div class="result-scores">
-                            <span class="score-pill highlight">Score: ${r.score}</span>
-                            ${r.rerank_score !== null ? `<span class="score-pill">Rerank: ${r.rerank_score}</span>` : ''}
-                            ${r.dense_score !== null ? `<span class="score-pill">Dense: ${r.dense_score}</span>` : ''}
-                            ${r.sparse_score !== null ? `<span class="score-pill">BM25: ${r.sparse_score}</span>` : ''}
+                        <div class="code-scores">
+                            <span class="score-tag active-score">Score: ${r.score}</span>
+                            ${r.rerank_score !== null ? `<span class="score-tag">Rerank: ${r.rerank_score}</span>` : ''}
+                            ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
+                            ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
                         </div>
                     </div>
-                    <div class="result-body">
+                    <div class="code-body">
                         <pre><code class="language-${r.language}">${escapeHtml(r.code)}</code></pre>
                     </div>
-                    <div class="result-footer">
-                        <span>Scope: ${r.symbol_name ? `<strong>${r.symbol_name}</strong> (${r.symbol_type || 'symbol'})` : r.file_path}</span>
-                        <span>Lines ${r.start_line} - ${r.end_line}</span>
+                    <div class="code-footer">
+                        <span>Scope: ${r.symbol_name ? `${r.symbol_name} (${r.symbol_type || 'symbol'})` : r.file_path}</span>
+                        <span>Lines ${r.start_line} – ${r.end_line}</span>
                     </div>
                 </div>
             `).join('');
