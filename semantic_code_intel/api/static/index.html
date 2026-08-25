@@ -89,7 +89,7 @@
             overflow-x: hidden;
         }
 
-        /* Glassmorphism Ambient Glow Backdrops */
+        /* Ambient Glow Backdrops */
         body::before {
             content: '';
             position: fixed;
@@ -380,7 +380,7 @@
             position: relative;
             z-index: 10;
             flex: 1;
-            max-width: 1040px;
+            max-width: 1080px;
             width: 100%;
             margin: 0 auto;
             padding: var(--space-6) var(--space-6) var(--space-12) var(--space-6);
@@ -688,7 +688,7 @@
             font-weight: 600;
         }
 
-        /* Frosted Glass Code Cards */
+        /* Results Code Cards */
         .results-list {
             display: flex;
             flex-direction: column;
@@ -780,7 +780,6 @@
             background: var(--system-green-tint);
         }
 
-        /* Xcode-Style Line Numbers Gutter */
         .code-block-container {
             display: flex;
             background: rgba(0, 0, 0, 0.55);
@@ -869,252 +868,195 @@
         }
 
         /* ==========================================================================
-           Interactive Dual-Mode Architecture & Interactive Graph Engine
+           Master-Detail Clean Architecture & Symbol Table Matching
            ========================================================================== */
-        .arch-explorer {
-            display: flex;
-            flex-direction: column;
+        .master-detail-view {
+            display: grid;
+            grid-template-columns: 320px 1fr;
             gap: var(--space-4);
+            min-height: 600px;
         }
 
-        .arch-toolbar-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: var(--space-3);
-            flex-wrap: wrap;
-        }
-
-        .arch-controls-right {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .btn-arch-action {
-            background: var(--glass-bg-input);
-            border: 1px solid var(--glass-border);
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.75rem;
-            font-weight: 500;
-            padding: 0.35rem 0.75rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .btn-arch-action:hover {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-        }
-
-        /* Interactive Canvas Force Graph */
-        .graph-canvas-container {
-            position: relative;
-            width: 100%;
-            height: 560px;
-            background: radial-gradient(circle at center, rgba(14, 14, 20, 0.95) 0%, rgba(4, 4, 6, 0.98) 100%);
+        /* Left Master Panel: Files List */
+        .master-files-panel {
+            background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             box-shadow: var(--glass-specular), var(--glass-shadow);
-            overflow: hidden;
-        }
-
-        #graphCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            cursor: grab;
-        }
-
-        #graphCanvas:active {
-            cursor: grabbing;
-        }
-
-        .graph-floating-controls {
-            position: absolute;
-            bottom: var(--space-4);
-            right: var(--space-4);
-            display: flex;
-            gap: var(--space-2);
-            background: rgba(10, 10, 14, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 4px;
-            box-shadow: var(--glass-specular);
-        }
-
-        .graph-control-btn {
-            background: transparent;
-            border: none;
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.3rem 0.6rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .graph-control-btn:hover {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-        }
-
-        .graph-hint-overlay {
-            position: absolute;
-            top: var(--space-3);
-            left: var(--space-4);
-            font-size: 0.72rem;
-            color: var(--label-tertiary);
-            font-family: var(--font-sans);
-            pointer-events: none;
-        }
-
-        /* Tree Explorer Container */
-        .file-tree-container {
             display: flex;
             flex-direction: column;
-            gap: var(--space-3);
-        }
-
-        .file-accordion-card {
-            background: var(--glass-bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
             overflow: hidden;
-            transition: border-color 0.2s ease;
         }
 
-        .file-accordion-card:hover {
-            border-color: var(--glass-border-medium);
-        }
-
-        .file-accordion-header {
-            padding: 0.75rem var(--space-4);
+        .master-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--glass-border);
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            user-select: none;
-            background: rgba(255, 255, 255, 0.02);
-            transition: background 0.15s ease;
-        }
-
-        .file-accordion-header:hover {
-            background: rgba(255, 255, 255, 0.04);
-        }
-
-        .file-info-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-
-        .chevron-toggle {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--label-tertiary);
-            transition: transform 0.2s var(--spring-easing);
-            display: inline-block;
-            width: 14px;
-        }
-
-        .file-accordion-card.open .chevron-toggle {
-            transform: rotate(90deg);
-            color: var(--system-blue);
-        }
-
-        .file-name-label {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--label-primary);
-        }
-
-        .file-path-sub {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--label-tertiary);
-        }
-
-        .file-meta-right {
-            display: flex;
-            align-items: center;
+            flex-direction: column;
             gap: var(--space-2);
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .symbol-count-badge {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--label-secondary);
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            padding: 2px var(--space-2);
-            border-radius: var(--radius-pill);
+        .master-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--label-tertiary);
         }
 
-        .file-symbols-body {
-            display: none;
-            padding: var(--space-3) var(--space-4) var(--space-4) var(--space-4);
-            border-top: 1px solid var(--glass-border);
-            background: rgba(0, 0, 0, 0.35);
+        .master-files-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
-        .file-accordion-card.open .file-symbols-body {
-            display: block;
-        }
-
-        .symbol-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: var(--space-3);
-        }
-
-        .symbol-card-item {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-sm);
-            padding: 0.65rem 0.85rem;
+        .file-item-row {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             transition: all 0.15s var(--spring-easing);
             display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-        }
-
-        .symbol-card-item:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--system-blue);
-            transform: translateY(-1px);
-        }
-
-        .symbol-header-row {
-            display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .symbol-title-text {
+        .file-item-row:hover {
+            background: var(--glass-bg-hover);
+        }
+
+        .file-item-row.active {
+            background: rgba(10, 132, 255, 0.14);
+            border-left: 3px solid var(--system-blue);
+        }
+
+        .file-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .file-item-name {
             font-family: var(--font-mono);
-            font-size: 0.8rem;
-            font-weight: 500;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: var(--label-primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
+        .file-item-row.active .file-item-name {
+            color: var(--system-blue);
+        }
+
+        .file-item-path {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--label-tertiary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-item-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--label-secondary);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
+            padding: 2px 7px;
+            border-radius: var(--radius-pill);
+            flex-shrink: 0;
+        }
+
+        /* Right Detail Panel: Symbol Table Matching */
+        .detail-symbols-panel {
+            background: var(--glass-bg-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .detail-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail-file-title {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--label-primary);
+        }
+
+        .detail-file-sub {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--label-tertiary);
+            margin-top: 2px;
+        }
+
+        .detail-table-wrap {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .symbol-matching-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        .symbol-matching-table th {
+            background: rgba(0, 0, 0, 0.4);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--label-tertiary);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .symbol-matching-table td {
+            padding: 0.85rem 1.25rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        .symbol-matching-table tr:hover td {
+            background: var(--glass-bg-hover);
+        }
+
+        .sym-name-cell {
+            font-family: var(--font-mono);
+            font-weight: 600;
+            color: var(--label-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
         .symbol-type-chip {
-            font-size: 0.68rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.04em;
             padding: 1px 5px;
@@ -1137,18 +1079,58 @@
             background: var(--system-blue-tint);
         }
 
-        .symbol-details-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.72rem;
-            color: var(--label-tertiary);
+        .sym-lines-cell {
             font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--label-secondary);
+            font-variant-numeric: tabular-nums;
         }
 
-        /* ==========================================================================
-           Code Inspector Modal Sheet ("Open It")
-           ========================================================================== */
+        .sym-calls-cell {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            max-width: 280px;
+        }
+
+        .relation-mini-pill {
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
+            color: var(--system-blue);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .relation-mini-pill:hover {
+            background: var(--glass-bg-hover);
+            color: #FFFFFF;
+            border-color: var(--system-blue);
+        }
+
+        .btn-table-action {
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
+            color: var(--label-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            padding: 0.3rem 0.65rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        .btn-table-action:hover {
+            background: var(--glass-bg-hover);
+            color: var(--label-primary);
+            border-color: var(--glass-border-medium);
+        }
+
+        /* Code Inspector Modal Sheet ("Open It") */
         .inspector-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1166,7 +1148,7 @@
         }
 
         .inspector-modal {
-            background: rgba(18, 18, 22, 0.92);
+            background: rgba(18, 18, 22, 0.94);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border-medium);
@@ -1259,16 +1241,6 @@
             align-items: center;
             gap: var(--space-2);
             color: var(--label-tertiary);
-        }
-
-        .relation-pill {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            color: var(--system-blue);
-            padding: 2px 7px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            cursor: pointer;
         }
 
         .inspector-footer {
@@ -1505,19 +1477,17 @@
         <div class="workspace-tabs-row">
             <button class="workspace-tab active" data-tab="search" onclick="switchTab('search')">Search & Citations</button>
             <button class="workspace-tab" data-tab="synthesize" onclick="switchTab('synthesize')">AI Synthesizer</button>
-            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Architecture & Graph</button>
+            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Symbol Architecture</button>
             <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Diff Patcher</button>
         </div>
 
         <!-- 1. SEARCH TAB -->
         <div id="tab-search" class="tab-content-view">
-            <!-- Suggestions Row -->
             <div class="suggestions-row" id="suggestionsBox">
                 <span>Suggested:</span>
                 <span id="suggestionsList"></span>
             </div>
 
-            <!-- Glass Search Card -->
             <div class="glass-panel">
                 <div class="search-row">
                     <div class="search-input-wrapper">
@@ -1558,7 +1528,6 @@
                 </div>
             </div>
 
-            <!-- Latency Telemetry Row -->
             <div class="telemetry-row" id="latencyDashboard">
                 <div class="telemetry-item">
                     <div class="telemetry-label">Dense Vector</div>
@@ -1582,7 +1551,6 @@
                 </div>
             </div>
 
-            <!-- Results List -->
             <div class="results-list" id="resultsContainer">
                 <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
                     Enter a query above to retrieve exact line citations.
@@ -1611,53 +1579,66 @@
             </div>
         </div>
 
-        <!-- 3. ARCHITECTURE & GRAPH TAB (DUAL VIEW: GRAPH & TREE) -->
+        <!-- 3. SYMBOL ARCHITECTURE TAB (MINIMALIST TABLE MATCHING SPLIT VIEW) -->
         <div id="tab-graph" class="tab-content-view hidden">
-            <div class="arch-explorer">
-                <!-- Explorer Controls Toolbar -->
-                <div class="glass-panel" style="padding: 1rem 1.25rem;">
-                    <div class="arch-toolbar-row">
-                        <div class="segmented-control">
-                            <button class="segment-btn active" id="btnViewGraph" onclick="switchArchView('graph')">Network Graph</button>
-                            <button class="segment-btn" id="btnViewTree" onclick="switchArchView('tree')">Tree Explorer</button>
-                        </div>
+            <!-- Filter Bar -->
+            <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="archFilterInput"
+                            class="apple-search-input"
+                            style="padding: 0.55rem 1rem; font-size: 0.85rem;"
+                            placeholder="Filter files or symbols across codebase..."
+                            oninput="filterMasterDetail()"
+                        />
+                    </div>
+                    <button class="apple-btn-secondary" onclick="loadSymbolGraph()">Refresh</button>
+                </div>
+            </div>
 
-                        <div class="search-input-wrapper" style="max-width: 360px;">
-                            <input
-                                type="text"
-                                id="archFilterInput"
-                                class="apple-search-input"
-                                style="padding: 0.5rem 0.9rem; font-size: 0.85rem;"
-                                placeholder="Filter files or symbols..."
-                                oninput="filterArchView()"
-                            />
-                        </div>
-
-                        <div class="arch-controls-right">
-                            <button class="btn-arch-action" onclick="expandAllNodes()">Expand All</button>
-                            <button class="btn-arch-action" onclick="contractAllNodes()">Contract All</button>
-                            <button class="btn-arch-action" onclick="loadSymbolGraph()">Refresh</button>
+            <!-- Master-Detail Table Split View -->
+            <div class="master-detail-view">
+                <!-- Left: Files Master List -->
+                <div class="master-files-panel">
+                    <div class="master-header">
+                        <div class="master-title">Files & Modules</div>
+                    </div>
+                    <div class="master-files-list" id="masterFilesList">
+                        <div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">
+                            Loading files...
                         </div>
                     </div>
                 </div>
 
-                <!-- VIEW A: Interactive Force Graph Canvas -->
-                <div id="archViewGraphContainer" class="graph-canvas-container">
-                    <div class="graph-hint-overlay">
-                        Drag nodes • Scroll to zoom • Click symbol to inspect • Double-click file to expand/contract
+                <!-- Right: Matching Symbols Detail Table -->
+                <div class="detail-symbols-panel">
+                    <div class="detail-header" id="detailHeader">
+                        <div>
+                            <div class="detail-file-title" id="detailFileName">Select a file</div>
+                            <div class="detail-file-sub" id="detailFilePath">Select a file on the left to inspect symbols and call relationships.</div>
+                        </div>
+                        <div id="detailFileStats" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--label-secondary);"></div>
                     </div>
-                    <canvas id="graphCanvas"></canvas>
-                    <div class="graph-floating-controls">
-                        <button class="graph-control-btn" onclick="zoomGraph(1.2)">+ Zoom In</button>
-                        <button class="graph-control-btn" onclick="zoomGraph(0.8)">- Zoom Out</button>
-                        <button class="graph-control-btn" onclick="resetGraphCamera()">Fit View</button>
-                    </div>
-                </div>
-
-                <!-- VIEW B: Interactive Collapsible Tree Explorer -->
-                <div id="archViewTreeContainer" class="file-tree-container" style="display: none;">
-                    <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);" id="archPlaceholder">
-                        Analyzing symbol hierarchy...
+                    <div class="detail-table-wrap">
+                        <table class="symbol-matching-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Lines</th>
+                                    <th>Calls & Dependencies</th>
+                                    <th style="text-align: right;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="symbolTableBody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
+                                        Select a file on the left to view symbols.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1701,7 +1682,7 @@
 
             <div class="inspector-meta-row">
                 <span id="inspectorFileCitation">file.py:L1-L20</span>
-                <span id="inspectorScopeText">Scope: global</span>
+                <span id="inspectorScopeText">Language: python</span>
             </div>
 
             <div class="inspector-code-body">
@@ -1763,19 +1744,9 @@
         let currentMode = 'hybrid';
         let currentTopK = 5;
         let activeTab = 'search';
-        let currentArchView = 'graph';
         let graphRawData = null;
+        let selectedFileId = null;
         let currentInspectorData = null;
-
-        // Force-Directed Canvas Graph Engine State
-        let graphNodes = [];
-        let graphEdges = [];
-        let camera = { x: 0, y: 0, zoom: 1 };
-        let isDraggingCanvas = false;
-        let dragStart = { x: 0, y: 0 };
-        let draggedNode = null;
-        let hoveredNode = null;
-        let animFrameId = null;
 
         const SAMPLE_QUERIES = {
             '.': [
@@ -1813,20 +1784,6 @@
 
             if (tabName === 'graph') {
                 loadSymbolGraph();
-            }
-        }
-
-        function switchArchView(viewName) {
-            currentArchView = viewName;
-            document.getElementById('btnViewGraph').classList.toggle('active', viewName === 'graph');
-            document.getElementById('btnViewTree').classList.toggle('active', viewName === 'tree');
-            
-            document.getElementById('archViewGraphContainer').style.display = viewName === 'graph' ? 'block' : 'none';
-            document.getElementById('archViewTreeContainer').style.display = viewName === 'tree' ? 'flex' : 'none';
-
-            if (viewName === 'graph') {
-                resizeCanvas();
-                resetGraphCamera();
             }
         }
 
@@ -2242,404 +2199,36 @@
         }
 
         /* ==========================================================================
-           Interactive Force-Directed Node Graph Engine
+           Minimalist Master-Detail Architecture Table Matching
            ========================================================================== */
         async function loadSymbolGraph() {
             const target = getActiveTarget();
+            const filesListEl = document.getElementById('masterFilesList');
+            filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">Loading files...</div>`;
+
             try {
                 const res = await fetch(`/api/graph?repo_path=${encodeURIComponent(target)}`);
                 const data = await res.json();
                 graphRawData = data;
 
-                renderArchitectureTree(data);
-                initForceGraph(data);
+                if (!data.nodes || data.nodes.length === 0) {
+                    filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No files found. Index repository first.</div>`;
+                    return;
+                }
+
+                renderMasterFilesList(data);
             } catch (err) {
-                console.error(err);
+                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--system-red); font-size: 0.8rem;">Error loading architecture: ${err.message}</div>`;
             }
         }
 
-        function initForceGraph(data) {
-            const canvas = document.getElementById('graphCanvas');
-            if (!canvas) return;
-
-            resizeCanvas();
-
+        function renderMasterFilesList(data) {
+            const filesListEl = document.getElementById('masterFilesList');
             const files = data.nodes.filter(n => n.group === 1);
             const symbols = data.nodes.filter(n => n.group === 2);
             const edges = data.edges || [];
 
-            // Build node objects
-            graphNodes = [];
-            const nodeMap = {};
-
-            // Place File Clusters
-            const centerX = canvas.width / (2 * (window.devicePixelRatio || 1));
-            const centerY = canvas.height / (2 * (window.devicePixelRatio || 1));
-            const radius = Math.min(centerX, centerY) * 0.65;
-
-            files.forEach((f, i) => {
-                const angle = (i / Math.max(files.length, 1)) * 2 * Math.PI;
-                const node = {
-                    ...f,
-                    x: centerX + radius * Math.cos(angle) + (Math.random() - 0.5) * 40,
-                    y: centerY + radius * Math.sin(angle) + (Math.random() - 0.5) * 40,
-                    vx: 0,
-                    vy: 0,
-                    radius: 20,
-                    isCollapsed: false,
-                    visible: true
-                };
-                graphNodes.push(node);
-                nodeMap[node.id] = node;
-            });
-
-            symbols.forEach((s, i) => {
-                const parentEdge = edges.find(e => e.target === s.id && e.relation === 'defines');
-                const parent = parentEdge ? nodeMap[parentEdge.source] : null;
-
-                const px = parent ? parent.x + (Math.random() - 0.5) * 120 : centerX + (Math.random() - 0.5) * 200;
-                const py = parent ? parent.y + (Math.random() - 0.5) * 120 : centerY + (Math.random() - 0.5) * 200;
-
-                const node = {
-                    ...s,
-                    x: px,
-                    y: py,
-                    vx: 0,
-                    vy: 0,
-                    radius: 12,
-                    parentId: parent ? parent.id : null,
-                    visible: true
-                };
-                graphNodes.push(node);
-                nodeMap[node.id] = node;
-            });
-
-            // Build edge references
-            graphEdges = edges.map(e => ({
-                source: nodeMap[e.source],
-                target: nodeMap[e.target],
-                relation: e.relation
-            })).filter(e => e.source && e.target);
-
-            resetGraphCamera();
-            startPhysicsSimulation();
-        }
-
-        function resizeCanvas() {
-            const canvas = document.getElementById('graphCanvas');
-            const container = document.getElementById('archViewGraphContainer');
-            if (!canvas || !container) return;
-
-            const dpr = window.devicePixelRatio || 1;
-            const w = container.clientWidth || 980;
-            const h = container.clientHeight || 560;
-
-            canvas.width = w * dpr;
-            canvas.height = h * dpr;
-            const ctx = canvas.getContext('2d');
-            ctx.scale(dpr, dpr);
-        }
-
-        window.addEventListener('resize', () => {
-            if (activeTab === 'graph' && currentArchView === 'graph') {
-                resizeCanvas();
-            }
-        });
-
-        function resetGraphCamera() {
-            const container = document.getElementById('archViewGraphContainer');
-            camera.x = 0;
-            camera.y = 0;
-            camera.zoom = 1;
-        }
-
-        function zoomGraph(factor) {
-            camera.zoom = Math.max(0.3, Math.min(3.0, camera.zoom * factor));
-        }
-
-        function expandAllNodes() {
-            expandAllFiles();
-            graphNodes.forEach(n => {
-                if (n.group === 1) n.isCollapsed = false;
-                n.visible = true;
-            });
-        }
-
-        function contractAllNodes() {
-            collapseAllFiles();
-            graphNodes.forEach(n => {
-                if (n.group === 1) n.isCollapsed = true;
-                if (n.group === 2) n.visible = false;
-            });
-        }
-
-        function filterArchView() {
-            filterArchTree();
-            const query = document.getElementById('archFilterInput').value.trim().toLowerCase();
-
-            graphNodes.forEach(n => {
-                const label = (n.name || n.label || '').toLowerCase();
-                const path = (n.full_path || '').toLowerCase();
-                const matches = query === '' || label.includes(query) || path.includes(query);
-                
-                if (n.group === 1) {
-                    n.visible = true;
-                } else {
-                    n.visible = matches;
-                }
-            });
-        }
-
-        /* --- Physics Simulation & Canvas Rendering Loop --- */
-        function startPhysicsSimulation() {
-            if (animFrameId) cancelAnimationFrame(animFrameId);
-
-            function step() {
-                updatePhysics();
-                drawGraphCanvas();
-                animFrameId = requestAnimationFrame(step);
-            }
-            step();
-        }
-
-        function updatePhysics() {
-            const visibleNodes = graphNodes.filter(n => n.visible);
-
-            // 1. Repulsion between all nodes
-            for (let i = 0; i < visibleNodes.length; i++) {
-                for (let j = i + 1; j < visibleNodes.length; j++) {
-                    const n1 = visibleNodes[i];
-                    const n2 = visibleNodes[j];
-                    const dx = n2.x - n1.x;
-                    const dy = n2.y - n1.y;
-                    const distSq = dx * dx + dy * dy || 1;
-                    const dist = Math.sqrt(distSq);
-
-                    if (dist < 320) {
-                        const force = (n1.group === 1 && n2.group === 1) ? 2200 / distSq : 750 / distSq;
-                        const fx = (dx / dist) * force;
-                        const fy = (dy / dist) * force;
-
-                        if (n1 !== draggedNode) { n1.vx -= fx; n1.vy -= fy; }
-                        if (n2 !== draggedNode) { n2.vx += fx; n2.vy += fy; }
-                    }
-                }
-            }
-
-            // 2. Spring attraction along edges
-            graphEdges.forEach(e => {
-                if (!e.source.visible || !e.target.visible) return;
-                const dx = e.target.x - e.source.x;
-                const dy = e.target.y - e.source.y;
-                const dist = Math.sqrt(dx * dx + dy * dy) || 1;
-                const idealDist = e.relation === 'defines' ? 70 : 160;
-                const force = (dist - idealDist) * 0.035;
-
-                const fx = (dx / dist) * force;
-                const fy = (dy / dist) * force;
-
-                if (e.source !== draggedNode) { e.source.vx += fx; e.source.vy += fy; }
-                if (e.target !== draggedNode) { e.target.vx -= fx; e.target.vy -= fy; }
-            });
-
-            // 3. Center gravity and damping
-            const canvas = document.getElementById('graphCanvas');
-            const dpr = window.devicePixelRatio || 1;
-            const cx = canvas.width / (2 * dpr);
-            const cy = canvas.height / (2 * dpr);
-
-            visibleNodes.forEach(n => {
-                if (n === draggedNode) return;
-                // Center gravity
-                n.vx += (cx - n.x) * 0.002;
-                n.vy += (cy - n.y) * 0.002;
-
-                // Velocity damping
-                n.vx *= 0.88;
-                n.vy *= 0.88;
-
-                n.x += n.vx;
-                n.y += n.vy;
-            });
-        }
-
-        function drawGraphCanvas() {
-            const canvas = document.getElementById('graphCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const dpr = window.devicePixelRatio || 1;
-            const w = canvas.width / dpr;
-            const h = canvas.height / dpr;
-
-            ctx.clearRect(0, 0, w, h);
-
-            ctx.save();
-            ctx.translate(w / 2 + camera.x, h / 2 + camera.y);
-            ctx.scale(camera.zoom, camera.zoom);
-            ctx.translate(-w / 2, -h / 2);
-
-            // Draw Edges
-            graphEdges.forEach(e => {
-                if (!e.source.visible || !e.target.visible) return;
-                const isHighlighted = hoveredNode && (hoveredNode === e.source || hoveredNode === e.target);
-
-                ctx.beginPath();
-                ctx.moveTo(e.source.x, e.source.y);
-                ctx.lineTo(e.target.x, e.target.y);
-
-                if (isHighlighted) {
-                    ctx.strokeStyle = '#0A84FF';
-                    ctx.lineWidth = 2.2;
-                } else {
-                    ctx.strokeStyle = e.relation === 'defines' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(48, 209, 88, 0.2)';
-                    ctx.lineWidth = 1.2;
-                }
-                ctx.stroke();
-            });
-
-            // Draw Nodes
-            graphNodes.forEach(n => {
-                if (!n.visible) return;
-
-                const isHovered = n === hoveredNode;
-                const isFile = n.group === 1;
-
-                ctx.save();
-
-                // Glow ring
-                if (isHovered) {
-                    ctx.beginPath();
-                    ctx.arc(n.x, n.y, n.radius + 6, 0, 2 * Math.PI);
-                    ctx.fillStyle = isFile ? 'rgba(10, 132, 255, 0.3)' : 'rgba(48, 209, 88, 0.3)';
-                    ctx.fill();
-                }
-
-                // Node Body
-                ctx.beginPath();
-                ctx.arc(n.x, n.y, n.radius, 0, 2 * Math.PI);
-                ctx.fillStyle = isFile ? '#0A84FF' : (n.type === 'class' ? '#BF5AF2' : '#30D158');
-                ctx.fill();
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-                ctx.lineWidth = 1.5;
-                ctx.stroke();
-
-                // Text Label
-                ctx.font = isFile ? '600 12px "SF Mono", monospace' : '500 11px "SF Mono", monospace';
-                ctx.fillStyle = isHovered ? '#FFFFFF' : 'rgba(255, 255, 255, 0.85)';
-                ctx.textAlign = 'center';
-                ctx.fillText(n.label, n.x, n.y + n.radius + 14);
-
-                ctx.restore();
-            });
-
-            ctx.restore();
-        }
-
-        /* --- Canvas Mouse & Gesture Interaction --- */
-        const canvas = document.getElementById('graphCanvas');
-
-        function getMousePos(e) {
-            const rect = canvas.getBoundingClientRect();
-            const clientX = e.clientX - rect.left;
-            const clientY = e.clientY - rect.top;
-
-            const w = rect.width;
-            const h = rect.height;
-
-            const worldX = (clientX - (w / 2 + camera.x)) / camera.zoom + w / 2;
-            const worldY = (clientY - (h / 2 + camera.y)) / camera.zoom + h / 2;
-
-            return { x: worldX, y: worldY, clientX, clientY };
-        }
-
-        function findNodeAt(x, y) {
-            const visibleNodes = graphNodes.filter(n => n.visible);
-            for (let i = visibleNodes.length - 1; i >= 0; i--) {
-                const n = visibleNodes[i];
-                const dx = x - n.x;
-                const dy = y - n.y;
-                if (dx * dx + dy * dy <= (n.radius + 8) * (n.radius + 8)) {
-                    return n;
-                }
-            }
-            return null;
-        }
-
-        canvas.addEventListener('mousedown', (e) => {
-            const pos = getMousePos(e);
-            const node = findNodeAt(pos.x, pos.y);
-
-            if (node) {
-                draggedNode = node;
-            } else {
-                isDraggingCanvas = true;
-                dragStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
-            }
-        });
-
-        canvas.addEventListener('mousemove', (e) => {
-            const pos = getMousePos(e);
-
-            if (draggedNode) {
-                draggedNode.x = pos.x;
-                draggedNode.y = pos.y;
-                draggedNode.vx = 0;
-                draggedNode.vy = 0;
-            } else if (isDraggingCanvas) {
-                camera.x = e.clientX - dragStart.x;
-                camera.y = e.clientY - dragStart.y;
-            } else {
-                hoveredNode = findNodeAt(pos.x, pos.y);
-            }
-        });
-
-        window.addEventListener('mouseup', () => {
-            draggedNode = null;
-            isDraggingCanvas = false;
-        });
-
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const factor = e.deltaY < 0 ? 1.08 : 0.92;
-            zoomGraph(factor);
-        }, { passive: false });
-
-        canvas.addEventListener('click', (e) => {
-            const pos = getMousePos(e);
-            const node = findNodeAt(pos.x, pos.y);
-            if (!node) return;
-
-            if (node.group === 2) {
-                openSymbolInspector(node.id);
-            }
-        });
-
-        canvas.addEventListener('dblclick', (e) => {
-            const pos = getMousePos(e);
-            const node = findNodeAt(pos.x, pos.y);
-            if (node && node.group === 1) {
-                node.isCollapsed = !node.isCollapsed;
-                graphNodes.forEach(child => {
-                    if (child.parentId === node.id) {
-                        child.visible = !node.isCollapsed;
-                        if (child.visible) {
-                            child.x = node.x + (Math.random() - 0.5) * 50;
-                            child.y = node.y + (Math.random() - 0.5) * 50;
-                        }
-                    }
-                });
-            }
-        });
-
-        /* ==========================================================================
-           Tree Explorer Renderer
-           ========================================================================== */
-        function renderArchitectureTree(data) {
-            const container = document.getElementById('archViewTreeContainer');
-            const files = data.nodes.filter(n => n.group === 1);
-            const symbols = data.nodes.filter(n => n.group === 2);
-            const edges = data.edges || [];
-
+            // Count symbols per file
             const fileSymbolsMap = {};
             files.forEach(f => { fileSymbolsMap[f.id] = []; });
 
@@ -2650,6 +2239,62 @@
                 fileSymbolsMap[parentFileId].push(sym);
             });
 
+            // Filter out files with 0 symbols
+            const activeFiles = files.filter(f => (fileSymbolsMap[f.id] || []).length > 0);
+
+            if (activeFiles.length === 0) {
+                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No code symbols found.</div>`;
+                return;
+            }
+
+            filesListEl.innerHTML = activeFiles.map((f, i) => {
+                const count = (fileSymbolsMap[f.id] || []).length;
+                return `
+                <div class="file-item-row ${i === 0 ? 'active' : ''}" id="file_item_${i}" onclick="selectMasterFile('${f.id}', 'file_item_${i}')" data-file-id="${f.id}" data-file-path="${escapeHtml(f.full_path || f.label)}">
+                    <div class="file-item-left">
+                        <span class="file-item-name">${escapeHtml(f.label)}</span>
+                        <span class="file-item-path">${escapeHtml(f.full_path || f.label)}</span>
+                    </div>
+                    <span class="file-item-badge">${count} sym</span>
+                </div>
+                `;
+            }).join('');
+
+            // Select first file by default
+            if (activeFiles.length > 0) {
+                selectMasterFile(activeFiles[0].id, 'file_item_0');
+            }
+        }
+
+        function selectMasterFile(fileId, itemRowId) {
+            selectedFileId = fileId;
+
+            document.querySelectorAll('.file-item-row').forEach(r => r.classList.remove('active'));
+            const targetRow = document.getElementById(itemRowId);
+            if (targetRow) targetRow.classList.add('active');
+
+            renderDetailSymbolTable(fileId);
+        }
+
+        function renderDetailSymbolTable(fileId) {
+            if (!graphRawData) return;
+
+            const fileNode = graphRawData.nodes.find(n => n.id === fileId);
+            const symbols = graphRawData.nodes.filter(n => n.group === 2);
+            const edges = graphRawData.edges || [];
+
+            // Get symbols defined in this file
+            const fileSymbols = symbols.filter(s => {
+                const parentEdge = edges.find(e => e.target === s.id && e.relation === 'defines');
+                return parentEdge ? parentEdge.source === fileId : (s.full_path === fileNode?.full_path);
+            });
+
+            // Update Header
+            document.getElementById('detailFileName').textContent = fileNode ? fileNode.label : 'File Symbols';
+            document.getElementById('detailFilePath').textContent = fileNode ? fileNode.full_path : '';
+            document.getElementById('detailFileStats').textContent = `${fileSymbols.length} Symbols Defined`;
+
+            // Build Callers and Callees map
             const callersMap = {};
             const calleesMap = {};
             edges.forEach(e => {
@@ -2659,90 +2304,69 @@
                 }
             });
 
-            container.innerHTML = files.map((f, idx) => {
-                const symList = fileSymbolsMap[f.id] || [];
-                if (symList.length === 0) return '';
+            const tableBody = document.getElementById('symbolTableBody');
 
-                const isInitiallyOpen = idx < 3;
+            if (fileSymbols.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
+                            No symbols defined in this file.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
 
-                const symbolsHtml = symList.map(s => {
-                    const callers = callersMap[s.id] || [];
-                    const callees = calleesMap[s.id] || [];
-                    const symTypeClass = s.type === 'class' ? 'class' : (s.type === 'method' ? 'method' : 'function');
+            tableBody.innerHTML = fileSymbols.map(s => {
+                const callers = callersMap[s.id] || [];
+                const callees = calleesMap[s.id] || [];
 
-                    return `
-                    <div class="symbol-card-item" onclick="openSymbolInspector('${s.id}')" data-symbol-name="${escapeHtml(s.name || '')}">
-                        <div class="symbol-header-row">
-                            <span class="symbol-title-text">${escapeHtml(s.name)}()</span>
-                            <span class="symbol-type-chip ${symTypeClass}">${escapeHtml(s.type || 'function')}</span>
-                        </div>
-                        <div class="symbol-details-row">
-                            <span>Lines ${s.start_line}–${s.end_line || s.start_line}</span>
-                            <span>${callers.length > 0 ? `Called by ${callers.length}` : (callees.length > 0 ? `Calls ${callees.length}` : 'Self-contained')}</span>
-                        </div>
-                    </div>
-                    `;
+                const callsHtml = callees.map(targetId => {
+                    const targetNode = graphRawData.nodes.find(n => n.id === targetId);
+                    const name = targetNode ? targetNode.name || targetNode.label : 'callee';
+                    return `<span class="relation-mini-pill" onclick="openSymbolInspector('${targetId}')" title="Calls ${name}">${escapeHtml(name)}()</span>`;
                 }).join('');
 
+                const callersHtml = callers.map(sourceId => {
+                    const srcNode = graphRawData.nodes.find(n => n.id === sourceId);
+                    const name = srcNode ? srcNode.name || srcNode.label : 'caller';
+                    return `<span class="relation-mini-pill" style="color: var(--system-green);" onclick="openSymbolInspector('${sourceId}')" title="Called by ${name}">Called by ${escapeHtml(name)}()</span>`;
+                }).join('');
+
+                const relationshipsHtml = (callsHtml || callersHtml) ? `<div class="sym-calls-cell">${callersHtml} ${callsHtml}</div>` : '<span style="color: var(--label-tertiary); font-size: 0.72rem;">Self-contained</span>';
+
+                const symTypeClass = s.type === 'class' ? 'class' : (s.type === 'method' ? 'method' : 'function');
+
                 return `
-                <div class="file-accordion-card ${isInitiallyOpen ? 'open' : ''}" id="file_card_${idx}" data-file-path="${escapeHtml(f.full_path || f.label)}">
-                    <div class="file-accordion-header" onclick="toggleFileCard('file_card_${idx}')">
-                        <div class="file-info-left">
-                            <span class="chevron-toggle">▶</span>
-                            <div>
-                                <div class="file-name-label">${escapeHtml(f.label)}</div>
-                                <div class="file-path-sub">${escapeHtml(f.full_path || f.label)}</div>
-                            </div>
+                <tr>
+                    <td>
+                        <div class="sym-name-cell">
+                            <span class="symbol-type-chip ${symTypeClass}">${escapeHtml(s.type || 'function')}</span>
+                            <span>${escapeHtml(s.name)}()</span>
                         </div>
-                        <div class="file-meta-right">
-                            <span class="symbol-count-badge">${symList.length} symbols</span>
-                        </div>
-                    </div>
-                    <div class="file-symbols-body">
-                        <div class="symbol-grid">
-                            ${symbolsHtml}
-                        </div>
-                    </div>
-                </div>
+                    </td>
+                    <td>
+                        <span class="sym-lines-cell">L${s.start_line}–L${s.end_line || s.start_line}</span>
+                    </td>
+                    <td>
+                        ${relationshipsHtml}
+                    </td>
+                    <td style="text-align: right;">
+                        <button class="btn-table-action" onclick="openSymbolInspector('${s.id}')">Inspect Code</button>
+                    </td>
+                </tr>
                 `;
             }).join('');
         }
 
-        function toggleFileCard(cardId) {
-            const card = document.getElementById(cardId);
-            if (card) card.classList.toggle('open');
-        }
-
-        function expandAllFiles() {
-            document.querySelectorAll('.file-accordion-card').forEach(c => c.classList.add('open'));
-        }
-
-        function collapseAllFiles() {
-            document.querySelectorAll('.file-accordion-card').forEach(c => c.classList.remove('open'));
-        }
-
-        function filterArchTree() {
+        function filterMasterDetail() {
             const query = document.getElementById('archFilterInput').value.trim().toLowerCase();
-            const cards = document.querySelectorAll('.file-accordion-card');
+            const fileRows = document.querySelectorAll('.file-item-row');
 
-            cards.forEach(card => {
-                const filePath = (card.dataset.filePath || '').toLowerCase();
-                const symbolItems = card.querySelectorAll('.symbol-card-item');
-                let hasMatchingSymbol = false;
-
-                symbolItems.forEach(item => {
-                    const symName = (item.dataset.symbolName || '').toLowerCase();
-                    const matches = symName.includes(query) || filePath.includes(query);
-                    item.style.display = matches ? 'flex' : 'none';
-                    if (matches) hasMatchingSymbol = true;
-                });
-
-                if (query === '' || filePath.includes(query) || hasMatchingSymbol) {
-                    card.style.display = 'block';
-                    if (query !== '') card.classList.add('open');
-                } else {
-                    card.style.display = 'none';
-                }
+            fileRows.forEach(row => {
+                const path = (row.dataset.filePath || '').toLowerCase();
+                const matches = query === '' || path.includes(query);
+                row.style.display = matches ? 'flex' : 'none';
             });
         }
 
@@ -2790,13 +2414,13 @@
             callersList.innerHTML = incoming.length > 0 ? incoming.map(e => {
                 const srcNode = graphRawData.nodes.find(n => n.id === e.source);
                 const name = srcNode ? srcNode.name || srcNode.label : 'caller';
-                return `<span class="relation-pill" onclick="openSymbolInspector('${e.source}')">${escapeHtml(name)}()</span>`;
+                return `<span class="relation-mini-pill" onclick="openSymbolInspector('${e.source}')">${escapeHtml(name)}()</span>`;
             }).join('') : '<span style="color: var(--label-tertiary);">None</span>';
 
             calleesList.innerHTML = outgoing.length > 0 ? outgoing.map(e => {
                 const tgtNode = graphRawData.nodes.find(n => n.id === e.target);
                 const name = tgtNode ? tgtNode.name || tgtNode.label : 'callee';
-                return `<span class="relation-pill" onclick="openSymbolInspector('${e.target}')">${escapeHtml(name)}()</span>`;
+                return `<span class="relation-mini-pill" onclick="openSymbolInspector('${e.target}')">${escapeHtml(name)}()</span>`;
             }).join('') : '<span style="color: var(--label-tertiary);">None</span>';
 
             modal.style.display = 'flex';
