@@ -6,7 +6,11 @@ from __future__ import annotations
 
 import json
 import logging
+import platform
+import sys
 import time
+from datetime import datetime, timezone
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from rich.console import Console
@@ -120,7 +124,30 @@ class BenchmarkRunner:
             ir_metrics=ir_metrics
         )
 
+        package_versions = {}
+        for package in ("faiss-cpu", "numpy", "torch", "transformers", "rank-bm25"):
+            try:
+                package_versions[package] = version(package)
+            except PackageNotFoundError:
+                package_versions[package] = "not-installed"
+
         results_payload = {
+            "report_schema_version": 1,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "environment": {
+                "python": sys.version,
+                "platform": platform.platform(),
+                "machine": platform.machine(),
+                "device": self.config.embedding.device,
+                "packages": package_versions,
+                "embedding_model": self.config.embedding.model_name,
+                "reranker_model": self.config.reranker.model_name,
+            },
+            "parameters": {
+                "target_loc": self.target_loc,
+                "requested_queries": num_test_queries,
+                "executed_queries": len(test_queries),
+            },
             "dataset": {
                 "total_files": total_files,
                 "total_lines": total_lines,
@@ -133,7 +160,8 @@ class BenchmarkRunner:
                 "sparse_bm25": sparse_stats.model_dump(),
                 "cross_encoder_rerank": rerank_stats.model_dump(),
             },
-            "retrieval_quality": ir_metrics.model_dump()
+            "retrieval_quality": ir_metrics.model_dump(),
+            "query_records": eval_records,
         }
 
         # Save JSON Report

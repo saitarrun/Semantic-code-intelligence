@@ -20,6 +20,8 @@ class SearchResult(BaseModel):
     sparse_score: Optional[float] = None
     rrf_score: Optional[float] = None
     rerank_score: Optional[float] = None
+    exact_match_boost: float = 0.0
+    match_reasons: List[str] = Field(default_factory=list)
 
     @classmethod
     def from_chunk(
@@ -29,7 +31,9 @@ class SearchResult(BaseModel):
         dense_score: Optional[float] = None,
         sparse_score: Optional[float] = None,
         rrf_score: Optional[float] = None,
-        rerank_score: Optional[float] = None
+        rerank_score: Optional[float] = None,
+        exact_match_boost: float = 0.0,
+        match_reasons: Optional[List[str]] = None
     ) -> SearchResult:
         citation_str = chunk.citation
         abs_uri = Path(chunk.absolute_path).as_uri()
@@ -44,7 +48,9 @@ class SearchResult(BaseModel):
             dense_score=dense_score,
             sparse_score=sparse_score,
             rrf_score=rrf_score,
-            rerank_score=rerank_score
+            rerank_score=rerank_score,
+            exact_match_boost=exact_match_boost,
+            match_reasons=match_reasons or []
         )
 
 

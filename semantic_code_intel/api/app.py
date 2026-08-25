@@ -9,23 +9,30 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import os
 import queue
 import threading
+from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
 
 from semantic_code_intel.config import CodeIntelConfig, DEFAULT_CONFIG
 from semantic_code_intel.generation.patcher import CodePatcher
 from semantic_code_intel.generation.synthesizer import CodeSynthesizer
 from semantic_code_intel.graph.symbol_graph import SymbolGraphEngine
 from semantic_code_intel.indexing.engine import HybridIndexer
+from semantic_code_intel.indexing.embeddings import ModelUnavailableError
 from semantic_code_intel.indexing.watcher import CodebaseWatcher
 from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
+from semantic_code_intel.api.schemas import (
+    IndexRequest, OpenFileRequest, PatchApplyRequest, PatchGenerateRequest,
+    SearchRequest, SearchResponse, SearchResultItem, SynthesizeRequest,
+    SynthesizeResponse,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -35,10 +42,19 @@ app = FastAPI(
     version="0.2.0"
 )
 
+
+@app.exception_handler(ModelUnavailableError)
+async def model_unavailable_handler(_, exc: ModelUnavailableError):
+    """Return an actionable setup error instead of an opaque internal failure."""
+    return JSONResponse(status_code=503, content={"detail": str(exc), "code": "model_unavailable"})
+
+_cors_origins = [origin.strip() for origin in os.getenv(
+    "CODE_INTEL_CORS_ORIGINS", "http://127.0.0.1:8000,http://localhost:8000"
+).split(",") if origin.strip()]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=_cors_origins,
+    allow_credentials="*" not in _cors_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -47,7 +63,9 @@ STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
-_PIPELINES: Dict[str, HybridRetrievalPipeline] = {}
+_PIPELINE_CACHE_SIZE = max(1, int(os.getenv("CODE_INTEL_PIPELINE_CACHE_SIZE", "4")))
+_PIPELINES: OrderedDict[str, HybridRetrievalPipeline] = OrderedDict()
+_PIPELINES_LOCK = threading.RLock()
 _ACTIVE_REPO_PATH: Path = Path.cwd()
 _ACTIVE_INDEX_PATH: Optional[Path] = None
 _WATCHER: Optional[CodebaseWatcher] = None
@@ -116,84 +134,19 @@ def get_pipeline(repo_path: Optional[str] = None, index_path: Optional[str] = No
     t_path, i_path = resolve_paths(repo_path, index_path)
     cache_key = f"{t_path}::{i_path}"
 
-    if cache_key not in _PIPELINES:
-        cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
-        _PIPELINES[cache_key] = HybridRetrievalPipeline(cfg)
-
-    _ACTIVE_REPO_PATH = t_path
-    _ACTIVE_INDEX_PATH = i_path
-    config = _PIPELINES[cache_key].config
-    pipeline = _PIPELINES[cache_key]
-    return _PIPELINES[cache_key]
-
-
-# Pydantic Schemas
-class SearchRequest(BaseModel):
-    query: str
-    repo_path: Optional[str] = Field(default=None, description="Repository directory path")
-    index_path: Optional[str] = Field(default=None, description="Custom index directory path")
-    top_k: int = Field(default=5, ge=1, le=50)
-    mode: str = Field(default="hybrid", description="'hybrid', 'dense', or 'sparse'")
-    rerank: bool = Field(default=True)
-    use_reranker: Optional[bool] = None
-
-
-class SearchResultItem(BaseModel):
-    chunk_id: str
-    file_path: str
-    start_line: int
-    end_line: int
-    language: str
-    symbol_name: Optional[str] = None
-    symbol_type: Optional[str] = None
-    score: float
-    citation: str
-    code: str
-    content: str
-    dense_score: Optional[float] = None
-    sparse_score: Optional[float] = None
-    rerank_score: Optional[float] = None
-
-
-class SearchResponse(BaseModel):
-    query: str
-    repo_path: str
-    total_results: int
-    results: List[SearchResultItem]
-    latency_ms: Dict[str, float]
-    index_status: str = "ready"
-
-
-class SynthesizeRequest(BaseModel):
-    query: str
-    repo_path: Optional[str] = None
-    index_path: Optional[str] = None
-    top_k: int = Field(default=5, ge=1, le=20)
-    provider: str = Field(default="local")
-
-
-class SynthesizeResponse(BaseModel):
-    query: str
-    answer: str
-    citations: List[str]
-    latency_ms: Dict[str, float]
-
-
-class PatchGenerateRequest(BaseModel):
-    instruction: str
-    repo_path: Optional[str] = None
-    top_k: int = Field(default=3)
-
-
-class PatchApplyRequest(BaseModel):
-    diff: str
-    repo_path: Optional[str] = None
-
-
-class IndexRequest(BaseModel):
-    target_dir: str = Field(default=".", description="Local filesystem path to codebase")
-    index_dir: Optional[str] = Field(default=None, description="Custom index directory")
-    force: bool = Field(default=False)
+    with _PIPELINES_LOCK:
+        if cache_key not in _PIPELINES:
+            cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
+            _PIPELINES[cache_key] = HybridRetrievalPipeline(cfg)
+        _PIPELINES.move_to_end(cache_key)
+        while len(_PIPELINES) > _PIPELINE_CACHE_SIZE:
+            _PIPELINES.popitem(last=False)
+        selected = _PIPELINES[cache_key]
+        _ACTIVE_REPO_PATH = t_path
+        _ACTIVE_INDEX_PATH = i_path
+        config = selected.config
+        pipeline = selected
+        return selected
 
 
 # Routes
@@ -297,8 +250,8 @@ async def stream_indexing(
                 progress_callback=progress_handler
             )
             cache_key = f"{t_path}::{cfg.get_index_dir()}"
-            if cache_key in _PIPELINES:
-                del _PIPELINES[cache_key]
+            with _PIPELINES_LOCK:
+                _PIPELINES.pop(cache_key, None)
 
             t_files = getattr(metrics, 'total_files', None) if not isinstance(metrics, dict) else metrics.get('total_files', 0)
             t_lines = getattr(metrics, 'total_lines', None) if not isinstance(metrics, dict) else metrics.get('total_lines', 0)
@@ -353,8 +306,8 @@ async def trigger_index(req: IndexRequest):
     metrics = indexer.index_codebase(t_path, force_reindex=req.force)
 
     cache_key = f"{t_path}::{cfg.get_index_dir()}"
-    if cache_key in _PIPELINES:
-        del _PIPELINES[cache_key]
+    with _PIPELINES_LOCK:
+        _PIPELINES.pop(cache_key, None)
 
     return {
         "status": "indexed",
@@ -405,6 +358,8 @@ async def search_code(req: SearchRequest):
             dense_score=round(r.dense_score, 4) if r.dense_score is not None else None,
             sparse_score=round(r.sparse_score, 4) if r.sparse_score is not None else None,
             rerank_score=round(r.rerank_score, 4) if r.rerank_score is not None else None,
+            exact_match_boost=round(r.exact_match_boost, 3),
+            match_reasons=r.match_reasons,
         )
         for r in res.results
     ]
@@ -415,7 +370,10 @@ async def search_code(req: SearchRequest):
         total_results=len(items),
         results=items,
         latency_ms=res.latency.to_dict(),
-        index_status="ready"
+        index_status="ready",
+        reliability=res.reliability,
+        reliability_score=res.reliability_score,
+        reliability_reasons=res.reliability_reasons
     )
 
 
@@ -456,6 +414,7 @@ async def ask_or_synthesize(req: SynthesizeRequest):
         query=req.query,
         answer=answer.answer,
         citations=answer.citations,
+        provider=answer.provider,
         latency_ms=res.latency.to_dict()
     )
 
@@ -470,7 +429,7 @@ async def stream_synthesis(req: SynthesizeRequest):
         raise HTTPException(status_code=400, detail=f"Repository {t_path} is not indexed.")
 
     res = p.query(query_text=req.query, top_k=req.top_k, use_reranker=True)
-    synthesizer = CodeSynthesizer(p.config)
+    synthesizer = CodeSynthesizer(p.config, provider=req.provider)
 
     async def event_generator():
         async for chunk in synthesizer.stream_synthesis(req.query, res.results):
@@ -561,13 +520,6 @@ async def lsp_inspect(
     }
 
 
-class OpenFileRequest(BaseModel):
-    file_path: str
-    repo_path: Optional[str] = None
-    line: Optional[int] = 1
-    action: Optional[str] = "editor"  # "editor" or "finder"
-
-
 @app.post("/api/open")
 async def open_file(req: OpenFileRequest):
     """Open a file at a specific line in the default editor (Cursor, VS Code) or macOS Finder."""
@@ -618,5 +570,3 @@ async def open_file(req: OpenFileRequest):
             }
     except Exception as e:
         return {"success": False, "error": str(e)}
-
-

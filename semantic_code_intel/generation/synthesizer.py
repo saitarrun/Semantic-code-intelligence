@@ -5,12 +5,17 @@ Generative Code Synthesizer and Explanation Engine.
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
-from typing import Any, AsyncGenerator, Dict, List, Optional
+import logging
+from typing import AsyncGenerator, List, Optional
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 from pydantic import BaseModel, Field
 
 from semantic_code_intel.config import CodeIntelConfig
+from semantic_code_intel.generation.prompt_builder import CodePromptBuilder
 from semantic_code_intel.retrieval.citation import SearchResult
+
+logger = logging.getLogger(__name__)
 
 
 class SynthesisResponse(BaseModel):
@@ -21,11 +26,71 @@ class SynthesisResponse(BaseModel):
 
 
 class CodeSynthesizer:
-    """Generates structured, citation-backed technical explanations for code intelligence queries."""
+    """Generates cited answers with a local LLM and an explicit extractive fallback."""
 
-    def __init__(self, config: Optional[CodeIntelConfig] = None, provider: str = "extractive"):
+    def __init__(self, config: Optional[CodeIntelConfig] = None, provider: Optional[str] = None):
         self.config = config or CodeIntelConfig()
-        self.provider = provider
+        self.provider = provider or self.config.generation.provider
+
+    def _extractive_answer(self, query: str, results: List[SearchResult]) -> str:
+        top_match = results[0]
+        top_symbol = top_match.chunk.symbol_name or top_match.chunk.context_header or top_match.chunk.file_path
+        sections = [
+            "## Direct answer",
+            f"The strongest retrieved implementation for **{query}** is `{top_symbol}` "
+            f"at `{top_match.chunk.citation}`. A local reasoning model is not available, so the "
+            "evidence is shown without inventing behavior that is not explicit in the code.",
+            "\n## Source-backed walkthrough",
+        ]
+        for index, result in enumerate(results[:6], 1):
+            chunk = result.chunk
+            symbol = chunk.symbol_name or chunk.context_header or "module-level code"
+            scope = f" in `{chunk.parent_scope}`" if chunk.parent_scope else ""
+            dependencies = (
+                f"Referenced symbols: {', '.join(f'`{item}`' for item in chunk.dependencies[:5])}."
+                if chunk.dependencies else ""
+            )
+            source_lines = chunk.content.splitlines()
+            displayed_source = "\n".join(source_lines[:32])
+            if len(source_lines) > 32:
+                displayed_source += f"\n# … {len(source_lines) - 32} additional lines in {chunk.citation}"
+            sections.extend([
+                f"\n### {index}. `{symbol}`{scope} — `{chunk.citation}`",
+                chunk.symbol_type.value.replace('_', ' ').title() + "." +
+                (f" {dependencies}" if dependencies else ""),
+                f"```{chunk.language}\n{displayed_source}\n```",
+            ])
+        sections.extend([
+            "\n## Evidence gaps",
+            "This is a deterministic evidence view, not a generated explanation. Start Ollama for a "
+            "step-by-step answer that connects these snippets; any behavior outside the cited blocks "
+            "remains unverified.",
+        ])
+        return "\n\n".join(sections)
+
+    def _ollama_answer(self, query: str, results: List[SearchResult]) -> str:
+        prompt = CodePromptBuilder.build_rag_prompt(query, results)
+        payload = json.dumps({
+            "model": self.config.generation.ollama_model,
+            "prompt": prompt,
+            "stream": False,
+            "options": {"temperature": 0.1},
+        }).encode("utf-8")
+        request = Request(
+            f"{self.config.generation.ollama_base_url.rstrip('/')}/api/generate",
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urlopen(request, timeout=self.config.generation.timeout_seconds) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as exc:
+            raise RuntimeError(f"Local Ollama generation failed: {exc}") from exc
+        answer = str(data.get("response", "")).strip()
+        if not answer:
+            raise RuntimeError("Local Ollama generation returned an empty response")
+        return answer
 
     def synthesize(self, query: str, results: List[SearchResult]) -> SynthesisResponse:
         """
@@ -40,20 +105,26 @@ class CodeSynthesizer:
             )
 
         citations = [r.chunk.citation for r in results]
-        top_match = results[0]
-        
-        symbol_info = f" in function `{top_match.chunk.symbol_name}`" if top_match.chunk.symbol_name else ""
-        answer = (
-            f"The logic for `{query}` is implemented in `{top_match.chunk.file_path}`{symbol_info} "
-            f"(lines {top_match.chunk.start_line}–{top_match.chunk.end_line}).\n\n"
-            f"Relevant Implementation:\n```{top_match.chunk.language}\n{top_match.chunk.content}\n```"
-        )
+        provider_used = self.provider
+        if self.provider == "ollama":
+            try:
+                answer = self._ollama_answer(query, results)
+            except RuntimeError:
+                if not self.config.generation.fallback_to_extractive:
+                    raise
+                logger.warning("Ollama unavailable; using deterministic source evidence")
+                answer = self._extractive_answer(query, results)
+                provider_used = "extractive-fallback"
+        elif self.provider == "extractive":
+            answer = self._extractive_answer(query, results)
+        else:
+            raise ValueError(f"Unsupported synthesis provider: {self.provider}")
 
         return SynthesisResponse(
             query=query,
             answer=answer,
             citations=citations,
-            provider=self.provider
+            provider=provider_used
         )
 
     async def stream_synthesis(
@@ -72,52 +143,22 @@ class CodeSynthesizer:
             yield json.dumps({"type": "done"}) + "\n"
             return
 
-        top_match = results[0]
-        
-        # Header overview
-        yield json.dumps({
-            "type": "content",
-            "delta": f"### Analysis for `{query}`\n\n"
-        }) + "\n"
-
-        # Key Findings
-        yield json.dumps({
-            "type": "content",
-            "delta": f"The primary implementation is located in **[`{top_match.chunk.file_path}`]({top_match.chunk.citation})** (lines {top_match.chunk.start_line}–{top_match.chunk.end_line})"
-        }) + "\n"
-
-        if top_match.chunk.symbol_name:
+        # Keep the streaming protocol provider-agnostic. Ollama generation is completed
+        # first, then emitted in small deltas so clients receive the same grounded answer
+        # as the synchronous endpoint (including explicit fallback behavior).
+        response = self.synthesize(query, results)
+        # Slice the original answer without tokenizing it. Tokenization previously
+        # collapsed newlines and broke headings, lists, and fenced code in the UI.
+        for offset in range(0, len(response.answer), 640):
+            delta = response.answer[offset:offset + 640]
             yield json.dumps({
                 "type": "content",
-                "delta": f" within symbol `{top_match.chunk.symbol_name}`.\n\n"
+                "delta": delta,
+                "provider": response.provider,
             }) + "\n"
-        else:
-            yield json.dumps({"type": "content", "delta": ".\n\n"}) + "\n"
-
-        # Implementation breakdown
         yield json.dumps({
-            "type": "content",
-            "delta": "#### Key Architectural Components:\n\n"
+            "type": "done",
+            "provider": response.provider,
+            "citations": response.citations,
         }) + "\n"
-
-        for idx, res in enumerate(results[:4], 1):
-            scope_desc = f"`{res.chunk.symbol_name}`" if res.chunk.symbol_name else f"Lines {res.chunk.start_line}–{res.chunk.end_line}"
-            first_line = res.chunk.content.strip().split("\n")[0][:80]
-            
-            yield json.dumps({
-                "type": "content",
-                "delta": f"**{idx}. [{res.chunk.file_path}:{res.chunk.start_line}]({res.chunk.citation})** ({res.chunk.language})\n"
-                         f"- **Scope**: {scope_desc}\n"
-                         f"- **Preview**: `{first_line}`\n"
-                         f"- **Match Score**: `{res.score:.4f}`\n\n"
-            }) + "\n"
-
-        # Summary takeaway
-        yield json.dumps({
-            "type": "content",
-            "delta": "#### Implementation Summary:\n"
-                     f"This subsystem coordinates control logic via `{top_match.chunk.symbol_name or top_match.chunk.file_path}`. "
-                     "Inputs are validated, state mutations occur safely, and execution boundaries conform to the citations above."
-        }) + "\n"
-
-        yield json.dumps({"type": "done"}) + "\n"
+        return

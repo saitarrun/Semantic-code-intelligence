@@ -57,6 +57,10 @@ class EmbeddingConfig(BaseModel):
     batch_size: int = Field(default=64, description="Inference batch size")
     normalize_embeddings: bool = Field(default=True, description="L2 normalize embeddings for cosine similarity")
     device: str = Field(default_factory=detect_device, description="Inference compute device")
+    local_files_only: bool = Field(
+        default_factory=lambda: os.getenv("CODE_INTEL_ALLOW_MODEL_DOWNLOADS", "0") != "1",
+        description="Only load cached model files unless downloads are explicitly enabled"
+    )
 
 
 class BM25Config(BaseModel):
@@ -74,18 +78,34 @@ class RerankerConfig(BaseModel):
     )
     batch_size: int = Field(default=32, description="Reranking batch size")
     device: str = Field(default_factory=detect_device, description="Inference compute device")
-    top_candidates_to_rerank: int = Field(default=25, description="Number of candidates to pass to reranker")
+    top_candidates_to_rerank: int = Field(default=40, description="Number of candidates to pass to reranker")
+    local_files_only: bool = Field(
+        default_factory=lambda: os.getenv("CODE_INTEL_ALLOW_MODEL_DOWNLOADS", "0") != "1",
+        description="Only load cached model files unless downloads are explicitly enabled"
+    )
+
+
+class GenerationConfig(BaseModel):
+    """Settings for local generative answer synthesis."""
+    provider: str = Field(default="ollama", description="Default provider: 'ollama' or 'extractive'")
+    ollama_base_url: str = Field(default_factory=lambda: os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434"))
+    ollama_model: str = Field(default_factory=lambda: os.getenv("CODE_INTEL_OLLAMA_MODEL", "qwen2.5-coder:7b"))
+    timeout_seconds: float = Field(default=90.0, gt=0)
+    fallback_to_extractive: bool = True
 
 
 class RetrievalConfig(BaseModel):
     """Configuration for the hybrid search and fusion pipeline."""
-    dense_top_k: int = Field(default=25, description="Number of dense vector search candidates")
-    sparse_top_k: int = Field(default=25, description="Number of sparse BM25 candidates")
+    dense_top_k: int = Field(default=50, description="Number of dense vector search candidates")
+    sparse_top_k: int = Field(default=50, description="Number of sparse BM25 candidates")
+    fusion_top_k: int = Field(default=60, description="Number of fused candidates retained before reranking")
     final_top_k: int = Field(default=5, description="Number of final results to return after reranking")
     rrf_k: int = Field(default=60, description="Reciprocal Rank Fusion smoothing constant")
     dense_weight: float = Field(default=0.5, description="Weight for dense retrieval in fusion")
     sparse_weight: float = Field(default=0.5, description="Weight for sparse retrieval in fusion")
     use_reranker: bool = Field(default=True, description="Whether to apply cross-encoder reranking")
+    expand_queries: bool = Field(default=True, description="Add code-domain intent terms to improve recall")
+    max_results_per_file: int = Field(default=4, ge=1, description="Result diversity limit per source file")
 
 
 class StorageConfig(BaseModel):
@@ -105,6 +125,7 @@ class CodeIntelConfig(BaseModel):
     embedding: EmbeddingConfig = Field(default_factory=EmbeddingConfig)
     bm25: BM25Config = Field(default_factory=BM25Config)
     reranker: RerankerConfig = Field(default_factory=RerankerConfig)
+    generation: GenerationConfig = Field(default_factory=GenerationConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     storage: StorageConfig = Field(default_factory=StorageConfig)
 

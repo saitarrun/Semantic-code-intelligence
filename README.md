@@ -6,7 +6,7 @@
 
 ## 🌟 Key Highlights
 
-- **Local-First & Privacy Preserving**: Zero cloud dependencies or external API keys required. Operates 100% offline with local embeddings (`sentence-transformers`), FAISS vector indices, and SQLite metadata stores.
+- **Local-First & Privacy Preserving**: Zero cloud API keys required. Retrieval uses local embedding/reranker models, FAISS, BM25, and SQLite. Cited generative answers use a local Ollama model, with an explicit extractive fallback.
 - **Sub-Second Retrieval Latency**: Measured average retrieval latency of **~150ms** across **40,000+ LOC** codebases (FAISS vector search: ~6ms, BM25 sparse search: ~3ms, Cross-Encoder reranking: ~140ms).
 - **Hybrid Retrieval & Reranking Architecture**:
   - **Dense Vector Search (FAISS)**: Captures semantic intent and natural language conceptual questions.
@@ -56,9 +56,15 @@ flowchart TD
 
 ---
 
-## 📊 Benchmark Performance (40,000+ Lines of Code)
+## 📊 Historical Benchmark Snapshot (40,000+ Lines of Code)
 
-Evaluated on Apple Silicon (M-series MPS) using the automated benchmark suite:
+The figures below are a historical project snapshot, not a guarantee for the current checkout or other hardware. Reproduce them locally with the command below; the runner writes the raw inputs, timings, metrics, and environment details to `benchmark_report.json`.
+
+```bash
+code-intel benchmark --loc 40000 --queries 30
+```
+
+Historical run on Apple Silicon:
 
 ### 1. Indexing Throughput
 | Metric | Value |
@@ -103,6 +109,14 @@ uv pip install -e .
 # or: pip install -e .
 ```
 
+Models are cache-only by default so a request never downloads multi-gigabyte assets unexpectedly. To populate the Hugging Face cache on first setup, explicitly allow downloads for one indexing/query run:
+
+```bash
+CODE_INTEL_ALLOW_MODEL_DOWNLOADS=1 code-intel index .
+```
+
+Subsequent runs use the local cache. Missing models produce an actionable error naming the model and setup command.
+
 ### 2. Index a Codebase
 
 ```bash
@@ -126,8 +140,14 @@ code-intel query "find database connection pool" --citations-only
 ### 4. Synthesize Code Q&A with Context
 
 ```bash
+# Requires a local Ollama server; defaults to qwen2.5-coder:7b.
+ollama pull qwen2.5-coder:7b
 code-intel ask "Explain how billing transaction steps are processed"
 ```
+
+Set `CODE_INTEL_OLLAMA_MODEL` or `OLLAMA_BASE_URL` to select another local model/server. If Ollama is unavailable, synthesis reports `extractive-fallback` and returns a cited extract instead of pretending it generated an answer. The REST API also accepts `provider: "extractive"` when deterministic extraction is desired.
+
+For browser deployments, allowed origins default to `http://127.0.0.1:8000` and `http://localhost:8000`. Configure an explicit comma-separated list with `CODE_INTEL_CORS_ORIGINS`. The pipeline cache is thread-safe and bounded to four repositories by default; change it with `CODE_INTEL_PIPELINE_CACHE_SIZE`.
 
 ### 5. Launch Interactive REPL
 

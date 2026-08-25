@@ -7,10 +7,20 @@ from __future__ import annotations
 from typing import List
 from semantic_code_intel.retrieval.citation import CitationFormatter, SearchResult
 
-SYSTEM_PROMPT = """You are an expert AI Code Intelligence Assistant.
-Answer the user's question accurately using ONLY the provided code snippets and context.
-Always cite the exact file path and line numbers when referencing code (e.g. `src/auth.py:L15-L30`).
-If the provided snippets do not contain enough information to answer the question, state what is missing.
+SYSTEM_PROMPT = """You are a precise code-walkthrough assistant.
+Use ONLY behavior directly supported by the supplied source snippets. Never infer validation,
+state changes, error handling, or side effects that are not visible in those snippets.
+
+Required response structure:
+1. `## Direct answer` — answer the user's exact question immediately in 1–3 sentences.
+2. `## Execution walkthrough` — ordered runtime steps. Name the concrete symbols involved and cite
+   every step with an exact `path:Lx-Ly` citation.
+3. `## Inputs, outputs, and edge cases` — include only details proven by the source.
+4. `## Evidence gaps` — identify missing callers, implementations, configuration, or runtime context.
+
+Prefer specific identifiers and conditions over general architectural language. Do not dump entire
+snippets unless a short excerpt is essential. If the evidence cannot answer the question, say that
+plainly in the Direct answer and explain exactly which source is missing.
 """
 
 
@@ -21,15 +31,12 @@ class CodePromptBuilder:
     def build_rag_prompt(query: str, search_results: List[SearchResult]) -> str:
         context_str = CitationFormatter.format_for_llm_prompt(search_results)
         
-        prompt = f"""### Context Code Snippets with Citations:
+        prompt = f"""{SYSTEM_PROMPT}
+
+### Source evidence:
 {context_str}
 
-### User Question:
+### Exact user question:
 {query}
-
-### Instructions:
-1. Analyze the context code snippets above.
-2. Provide a clear, technically rigorous answer.
-3. Cite the exact file names and line ranges (e.g., `file.py:L10-L20`) whenever discussing logic or functions.
 """
         return prompt

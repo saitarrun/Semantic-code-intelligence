@@ -5,6 +5,8 @@ from pathlib import Path
 import numpy as np
 from semantic_code_intel.indexing.bm25_index import BM25SparseIndex, CodeTokenizer
 from semantic_code_intel.indexing.faiss_index import FAISSDenseIndex
+from semantic_code_intel.parser.base import CodeChunk, SymbolType
+from semantic_code_intel.retrieval.query_analysis import expand_code_query, exact_match_boost
 
 
 def test_code_tokenizer():
@@ -15,6 +17,28 @@ def test_code_tokenizer():
     assert "balance" in tokens
     assert "user_id" in tokens
     assert "id" in tokens
+
+
+def test_query_expansion_and_exact_symbol_boost():
+    expanded = expand_code_query("Where does the application render the UI?")
+    assert "frontend" in expanded
+    assert "implementation" in expanded
+
+    chunk = CodeChunk(
+        chunk_id="serve-ui",
+        file_path="semantic_code_intel/api/app.py",
+        absolute_path="/repo/semantic_code_intel/api/app.py",
+        language="python",
+        symbol_name="serve_ui",
+        symbol_type=SymbolType.FUNCTION,
+        start_line=1,
+        end_line=3,
+        content="def serve_ui(): pass",
+        context_header="def serve_ui()",
+    )
+    boost, reasons = exact_match_boost("Where is serve_ui implemented?", chunk)
+    assert boost >= 2.5
+    assert "exact symbol" in reasons
 
 
 def test_faiss_dense_index():

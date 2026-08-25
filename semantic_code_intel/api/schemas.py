@@ -1,64 +1,87 @@
-"""
-Pydantic API schemas for HTTP REST endpoints.
-"""
+"""Canonical Pydantic schemas for the HTTP API."""
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel, Field
 
 
 class SearchRequest(BaseModel):
-    query: str = Field(description="Search query or natural language code question")
-    top_k: int = Field(default=5, description="Number of results to return")
-    use_reranker: bool = Field(default=True, description="Enable cross-encoder reranking")
-    mode: str = Field(default="hybrid", description="Retrieval mode: 'hybrid', 'dense', or 'sparse'")
+    query: str
+    repo_path: Optional[str] = None
+    index_path: Optional[str] = None
+    top_k: int = Field(default=5, ge=1, le=50)
+    mode: str = Field(default="hybrid", pattern="^(hybrid|dense|sparse)$")
+    rerank: bool = True
+    use_reranker: Optional[bool] = None
 
 
-class IndexRequest(BaseModel):
-    target_dir: Optional[str] = Field(default=None, description="Path to codebase to index")
-    force_reindex: bool = Field(default=False, description="Wipe and rebuild index from scratch")
+class SearchResultItem(BaseModel):
+    chunk_id: str
+    file_path: str
+    start_line: int
+    end_line: int
+    language: str
+    symbol_name: Optional[str] = None
+    symbol_type: Optional[str] = None
+    score: float
+    citation: str
+    code: str
+    content: str
+    dense_score: Optional[float] = None
+    sparse_score: Optional[float] = None
+    rerank_score: Optional[float] = None
+    exact_match_boost: float = 0.0
+    match_reasons: List[str] = Field(default_factory=list)
+
+
+class SearchResponse(BaseModel):
+    query: str
+    repo_path: str
+    total_results: int
+    results: List[SearchResultItem]
+    latency_ms: Dict[str, float]
+    index_status: str = "ready"
+    reliability: str = "low"
+    reliability_score: float = 0.0
+    reliability_reasons: List[str] = Field(default_factory=list)
 
 
 class SynthesizeRequest(BaseModel):
-    query: str = Field(description="Question to ask about the codebase")
-    top_k: int = Field(default=5, description="Number of context snippets to retrieve")
-    provider: str = Field(default="extractive", description="LLM provider: 'extractive' or 'ollama'")
-
-
-class ChunkResponse(BaseModel):
-    chunk_id: str
-    file_path: str
-    absolute_path: str
-    language: str
-    symbol_name: Optional[str]
-    symbol_type: str
-    parent_scope: Optional[str]
-    start_line: int
-    end_line: int
-    content: str
-    context_header: Optional[str]
-    docstring: Optional[str]
-    citation: str
-    markdown_link: str
-    score: float
-    dense_score: Optional[float] = None
-    sparse_score: Optional[float] = None
-    rrf_score: Optional[float] = None
-    rerank_score: Optional[float] = None
-
-
-class SearchApiResponse(BaseModel):
     query: str
-    results: List[ChunkResponse]
-    latency_ms: Dict[str, float]
-    total_candidates: int
+    repo_path: Optional[str] = None
+    index_path: Optional[str] = None
+    top_k: int = Field(default=5, ge=1, le=20)
+    provider: Optional[str] = Field(default=None, pattern="^(ollama|extractive)$")
 
 
-class SynthesizeApiResponse(BaseModel):
+class SynthesizeResponse(BaseModel):
     query: str
     answer: str
     citations: List[str]
-    model_used: str
-    search_latency_ms: float
-    total_latency_ms: float
+    provider: str
+    latency_ms: Dict[str, float]
+
+
+class PatchGenerateRequest(BaseModel):
+    instruction: str
+    repo_path: Optional[str] = None
+    top_k: int = Field(default=3, ge=1, le=20)
+
+
+class PatchApplyRequest(BaseModel):
+    diff: str
+    repo_path: Optional[str] = None
+
+
+class IndexRequest(BaseModel):
+    target_dir: str = Field(default=".")
+    index_dir: Optional[str] = None
+    force: bool = False
+
+
+class OpenFileRequest(BaseModel):
+    file_path: str
+    repo_path: Optional[str] = None
+    line: int = Field(default=1, ge=1)
+    action: str = Field(default="editor", pattern="^(editor|finder)$")

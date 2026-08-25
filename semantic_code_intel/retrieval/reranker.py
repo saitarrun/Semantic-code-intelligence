@@ -9,6 +9,7 @@ from typing import List, Optional, Tuple
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from semantic_code_intel.config import RerankerConfig
+from semantic_code_intel.indexing.embeddings import ModelUnavailableError
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +30,18 @@ class CrossEncoderReranker:
         """Lazy load tokenizer and model."""
         if self._tokenizer is None or self._model is None:
             logger.info(f"Loading Cross-Encoder reranker '{self.model_name}' on '{self.device}'...")
-            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self._model = AutoModelForSequenceClassification.from_pretrained(self.model_name).to(self.device)
+            try:
+                self._tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_name, local_files_only=self.config.local_files_only
+                )
+                self._model = AutoModelForSequenceClassification.from_pretrained(
+                    self.model_name, local_files_only=self.config.local_files_only
+                ).to(self.device)
+            except (OSError, ValueError) as exc:
+                raise ModelUnavailableError(
+                    f"Reranker model '{self.model_name}' is not available locally. Set "
+                    "CODE_INTEL_ALLOW_MODEL_DOWNLOADS=1 and retry once, or pre-download it."
+                ) from exc
             self._model.eval()
 
     def rerank(

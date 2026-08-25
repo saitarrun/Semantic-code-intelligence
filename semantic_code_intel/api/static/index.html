@@ -825,6 +825,32 @@
             font-size: 0.72rem;
         }
 
+        .search-reliability {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.75rem 0.9rem;
+            margin-bottom: var(--space-3);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            background: var(--glass-bg-subtle);
+            color: var(--label-secondary);
+            font-size: 0.78rem;
+        }
+
+        .reliability-pill {
+            padding: 0.18rem 0.5rem;
+            border-radius: var(--radius-pill);
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .reliability-pill.high { background: var(--system-green-tint); color: var(--system-green); }
+        .reliability-pill.medium { background: var(--system-orange-tint); color: var(--system-orange); }
+        .reliability-pill.low { background: rgba(255,69,58,.14); color: var(--system-red); }
+
         .synthesis-card {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
@@ -837,19 +863,93 @@
             flex-direction: column;
             gap: var(--space-4);
             line-height: 1.6;
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        .synthesis-card h2 {
+            font-size: 1.35rem;
+            font-weight: 650;
+            color: var(--label-primary);
+            letter-spacing: -0.025em;
+            margin: 1.5rem 0 0.7rem;
+        }
+
+        .synthesis-card h2:first-child {
+            margin-top: 0;
         }
 
         .synthesis-card h3 {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             color: var(--label-primary);
+            margin: 1.25rem 0 0.55rem;
+            padding-left: 0.75rem;
+            border-left: 2px solid var(--system-blue);
         }
 
-        .synthesis-card h4 {
-            font-size: 0.95rem;
-            font-weight: 600;
+        .synthesis-card p {
             color: var(--label-secondary);
-            margin-top: var(--space-3);
+            line-height: 1.75;
+            margin: 0.55rem 0;
+        }
+
+        .synthesis-card ul,
+        .synthesis-card ol {
+            color: var(--label-secondary);
+            padding-left: 1.4rem;
+            margin: 0.6rem 0;
+        }
+
+        .synthesis-card li {
+            margin: 0.35rem 0;
+        }
+
+        .synthesis-card code:not(pre code) {
+            background: rgba(255, 255, 255, 0.075);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 0.12rem 0.38rem;
+            border-radius: 5px;
+            color: #e5e5ea;
+            font-family: var(--font-mono);
+            font-size: 0.86em;
+        }
+
+        .synthesis-card pre {
+            background: #08090b;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            padding: 1rem 1.1rem;
+            margin: 0.75rem 0 1rem;
+            overflow: auto;
+            max-height: 360px;
+            white-space: pre;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+        }
+
+        .synthesis-card pre code {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.65;
+        }
+
+        .walkthrough-status {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 1.25rem;
+            padding-top: 0.8rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--label-tertiary);
+            font-size: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .walkthrough-status .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--system-orange);
         }
 
         .synthesis-card a {
@@ -1555,7 +1655,7 @@
                             type="text"
                             id="synthInput"
                             class="apple-search-input"
-                            placeholder="Ask an architectural question (e.g. 'How does the rate limiter handle exponential backoff?')"
+                            placeholder="Ask for exact behavior (e.g. 'What conditions make validate_token return false, and who calls it?')"
                         />
                     </div>
                     <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
@@ -2115,7 +2215,15 @@
                 return;
             }
 
-            container.innerHTML = data.results.map((r, idx) => {
+            const reliability = data.reliability || 'low';
+            const reliabilityReasons = (data.reliability_reasons || []).join(' · ') || 'No exact identifier agreement';
+            const reliabilityHtml = `
+                <div class="search-reliability">
+                    <span class="reliability-pill ${escapeHtml(reliability)}">${escapeHtml(reliability)}</span>
+                    <span>${Math.round((data.reliability_score || 0) * 100)}% retrieval agreement · ${escapeHtml(reliabilityReasons)}</span>
+                </div>`;
+
+            container.innerHTML = reliabilityHtml + data.results.map((r, idx) => {
                 const snippetId = `code_snippet_${idx}`;
                 const start = r.start_line || 1;
                 const end = r.end_line || start;
@@ -2137,6 +2245,7 @@
                                 ${r.rerank_score !== null ? `<span class="score-tag">Rerank: ${r.rerank_score}</span>` : ''}
                                 ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
                                 ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
+                                ${(r.match_reasons || []).map(reason => `<span class="score-tag active-score">${escapeHtml(reason)}</span>`).join('')}
                             </div>
                             <button class="btn-copy" onclick="openFileInFinder('${r.file_path}')" title="Reveal in Finder">Finder</button>
                             <button class="btn-copy" onclick="openFileInEditor('${r.file_path}', ${start})" title="Open in Editor">Editor</button>
@@ -2180,12 +2289,20 @@
                 const res = await fetch('/api/synthesize/stream', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, repo_path: target, top_k: 4 })
+                    body: JSON.stringify({ query: query, repo_path: target, top_k: 8 })
                 });
+
+                if (!res.ok) {
+                    const errorBody = await res.json().catch(() => ({}));
+                    throw new Error(errorBody.detail || `Request failed with HTTP ${res.status}`);
+                }
 
                 const reader = res.body.getReader();
                 const decoder = new TextDecoder();
                 let fullText = '';
+                let sseBuffer = '';
+                let answerProvider = '';
+                let answerCitations = [];
 
                 outContent.innerHTML = '';
 
@@ -2193,8 +2310,9 @@
                     const { done, value } = await reader.read();
                     if (done) break;
 
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
+                    sseBuffer += decoder.decode(value, { stream: true });
+                    const lines = sseBuffer.split('\n');
+                    sseBuffer = lines.pop() || '';
 
                     for (const line of lines) {
                         if (line.startsWith('data: ')) {
@@ -2203,11 +2321,24 @@
                                 if (parsed.type === 'content' && parsed.delta) {
                                     fullText += parsed.delta;
                                     outContent.innerHTML = formatMarkdown(fullText);
+                                } else if (parsed.type === 'done') {
+                                    answerProvider = parsed.provider || '';
+                                    answerCitations = parsed.citations || [];
                                 }
                             } catch (e) {}
                         }
                     }
                 }
+
+                const providerLabel = answerProvider === 'ollama'
+                    ? 'Generated locally with Ollama'
+                    : 'Deterministic source evidence (Ollama unavailable)';
+                const citationHtml = answerCitations.length
+                    ? `<span>Sources: ${answerCitations.map(c => `<code>${escapeHtml(c)}</code>`).join(' · ')}</span>`
+                    : '';
+                outContent.innerHTML = formatMarkdown(fullText) +
+                    `<div class="walkthrough-status"><span class="status-dot"></span><strong>${escapeHtml(providerLabel)}</strong>${citationHtml}</div>`;
+                outContent.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
             } catch (err) {
                 outContent.innerHTML = `Synthesis error: ${err.message}`;
             } finally {
@@ -2575,14 +2706,82 @@
         }
 
         function formatMarkdown(text) {
-            return text
-                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-                .replace(/`([^`]+)`/gim, '<code style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">$1</code>')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="#" onclick="setAndSearch(\'$1\'); return false;">$1</a>')
-                .replace(/\n\n/gim, '<br><br>')
-                .replace(/\n/gim, '<br>');
+            const inline = (value) => escapeHtml(value)
+                .replace(/`([^`]+)`/g, '<code>$1</code>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            const lines = text.replace(/\r\n/g, '\n').split('\n');
+            const html = [];
+            let paragraph = [];
+            let code = [];
+            let codeLanguage = '';
+            let inCode = false;
+            let listType = null;
+
+            const closeList = () => {
+                if (listType) html.push(`</${listType}>`);
+                listType = null;
+            };
+            const flushParagraph = () => {
+                if (paragraph.length) html.push(`<p>${inline(paragraph.join(' '))}</p>`);
+                paragraph = [];
+            };
+
+            for (const line of lines) {
+                const fence = line.match(/^```\s*([\w+-]*)\s*$/);
+                if (fence) {
+                    if (inCode) {
+                        html.push(`<pre><code class="language-${escapeHtml(codeLanguage || 'plaintext')}">${escapeHtml(code.join('\n'))}</code></pre>`);
+                        code = [];
+                        inCode = false;
+                    } else {
+                        flushParagraph();
+                        closeList();
+                        codeLanguage = fence[1] || 'plaintext';
+                        inCode = true;
+                    }
+                    continue;
+                }
+                if (inCode) {
+                    code.push(line);
+                    continue;
+                }
+
+                const heading = line.match(/^(#{2,4})\s+(.+)$/);
+                if (heading) {
+                    flushParagraph();
+                    closeList();
+                    const level = Math.min(3, heading[1].length);
+                    html.push(`<h${level}>${inline(heading[2])}</h${level}>`);
+                    continue;
+                }
+
+                const unordered = line.match(/^[-*]\s+(.+)$/);
+                const ordered = line.match(/^\d+[.)]\s+(.+)$/);
+                if (unordered || ordered) {
+                    flushParagraph();
+                    const desired = unordered ? 'ul' : 'ol';
+                    if (listType !== desired) {
+                        closeList();
+                        html.push(`<${desired}>`);
+                        listType = desired;
+                    }
+                    html.push(`<li>${inline((unordered || ordered)[1])}</li>`);
+                    continue;
+                }
+
+                if (!line.trim()) {
+                    flushParagraph();
+                    closeList();
+                } else {
+                    paragraph.push(line.trim());
+                }
+            }
+
+            if (inCode) html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);
+            flushParagraph();
+            closeList();
+            return html.join('');
         }
 
         function escapeHtml(str) {

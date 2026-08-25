@@ -151,7 +151,7 @@ def ask_cmd(
     target_dir: Path = typer.Option(Path("."), "--dir", "-d"),
     index_dir: Optional[Path] = typer.Option(None, "--index-dir", "-i"),
     top_k: int = typer.Option(5, "--top-k", "-k"),
-    provider: str = typer.Option("extractive", "--provider", "-p", help="LLM backend: 'extractive' or 'ollama'")
+    provider: str = typer.Option("ollama", "--provider", "-p", help="Local answer backend: 'ollama' or 'extractive'")
 ):
     """Query codebase and synthesize a cited answer with code context."""
     cfg = CodeIntelConfig(project_root=target_dir)
@@ -164,7 +164,7 @@ def ask_cmd(
         raise typer.Exit(code=1)
 
     res = pipeline.query(query_text=query_text, top_k=top_k, use_reranker=True)
-    synthesizer = CodeSynthesizer(provider=provider)
+    synthesizer = CodeSynthesizer(config=cfg, provider=provider)
     answer = synthesizer.synthesize(query_text, res.results)
 
     console.print(f"\n[bold green]Answer for:[/] [bold]{query_text}[/]\n")
@@ -258,6 +258,13 @@ def benchmark_cmd(
     )
 ):
     """Run full automated benchmark on a 30,000+ LOC codebase."""
+    from semantic_code_intel.benchmark.bench_suite import BenchmarkRunner
+
+    workspace_dir.mkdir(parents=True, exist_ok=True)
+    runner = BenchmarkRunner(workspace_dir=workspace_dir, target_loc=target_loc)
+    runner.run_full_benchmark(num_test_queries=queries)
+
+
 @app.command(name="mcp")
 def mcp_cmd():
     """Start the Model Context Protocol (MCP) JSON-RPC 2.0 stdio server."""
@@ -305,5 +312,3 @@ def lsp_cmd(
 
 if __name__ == "__main__":
     app()
-
-

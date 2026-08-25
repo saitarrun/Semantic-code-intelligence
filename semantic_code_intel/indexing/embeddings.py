@@ -15,6 +15,10 @@ from semantic_code_intel.config import EmbeddingConfig
 logger = logging.getLogger(__name__)
 
 
+class ModelUnavailableError(RuntimeError):
+    """Raised when a required local model is not available."""
+
+
 class EmbeddingEngine:
     """Manages dense vector embedding generation with batching and device acceleration."""
 
@@ -29,8 +33,21 @@ class EmbeddingEngine:
         """Lazy load tokenizer and model."""
         if self._tokenizer is None or self._model is None:
             logger.info(f"Loading embedding model '{self.model_name}' on device '{self.device}'...")
-            self._tokenizer = AutoTokenizer.from_pretrained(self.model_name)
-            self._model = AutoModel.from_pretrained(self.model_name).to(self.device)
+            try:
+                self._tokenizer = AutoTokenizer.from_pretrained(
+                    self.model_name, local_files_only=self.config.local_files_only
+                )
+                self._model = AutoModel.from_pretrained(
+                    self.model_name, local_files_only=self.config.local_files_only
+                ).to(self.device)
+            except (OSError, ValueError) as exc:
+                download_hint = (
+                    "Set CODE_INTEL_ALLOW_MODEL_DOWNLOADS=1 and retry once, or pre-download "
+                    f"'{self.model_name}' into the Hugging Face cache."
+                )
+                raise ModelUnavailableError(
+                    f"Embedding model '{self.model_name}' is not available locally. {download_hint}"
+                ) from exc
             self._model.eval()
 
     def _mean_pooling(self, model_output, attention_mask: torch.Tensor) -> torch.Tensor:
