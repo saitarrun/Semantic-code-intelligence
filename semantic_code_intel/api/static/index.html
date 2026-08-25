@@ -43,7 +43,7 @@
         header {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 0.85rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -81,7 +81,70 @@
             font-family: var(--font-code);
         }
 
-        .header-stats {
+        /* Repository Selection Bar */
+        .repo-bar {
+            background: #121820;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .repo-selector-group {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .repo-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .repo-select {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-sans);
+            outline: none;
+            cursor: pointer;
+            min-width: 260px;
+        }
+
+        .repo-select:focus {
+            border-color: var(--accent);
+        }
+
+        .custom-path-input {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.45rem 0.85rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-family: var(--font-code);
+            outline: none;
+            flex: 1;
+            display: none;
+        }
+
+        .custom-path-input:focus {
+            border-color: var(--accent);
+        }
+
+        .repo-stats {
             display: flex;
             gap: 1.25rem;
             font-size: 0.85rem;
@@ -92,7 +155,7 @@
         .stat-item {
             display: flex;
             align-items: center;
-            gap: 0.4rem;
+            gap: 0.35rem;
         }
 
         .stat-val {
@@ -101,20 +164,47 @@
             font-family: var(--font-code);
         }
 
+        .repo-status-tag {
+            font-size: 0.75rem;
+            font-family: var(--font-code);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .status-ready {
+            background: rgba(63, 185, 80, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(63, 185, 80, 0.3);
+        }
+
+        .status-unindexed {
+            background: rgba(210, 153, 34, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 153, 34, 0.3);
+        }
+
         .btn-index {
             background: #238636;
             color: white;
             border: 1px solid rgba(240, 246, 252, 0.1);
-            padding: 0.4rem 0.8rem;
+            padding: 0.45rem 0.9rem;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
         .btn-index:hover {
             background: #2ea043;
+        }
+
+        .btn-index:disabled {
+            background: #21262d;
+            color: var(--text-muted);
+            cursor: not-allowed;
         }
 
         main {
@@ -122,7 +212,7 @@
             max-width: 1200px;
             width: 100%;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 1.75rem 1.5rem;
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
@@ -316,10 +406,6 @@
             border-color: #3fb95044;
         }
 
-        .result-body {
-            position: relative;
-        }
-
         .result-body pre {
             margin: 0;
             padding: 1rem;
@@ -342,7 +428,7 @@
 
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 3.5rem 2rem;
             color: var(--text-muted);
         }
 
@@ -373,22 +459,48 @@
             <span class="brand-title">Semantic Code Intelligence</span>
             <span class="brand-badge">FAISS + BM25 + CrossEncoder</span>
         </div>
-        <div class="header-stats" id="headerStats">
+        <div style="font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-code);">
+            Sub-Second Code Retrieval
+        </div>
+    </header>
+
+    <!-- Repository Selection & Control Bar -->
+    <div class="repo-bar">
+        <div class="repo-selector-group">
+            <label class="repo-label" for="repoSelect">📁 Repository:</label>
+            <select class="repo-select" id="repoSelect" onchange="onRepoChanged()">
+                <option value=".">Current Platform Codebase</option>
+                <option value="./oss_evaluation/client-go">Kubernetes client-go (406k LOC)</option>
+                <option value="./oss_evaluation/fastapi">FastAPI (112k LOC)</option>
+                <option value="./oss_evaluation/rich">Textualize Rich (67k LOC)</option>
+                <option value="CUSTOM">+ Custom Local Directory...</option>
+            </select>
+            <input
+                type="text"
+                id="customPathInput"
+                class="custom-path-input"
+                placeholder="/Users/xploit404/Projects/your-project-path"
+                onchange="onCustomPathChanged()"
+            />
+        </div>
+
+        <div class="repo-stats">
+            <span id="repoStatusBadge" class="repo-status-tag status-ready">Ready</span>
             <div class="stat-item">
-                <span>Indexed Files:</span>
-                <span class="stat-val" id="statFiles">0</span>
+                <span>Files:</span>
+                <span class="stat-val" id="statFiles">--</span>
             </div>
             <div class="stat-item">
                 <span>LOC:</span>
-                <span class="stat-val" id="statLoc">0</span>
+                <span class="stat-val" id="statLoc">--</span>
             </div>
             <div class="stat-item">
                 <span>Chunks:</span>
-                <span class="stat-val" id="statChunks">0</span>
+                <span class="stat-val" id="statChunks">--</span>
             </div>
-            <button class="btn-index" id="btnReindex" onclick="triggerReindex()">⚡ Index Repository</button>
+            <button class="btn-index" id="btnReindex" onclick="triggerIndexCurrentRepo()">⚡ Index This Repo</button>
         </div>
-    </header>
+    </div>
 
     <main>
         <div class="search-panel">
@@ -397,7 +509,7 @@
                     type="text"
                     id="searchInput"
                     class="search-input"
-                    placeholder="Search codebase (e.g. 'Where is rate limiting handled?', 'JWT auth verify', 'database pool connection')..."
+                    placeholder="Ask or search code (e.g. 'LeaderElector lease loop', 'JWT authentication verify', 'exponential backoff')..."
                     autocomplete="off"
                 />
                 <button class="btn-search" id="searchBtn" onclick="performSearch()">
@@ -431,7 +543,7 @@
                 <div class="latency-val" id="rrfLatency">-- ms</div>
             </div>
             <div class="latency-metric">
-                <div class="latency-label">Reranker</div>
+                <div class="latency-label">Cross-Encoder</div>
                 <div class="latency-val" id="rerankLatency">-- ms</div>
             </div>
             <div class="latency-metric">
@@ -444,48 +556,92 @@
             <div class="empty-state">
                 <div class="empty-icon">🔍</div>
                 <h3>Ready to Query</h3>
-                <p>Enter a query above to retrieve exact lines, function scopes, and citations in sub-second latency.</p>
+                <p>Select a repository above and enter a search query to retrieve exact line citations in sub-second latency.</p>
             </div>
         </div>
     </main>
 
     <script>
         let currentMode = 'hybrid';
+        let activeRepoPath = '.';
+        let activeIndexPath = null;
 
-        async function fetchStats() {
+        function getActiveTarget() {
+            const selectVal = document.getElementById('repoSelect').value;
+            if (selectVal === 'CUSTOM') {
+                return document.getElementById('customPathInput').value.trim() || '.';
+            }
+            return selectVal;
+        }
+
+        async function onRepoChanged() {
+            const select = document.getElementById('repoSelect');
+            const customInput = document.getElementById('customPathInput');
+            
+            if (select.value === 'CUSTOM') {
+                customInput.style.display = 'block';
+                customInput.focus();
+                return;
+            } else {
+                customInput.style.display = 'none';
+            }
+
+            activeRepoPath = select.value;
+            await loadRepoStats();
+        }
+
+        async function onCustomPathChanged() {
+            activeRepoPath = document.getElementById('customPathInput').value.trim();
+            await loadRepoStats();
+        }
+
+        async function loadRepoStats() {
+            const target = getActiveTarget();
+            const badge = document.getElementById('repoStatusBadge');
+            const btn = document.getElementById('btnReindex');
+
             try {
-                const res = await fetch('/api/stats');
+                const res = await fetch(`/api/stats?repo_path=${encodeURIComponent(target)}`);
                 const data = await res.json();
+
                 if (data.status === 'ready') {
-                    document.getElementById('statFiles').textContent = data.stats.total_files || 0;
-                    document.getElementById('statLoc').textContent = data.stats.total_lines || 0;
-                    document.getElementById('statChunks').textContent = data.stats.total_chunks || 0;
-                    document.getElementById('btnReindex').textContent = '↻ Re-Index';
+                    badge.textContent = 'Indexed & Ready';
+                    badge.className = 'repo-status-tag status-ready';
+                    document.getElementById('statFiles').textContent = (data.total_files || 0).toLocaleString();
+                    document.getElementById('statLoc').textContent = (data.total_lines || 0).toLocaleString();
+                    document.getElementById('statChunks').textContent = (data.total_chunks || 0).toLocaleString();
+                    btn.textContent = '↻ Re-Index';
                 } else {
-                    document.getElementById('btnReindex').textContent = '⚡ Index Codebase Now';
+                    badge.textContent = 'Not Indexed';
+                    badge.className = 'repo-status-tag status-unindexed';
+                    document.getElementById('statFiles').textContent = '0';
+                    document.getElementById('statLoc').textContent = '0';
+                    document.getElementById('statChunks').textContent = '0';
+                    btn.textContent = '⚡ Index This Repo';
                 }
             } catch (err) {
                 console.error('Failed to load stats', err);
             }
         }
 
-        async function triggerReindex() {
+        async function triggerIndexCurrentRepo() {
+            const target = getActiveTarget();
             const btn = document.getElementById('btnReindex');
             btn.textContent = '⏳ Indexing...';
             btn.disabled = true;
+
             try {
                 const res = await fetch('/api/index', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ target_dir: '.', force: true })
+                    body: JSON.stringify({ target_dir: target, force: true })
                 });
                 const data = await res.json();
-                alert(`✓ Indexing complete! Indexed ${data.metrics.total_lines} LOC in ${data.metrics.total_files} files.`);
-                await fetchStats();
+                alert(`✓ Successfully indexed repository!\n• Files: ${data.metrics.total_files}\n• Lines of Code: ${data.metrics.total_lines}\n• Chunks: ${data.metrics.total_chunks}`);
+                await loadRepoStats();
             } catch (err) {
-                alert('Indexing failed: ' + err);
+                alert('Indexing error: ' + err);
             } finally {
-                btn.textContent = '↻ Re-Index';
                 btn.disabled = false;
             }
         }
@@ -505,6 +661,7 @@
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
 
+            const target = getActiveTarget();
             const btnText = document.getElementById('btnText');
             btnText.innerHTML = '<span class="loading-spinner"></span>';
 
@@ -516,6 +673,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         query: query,
+                        repo_path: target,
                         top_k: 5,
                         mode: currentMode,
                         rerank: rerank
@@ -546,8 +704,9 @@
                 container.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">📂</div>
-                        <h3>Codebase Not Indexed</h3>
-                        <p>Click <strong>⚡ Index Codebase</strong> at top right to build the index.</p>
+                        <h3>Repository Not Indexed</h3>
+                        <p>The repository at <code>${data.repo_path}</code> is not indexed yet.</p>
+                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index This Repo</strong> in the top bar to index it.</p>
                     </div>
                 `;
                 latencyDash.style.display = 'none';
@@ -561,7 +720,7 @@
                 document.getElementById('rrfLatency').textContent = `${(data.latency_ms.rrf_fusion_ms || 0).toFixed(2)} ms`;
                 document.getElementById('rerankLatency').textContent = `${(data.latency_ms.reranker_ms || 0).toFixed(1)} ms`;
                 
-                const total = (data.latency_ms.total_end_to_end_ms || 0).toFixed(1);
+                const total = (data.latency_ms.total_end_to_end_ms || data.latency_ms.total_ms || 0).toFixed(1);
                 const totalEl = document.getElementById('totalLatency');
                 totalEl.textContent = `${total} ms`;
                 totalEl.className = total < 1000 ? 'latency-val fast' : 'latency-val';
@@ -572,7 +731,7 @@
                     <div class="empty-state">
                         <div class="empty-icon">🤷</div>
                         <h3>No Exact Matches Found</h3>
-                        <p>Try rephrasing your search query or enabling Hybrid search.</p>
+                        <p>Try rephrasing your search query or enabling Hybrid search mode.</p>
                     </div>
                 `;
                 return;
@@ -616,7 +775,8 @@
                 .replace(/'/g, "&#039;");
         }
 
-        fetchStats();
+        // Initialize default repository stats
+        loadRepoStats();
     </script>
 </body>
 </html>
