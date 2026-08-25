@@ -35,7 +35,7 @@ The first indexing and reranking operations require internet access to download 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/saitarrun/semantic-code-intelligence.git
+git clone https://github.com/saitarrun/Semantic-code-intelligence.git
 cd semantic-code-intelligence
 ```
 
