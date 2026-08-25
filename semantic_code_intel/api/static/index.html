@@ -11,8 +11,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           True Pitch-Black Minimalist Glassmorphic Design System
-           Apple HIG + Figma Principles (OLED True Black Palette)
+           True-Black Frosted Glassmorphism Design System
+           Refractive Glass Layers + Apple HIG Spacing + Figma Geometry
            ========================================================================== */
         :root {
             /* 1. Spatial Grid (8-Point Grid) */
@@ -25,52 +25,47 @@
             --space-8: 32px;
             --space-12: 48px;
 
-            /* 2. True Black Canvas & Surface Palette */
-            --bg-canvas: #000000;
-            --surface-nav: rgba(0, 0, 0, 0.88);
-            --surface-toolbar: rgba(6, 6, 8, 0.75);
-            --surface-panel: rgba(10, 10, 12, 0.65);
-            --surface-card: rgba(8, 8, 10, 0.75);
-            --surface-code: #030304;
-            --surface-input: rgba(255, 255, 255, 0.04);
-            --surface-hover: rgba(255, 255, 255, 0.08);
-            --surface-active: rgba(255, 255, 255, 0.12);
-            --surface-subtle: rgba(255, 255, 255, 0.03);
+            /* 2. Glassmorphic Surfaces (Multi-Layer Translucency) */
+            --glass-bg-nav: rgba(10, 10, 14, 0.72);
+            --glass-bg-toolbar: rgba(12, 12, 16, 0.55);
+            --glass-bg-panel: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            --glass-bg-card: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.008) 100%);
+            --glass-bg-input: rgba(255, 255, 255, 0.045);
+            --glass-bg-hover: rgba(255, 255, 255, 0.08);
+            --glass-bg-active: rgba(255, 255, 255, 0.12);
+            --glass-bg-subtle: rgba(255, 255, 255, 0.03);
 
-            /* 3. Hairlines & Subtle Edge Highlights */
-            --border-subtle: rgba(255, 255, 255, 0.07);
-            --border-medium: rgba(255, 255, 255, 0.14);
-            --border-focus: #0A84FF;
-            --specular-reflection: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+            /* 3. Refractive Edges & Specular Lighting */
+            --glass-border: rgba(255, 255, 255, 0.10);
+            --glass-border-medium: rgba(255, 255, 255, 0.16);
+            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            --glass-blur: blur(40px) saturate(210%);
+            --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.75);
 
-            /* 4. Apple Dynamic Accent Colors */
+            /* 4. Apple System Accents */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
-            --system-blue-tint: rgba(10, 132, 255, 0.14);
+            --system-blue-tint: rgba(10, 132, 255, 0.16);
             --system-green: #30D158;
             --system-green-tint: rgba(48, 209, 88, 0.14);
             --system-orange: #FF9F0A;
             --system-orange-tint: rgba(255, 159, 10, 0.14);
             --system-red: #FF453A;
-            --system-red-tint: rgba(255, 69, 58, 0.14);
 
-            /* 5. Typography & High-Contrast Labels */
+            /* 5. Typography & High Contrast Labels */
             --label-primary: #FFFFFF;
-            --label-secondary: rgba(255, 255, 255, 0.68);
-            --label-tertiary: rgba(255, 255, 255, 0.38);
-            --label-quaternary: rgba(255, 255, 255, 0.18);
+            --label-secondary: rgba(255, 255, 255, 0.70);
+            --label-tertiary: rgba(255, 255, 255, 0.40);
+            --label-quaternary: rgba(255, 255, 255, 0.20);
 
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
-            /* 6. Precision Radii & Easing */
+            /* 6. Radii & Curves */
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 16px;
             --radius-pill: 980px;
-            --blur-standard: blur(36px) saturate(190%);
-            --shadow-elevated: 0 24px 64px rgba(0, 0, 0, 0.9);
-            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.6);
             --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -83,13 +78,42 @@
         }
 
         body {
-            background-color: var(--bg-canvas);
+            background-color: #000000;
             color: var(--label-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             letter-spacing: -0.012em;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Ambient Glow Backdrops */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -15%;
+            left: 25%;
+            width: 50vw;
+            height: 45vh;
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.12) 0%, rgba(94, 92, 230, 0.06) 50%, transparent 75%);
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -10%;
+            right: 15%;
+            width: 40vw;
+            height: 40vh;
+            background: radial-gradient(circle, rgba(48, 209, 88, 0.05) 0%, rgba(10, 132, 255, 0.04) 50%, transparent 75%);
+            filter: blur(90px);
+            pointer-events: none;
+            z-index: 0;
         }
 
         /* Top Navigation Bar */
@@ -97,11 +121,11 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            background: var(--surface-nav);
-            backdrop-filter: var(--blur-standard);
-            -webkit-backdrop-filter: var(--blur-standard);
-            border-bottom: 1px solid var(--border-subtle);
-            box-shadow: var(--specular-reflection);
+            background: var(--glass-bg-nav);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--glass-specular);
             padding: var(--space-3) var(--space-8);
             display: flex;
             justify-content: space-between;
@@ -126,8 +150,8 @@
             font-weight: 500;
             color: var(--label-tertiary);
             padding: 2px var(--space-2);
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-pill);
         }
 
@@ -141,8 +165,8 @@
             display: inline-flex;
             align-items: center;
             gap: var(--space-2);
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             padding: 3px var(--space-3);
             border-radius: var(--radius-pill);
             font-size: 0.75rem;
@@ -163,11 +187,13 @@
 
         /* Repository Control Toolbar */
         .toolbar {
-            background: var(--surface-toolbar);
-            backdrop-filter: var(--blur-standard);
-            -webkit-backdrop-filter: var(--blur-standard);
-            border-bottom: 1px solid var(--border-subtle);
-            box-shadow: var(--specular-reflection);
+            position: relative;
+            z-index: 10;
+            background: var(--glass-bg-toolbar);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: var(--glass-specular);
             padding: var(--space-3) var(--space-8);
             display: flex;
             justify-content: space-between;
@@ -200,8 +226,10 @@
         select.apple-select {
             width: 100%;
             appearance: none;
-            background: var(--surface-input);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-input);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             color: var(--label-primary);
             font-family: var(--font-sans);
             font-size: 0.85rem;
@@ -210,19 +238,19 @@
             border-radius: var(--radius-md);
             outline: none;
             cursor: pointer;
-            box-shadow: var(--specular-reflection);
+            box-shadow: var(--glass-specular);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         select.apple-select:hover {
-            background: var(--surface-hover);
-            border-color: var(--border-medium);
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-medium);
         }
 
         select.apple-select:focus {
-            border-color: var(--border-focus);
-            background: var(--surface-active);
+            border-color: var(--system-blue);
+            background: var(--glass-bg-active);
             box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
@@ -234,14 +262,16 @@
             pointer-events: none;
             width: 8px;
             height: 5px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.6)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.65)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
         }
 
         input.apple-input-custom {
             flex: 1;
             min-width: 240px;
-            background: var(--surface-input);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-input);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             color: var(--label-primary);
             font-family: var(--font-mono);
             font-size: 0.8rem;
@@ -249,12 +279,12 @@
             border-radius: var(--radius-md);
             outline: none;
             display: none;
-            box-shadow: var(--specular-reflection);
+            box-shadow: var(--glass-specular);
             transition: all 0.2s var(--spring-easing);
         }
 
         input.apple-input-custom:focus {
-            border-color: var(--border-focus);
+            border-color: var(--system-blue);
             box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
@@ -280,23 +310,25 @@
         }
 
         button.apple-btn-secondary {
-            background: var(--surface-input);
+            background: var(--glass-bg-input);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             color: var(--label-primary);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--glass-border);
             font-family: var(--font-sans);
             font-size: 0.8rem;
             font-weight: 500;
             padding: 0.45rem var(--space-4);
             border-radius: var(--radius-md);
             cursor: pointer;
-            box-shadow: var(--specular-reflection);
+            box-shadow: var(--glass-specular);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
 
         button.apple-btn-secondary:hover {
-            background: var(--surface-hover);
-            border-color: var(--border-medium);
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-medium);
         }
 
         button.apple-btn-secondary:active {
@@ -305,6 +337,8 @@
 
         /* Main Workspace Container */
         main {
+            position: relative;
+            z-index: 10;
             flex: 1;
             max-width: 1040px;
             width: 100%;
@@ -315,13 +349,14 @@
             gap: var(--space-6);
         }
 
+        /* Frosted Glass Search Card */
         .glass-panel {
-            background: var(--surface-panel);
-            backdrop-filter: var(--blur-standard);
-            -webkit-backdrop-filter: var(--blur-standard);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-panel);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--specular-reflection), var(--shadow-card);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
             padding: var(--space-6);
             display: flex;
             flex-direction: column;
@@ -343,15 +378,17 @@
 
         input.apple-search-input {
             width: 100%;
-            background: var(--surface-input);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-input);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
             padding: 0.85rem 3.5rem 0.85rem 1.15rem;
             color: var(--label-primary);
             font-family: var(--font-sans);
             font-size: 0.95rem;
             outline: none;
-            box-shadow: var(--specular-reflection);
+            box-shadow: var(--glass-specular);
             transition: all 0.2s var(--spring-easing);
         }
 
@@ -361,8 +398,8 @@
         }
 
         input.apple-search-input:focus {
-            border-color: var(--border-focus);
-            background: var(--surface-active);
+            border-color: var(--system-blue);
+            background: var(--glass-bg-active);
             box-shadow: 0 0 0 3px var(--system-blue-tint);
         }
 
@@ -370,8 +407,8 @@
             position: absolute;
             right: 0.85rem;
             pointer-events: none;
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             border-radius: 4px;
             padding: 2px var(--space-2);
             font-size: 0.7rem;
@@ -389,7 +426,7 @@
             font-size: 0.9rem;
             font-weight: 500;
             cursor: pointer;
-            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.25);
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 4px 16px rgba(10, 132, 255, 0.35);
             transition: all 0.2s var(--spring-easing);
             white-space: nowrap;
         }
@@ -420,10 +457,12 @@
 
         .segmented-control {
             display: inline-flex;
-            background: #020203;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 3px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--glass-border);
         }
 
         .segment-btn {
@@ -440,18 +479,20 @@
         }
 
         .segment-btn.active {
-            background: var(--surface-hover);
+            background: var(--glass-bg-hover);
             color: var(--label-primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         /* Top K Filter Control */
         .topk-control {
             display: inline-flex;
-            background: #020203;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 3px;
             border-radius: var(--radius-md);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--glass-border);
         }
 
         .topk-btn {
@@ -468,7 +509,7 @@
         }
 
         .topk-btn.active {
-            background: var(--surface-hover);
+            background: var(--glass-bg-hover);
             color: var(--label-primary);
         }
 
@@ -503,7 +544,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.12);
+            background-color: rgba(255, 255, 255, 0.15);
             transition: 0.2s var(--spring-easing);
             border-radius: 34px;
         }
@@ -540,8 +581,10 @@
         }
 
         .suggestion-pill {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
             color: var(--label-secondary);
             padding: 0.28rem var(--space-3);
             border-radius: var(--radius-pill);
@@ -550,16 +593,19 @@
         }
 
         .suggestion-pill:hover {
-            background: var(--surface-hover);
+            background: var(--glass-bg-hover);
             color: var(--label-primary);
-            border-color: var(--border-medium);
+            border-color: var(--glass-border-medium);
         }
 
         /* Telemetry Dashboard */
         .telemetry-row {
-            background: rgba(8, 8, 10, 0.65);
-            border: 1px solid var(--border-subtle);
+            background: rgba(14, 14, 18, 0.6);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
+            box-shadow: var(--glass-specular);
             padding: 0.85rem var(--space-6);
             display: flex;
             justify-content: space-between;
@@ -602,7 +648,7 @@
             display: none;
         }
 
-        /* Code Cards & Xcode-Style Line Number Gutters */
+        /* Frosted Glass Code Cards */
         .results-list {
             display: flex;
             flex-direction: column;
@@ -610,24 +656,24 @@
         }
 
         .code-card {
-            background: var(--surface-card);
-            backdrop-filter: var(--blur-standard);
-            -webkit-backdrop-filter: var(--blur-standard);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            box-shadow: var(--specular-reflection), var(--shadow-card);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
             overflow: hidden;
             transition: all 0.2s var(--spring-easing);
         }
 
         .code-card:hover {
-            border-color: var(--border-medium);
+            border-color: var(--glass-border-medium);
             transform: translateY(-1px);
         }
 
         .code-header {
-            background: rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.025);
+            border-bottom: 1px solid var(--glass-border);
             padding: 0.65rem var(--space-4);
             display: flex;
             justify-content: space-between;
@@ -656,8 +702,8 @@
         }
 
         .btn-copy {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             color: var(--label-secondary);
             font-family: var(--font-sans);
             font-size: 0.72rem;
@@ -668,7 +714,7 @@
         }
 
         .btn-copy:hover {
-            background: var(--surface-hover);
+            background: var(--glass-bg-hover);
             color: var(--label-primary);
         }
 
@@ -681,8 +727,8 @@
         }
 
         .score-tag {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             padding: 0.15rem 0.45rem;
             border-radius: 4px;
             font-variant-numeric: tabular-nums;
@@ -697,7 +743,7 @@
         /* Xcode-Style Line Numbers Gutter */
         .code-block-container {
             display: flex;
-            background: var(--surface-code);
+            background: rgba(0, 0, 0, 0.55);
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
@@ -709,7 +755,7 @@
             color: var(--label-quaternary);
             text-align: right;
             user-select: none;
-            border-right: 1px solid var(--border-subtle);
+            border-right: 1px solid var(--glass-border);
             font-variant-numeric: tabular-nums;
         }
 
@@ -727,7 +773,7 @@
 
         .code-footer {
             background: rgba(255, 255, 255, 0.015);
-            border-top: 1px solid var(--border-subtle);
+            border-top: 1px solid var(--glass-border);
             padding: 0.55rem var(--space-4);
             font-size: 0.75rem;
             color: var(--label-tertiary);
@@ -737,7 +783,7 @@
         }
 
         .scope-badge {
-            background: var(--surface-subtle);
+            background: var(--glass-bg-subtle);
             padding: 2px var(--space-2);
             border-radius: 4px;
             color: var(--label-secondary);
@@ -747,8 +793,10 @@
 
         /* Shimmer Loading Skeleton */
         .skeleton-card {
-            background: var(--surface-card);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-card);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: var(--space-5);
             display: flex;
@@ -759,7 +807,7 @@
 
         .skeleton-bar {
             height: 14px;
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 4px;
         }
 
@@ -785,16 +833,16 @@
             font-size: 0.82rem;
         }
 
-        /* Glassmorphic Indexing Modal */
+        /* Frosted Glass Indexing Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.88);
-            backdrop-filter: blur(28px) saturate(190%);
-            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(32px) saturate(190%);
+            -webkit-backdrop-filter: blur(32px) saturate(190%);
             z-index: 1000;
             display: none;
             justify-content: center;
@@ -808,13 +856,15 @@
         }
 
         .glass-modal {
-            background: #08080a;
-            border: 1px solid var(--border-medium);
+            background: rgba(20, 20, 24, 0.85);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--glass-border-medium);
             border-radius: 18px;
             width: 90%;
             max-width: 500px;
             padding: var(--space-6);
-            box-shadow: var(--specular-reflection), var(--shadow-elevated);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
             display: flex;
             flex-direction: column;
             gap: var(--space-5);
@@ -855,12 +905,13 @@
             width: 0%;
             background: var(--system-blue);
             border-radius: var(--radius-pill);
+            box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
             transition: width 0.25s var(--spring-easing);
         }
 
         .modal-status-pill {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
             padding: 0.65rem 0.85rem;
             font-family: var(--font-mono);
@@ -878,8 +929,8 @@
         }
 
         .stage-pill {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            background: var(--glass-bg-subtle);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
             padding: 0.5rem 0.75rem;
             font-size: 0.75rem;
@@ -900,22 +951,22 @@
         }
 
         button.modal-close-btn {
-            background: var(--surface-hover);
+            background: var(--glass-bg-hover);
             color: var(--label-primary);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
             padding: 0.75rem;
             font-family: var(--font-sans);
             font-size: 0.88rem;
             font-weight: 500;
             cursor: pointer;
-            box-shadow: var(--specular-reflection);
+            box-shadow: var(--glass-specular);
             display: none;
             transition: all 0.2s var(--spring-easing);
         }
 
         button.modal-close-btn:hover {
-            background: var(--surface-active);
+            background: var(--glass-bg-active);
         }
     </style>
 </head>
