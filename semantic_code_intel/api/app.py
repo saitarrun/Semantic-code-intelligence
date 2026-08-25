@@ -576,6 +576,7 @@ class OpenFileRequest(BaseModel):
 @app.post("/api/open")
 async def open_file(req: OpenFileRequest):
     """Open a file at a specific line in the default editor (Cursor, VS Code) or macOS Finder."""
+    import shutil
     import subprocess
     t_path, _ = resolve_paths(req.repo_path)
     
@@ -596,18 +597,27 @@ async def open_file(req: OpenFileRequest):
             return {"success": True, "message": f"Revealed {target.name} in Finder", "path": str(target)}
         else:
             line_spec = f"{target}:{line_num}"
-            # Try Cursor first
-            res = subprocess.run(["cursor", "-g", line_spec], capture_output=True, text=True, check=False)
-            if res.returncode != 0:
-                # Try VS Code
+            opened = False
+
+            # 1. Check Cursor CLI
+            if shutil.which("cursor"):
+                res = subprocess.run(["cursor", "-g", line_spec], capture_output=True, text=True, check=False)
+                if res.returncode == 0:
+                    opened = True
+
+            # 2. Check VS Code CLI
+            if not opened and shutil.which("code"):
                 res = subprocess.run(["code", "-g", line_spec], capture_output=True, text=True, check=False)
-            if res.returncode != 0:
-                # Fallback to system default text editor
+                if res.returncode == 0:
+                    opened = True
+
+            # 3. Fallback: macOS system open
+            if not opened:
                 subprocess.run(["open", str(target)], check=False)
 
             return {
                 "success": True,
-                "message": f"Opened {target.name}:{line_num} in editor",
+                "message": f"Opened {target.name}:{line_num}",
                 "path": str(target),
                 "line": line_num
             }
