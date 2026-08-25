@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semantic Code Intelligence Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #21262d;
+      --border-color: #30363d;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --accent-green: #3fb950;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --code-bg: #090d13;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+    body { background-color: var(--bg-primary); color: var(--text-main); line-height: 1.6; padding: 24px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 24px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo h1 { font-size: 1.5rem; color: #fff; font-weight: 600; }
+    .logo span { background: #238636; color: #fff; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
+    .search-panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
+    .search-row { display: flex; gap: 12px; margin-bottom: 14px; }
+    input[type="text"] { flex: 1; padding: 12px 16px; background: var(--bg-primary); border: 1px solid var(--border-color); border-radius: 6px; color: #fff; font-size: 1rem; outline: none; }
+    input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2); }
+    button.btn-primary { background: #238636; color: #fff; border: none; padding: 12px 24px; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    button.btn-primary:hover { background: #2ea043; }
+    .options-row { display: flex; gap: 20px; align-items: center; font-size: 0.88rem; color: var(--text-muted); }
+    select { background: var(--bg-primary); border: 1px solid var(--border-color); color: #fff; padding: 6px 12px; border-radius: 6px; }
+    .metrics-bar { display: none; background: #1f2937; border-left: 4px solid var(--accent-green); padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem; }
+    .metrics-bar.visible { display: flex; justify-content: space-between; align-items: center; }
+    .card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+    .card-header { padding: 12px 16px; background: var(--bg-card); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+    .citation-badge { background: #1f6feb22; border: 1px solid #1f6feb; color: #58a6ff; font-family: monospace; font-size: 0.85rem; padding: 4px 10px; border-radius: 4px; font-weight: 600; }
+    .meta-info { font-size: 0.8rem; color: var(--text-muted); display: flex; gap: 12px; }
+    .card-body { padding: 16px; font-size: 0.9rem; }
+    .card-scope { margin-bottom: 8px; color: #7ee787; font-family: monospace; font-size: 0.85rem; }
+    .card-doc { color: #8b949e; font-style: italic; margin-bottom: 12px; }
+    pre { border-radius: 6px; background: var(--code-bg) !important; padding: 14px; overflow-x: auto; font-size: 0.88rem; }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <h1>Semantic Code Intelligence</h1>
+        <span>FAISS + BM25 + CrossEncoder</span>
+      </div>
+      <div id="repo-stats" style="font-size: 0.85rem; color: var(--text-muted);">Loading stats...</div>
+    </header>
+
+    <div class="search-panel">
+      <div class="search-row">
+        <input type="text" id="query-input" placeholder="e.g. How does user authentication verify passwords or find where database connections are pooled..." autofocus>
+        <button class="btn-primary" id="search-btn" onclick="executeSearch()">Search Code</button>
+      </div>
+      <div class="options-row">
+        <label>Mode: 
+          <select id="mode-select">
+            <option value="hybrid">Hybrid (Dense FAISS + Sparse BM25 + RRF)</option>
+            <option value="dense">Dense Vector Only (FAISS)</option>
+            <option value="sparse">Sparse Lexical Only (BM25)</option>
+          </select>
+        </label>
+        <label>
+          <input type="checkbox" id="rerank-toggle" checked> Cross-Encoder Reranking
+        </label>
+        <label>Top K:
+          <select id="top-k-select">
+            <option value="3">3</option>
+            <option value="5" selected>5</option>
+            <option value="10">10</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div id="metrics-bar" class="metrics-bar">
+      <div id="metrics-text">⚡ Latency: 0ms</div>
+      <div id="status-badge" style="color: var(--accent-green); font-weight: bold;">SUB-SECOND RETRIEVAL</div>
+    </div>
+
+    <div id="results-container">
+      <div class="empty-state">
+        <h3>Ready to search</h3>
+        <p>Type a semantic question or code identifier to search indexed repository.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats');
+        const data = await res.json();
+        document.getElementById('repo-stats').innerText = 
+          `📊 Indexed: ${data.total_files || 0} files | ${Number(data.total_lines || 0).toLocaleString()} LOC | ${data.total_chunks || 0} chunks`;
+      } catch (e) {
+        document.getElementById('repo-stats').innerText = 'Index not yet initialized.';
+      }
+    }
+
+    async function executeSearch() {
+      const query = document.getElementById('query-input').value.trim();
+      if (!query) return;
+
+      const btn = document.getElementById('search-btn');
+      btn.innerText = 'Searching...';
+      btn.disabled = true;
+
+      const mode = document.getElementById('mode-select').value;
+      const use_reranker = document.getElementById('rerank-toggle').checked;
+      const top_k = parseInt(document.getElementById('top-k-select').value);
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, mode, use_reranker, top_k })
+        });
+        const data = await res.json();
+        renderResults(data);
+      } catch (err) {
+        alert('Search failed: ' + err.message);
+      } finally {
+        btn.innerText = 'Search Code';
+        btn.disabled = false;
+      }
+    }
+
+    function renderResults(data) {
+      const mb = document.getElementById('metrics-bar');
+      const mt = document.getElementById('metrics-text');
+      const sb = document.getElementById('status-badge');
+      mb.className = 'metrics-bar visible';
+
+      const lat = data.latency_ms || {};
+      const total = lat.total_ms ? lat.total_ms.toFixed(1) : '0';
+      mt.innerHTML = `⚡ <strong>Total Latency: ${total} ms</strong> (FAISS: ${lat.dense_ms?.toFixed(1) || 0}ms | BM25: ${lat.sparse_ms?.toFixed(1) || 0}ms | Rerank: ${lat.rerank_ms?.toFixed(1) || 0}ms)`;
+      
+      if (lat.total_ms < 1000) {
+        sb.innerText = '⚡ SUB-SECOND RETRIEVAL (PASS)';
+        sb.style.color = '#3fb950';
+      } else {
+        sb.innerText = '⚠️ > 1.0s';
+        sb.style.color = '#d29922';
+      }
+
+      const container = document.getElementById('results-container');
+      if (!data.results || data.results.length === 0) {
+        container.innerHTML = `<div class="empty-state"><h3>No results found</h3><p>Try refining your search terms.</p></div>`;
+        return;
+      }
+
+      let html = '';
+      data.results.forEach((r, idx) => {
+        const symbol = r.symbol_name ? `<span style="color: #58a6ff;">${r.symbol_type}: ${r.symbol_name}</span>` : '';
+        html += `
+          <div class="card">
+            <div class="card-header">
+              <span class="citation-badge">#${idx+1} ${r.citation}</span>
+              <div class="meta-info">
+                <span>Score: <strong>${r.score.toFixed(4)}</strong></span>
+                <span>Language: <strong>${r.language}</strong></span>
+                ${symbol}
+              </div>
+            </div>
+            <div class="card-body">
+              ${r.context_header ? `<div class="card-scope">Scope: ${r.context_header}</div>` : ''}
+              ${r.docstring ? `<div class="card-doc">"${r.docstring.trim()}"</div>` : ''}
+              <pre><code class="language-${r.language}">${escapeHtml(r.content)}</code></pre>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+      hljs.highlightAll();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+    document.getElementById('query-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') executeSearch();
+    });
+
+    loadStats();
+  </script>
+</body>
+</html>

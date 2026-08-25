@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3*
+*.faiss*
+*.pkl
+.pytest_cache/
+.coverage
+benchmark_*_run/
+benchmark_workspace/
+.code_intel_index/
+.DS_Store
+*.egg-info/
+dist/
+build/
