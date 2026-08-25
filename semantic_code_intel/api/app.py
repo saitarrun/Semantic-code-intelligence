@@ -1,6 +1,7 @@
 """
 FastAPI REST API and Web Interface Server for Semantic Code Intelligence Platform.
-Supports real-time SSE progress streaming, dynamic repository selection, indexing, and querying.
+Supports real-time SSE progress streaming, dynamic repository selection, indexing,
+interactive call-graphs, streaming synthesis, multi-file diff patching, and background file watching.
 """
 
 from __future__ import annotations
@@ -19,16 +20,19 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from semantic_code_intel.config import CodeIntelConfig, DEFAULT_CONFIG
+from semantic_code_intel.generation.patcher import CodePatcher
 from semantic_code_intel.generation.synthesizer import CodeSynthesizer
+from semantic_code_intel.graph.symbol_graph import SymbolGraphEngine
 from semantic_code_intel.indexing.engine import HybridIndexer
+from semantic_code_intel.indexing.watcher import CodebaseWatcher
 from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
 
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Semantic Code Intelligence API",
-    description="Local-first hybrid code search with FAISS, BM25, and Cross-Encoder reranking",
-    version="0.1.0"
+    description="Local-first hybrid code search with FAISS, BM25, Cross-Encoder reranking, AST graphs, and streaming synthesis",
+    version="0.2.0"
 )
 
 app.add_middleware(
@@ -46,6 +50,7 @@ if STATIC_DIR.exists():
 _PIPELINES: Dict[str, HybridRetrievalPipeline] = {}
 _ACTIVE_REPO_PATH: Path = Path.cwd()
 _ACTIVE_INDEX_PATH: Optional[Path] = None
+_WATCHER: Optional[CodebaseWatcher] = None
 
 # Exported for tests
 config: CodeIntelConfig = DEFAULT_CONFIG
@@ -99,39 +104,38 @@ def resolve_paths(target_dir: Optional[str] = None, index_dir: Optional[str] = N
         else:
             i_path = (t_path / ".code_intel_index").resolve()
     else:
-        i_path = (t_path / ".code_intel_index").resolve()
+        i_path = None
 
     return t_path, i_path
 
 
-def get_pipeline(target_dir: Optional[str] = None, index_dir: Optional[str] = None) -> HybridRetrievalPipeline:
-    """Retrieve or instantiate a cached HybridRetrievalPipeline for the target repository."""
-    global pipeline, config
-    if target_dir is None and index_dir is None:
-        if config.project_root != Path.cwd() or config.index_dir is not None:
-            if pipeline is None or pipeline.config != config:
-                pipeline = HybridRetrievalPipeline(config)
-            return pipeline
+def get_pipeline(repo_path: Optional[str] = None, index_path: Optional[str] = None) -> HybridRetrievalPipeline:
+    """Get or initialize a cached HybridRetrievalPipeline instance for a specific repository."""
+    global _PIPELINES, _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH, config, pipeline
 
-    t_path, i_path = resolve_paths(target_dir, index_dir)
+    t_path, i_path = resolve_paths(repo_path, index_path)
     cache_key = f"{t_path}::{i_path}"
-    
+
     if cache_key not in _PIPELINES:
         cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
         _PIPELINES[cache_key] = HybridRetrievalPipeline(cfg)
-    
+
+    _ACTIVE_REPO_PATH = t_path
+    _ACTIVE_INDEX_PATH = i_path
+    config = _PIPELINES[cache_key].config
+    pipeline = _PIPELINES[cache_key]
     return _PIPELINES[cache_key]
 
 
-# Request/Response Models
+# Pydantic Schemas
 class SearchRequest(BaseModel):
-    query: str = Field(..., description="Query string or question")
+    query: str
+    repo_path: Optional[str] = Field(default=None, description="Repository directory path")
+    index_path: Optional[str] = Field(default=None, description="Custom index directory path")
     top_k: int = Field(default=5, ge=1, le=50)
     mode: str = Field(default="hybrid", description="'hybrid', 'dense', or 'sparse'")
     rerank: bool = Field(default=True)
-    use_reranker: Optional[bool] = Field(default=None)
-    repo_path: Optional[str] = Field(default=None)
-    index_path: Optional[str] = Field(default=None)
+    use_reranker: Optional[bool] = None
 
 
 class SearchResultItem(BaseModel):
@@ -145,7 +149,7 @@ class SearchResultItem(BaseModel):
     score: float
     citation: str
     code: str
-    content: Optional[str] = None
+    content: str
     dense_score: Optional[float] = None
     sparse_score: Optional[float] = None
     rerank_score: Optional[float] = None
@@ -162,10 +166,10 @@ class SearchResponse(BaseModel):
 
 class SynthesizeRequest(BaseModel):
     query: str
+    repo_path: Optional[str] = None
+    index_path: Optional[str] = None
     top_k: int = Field(default=5, ge=1, le=20)
-    provider: str = Field(default="extractive")
-    repo_path: Optional[str] = Field(default=None)
-    index_path: Optional[str] = Field(default=None)
+    provider: str = Field(default="local")
 
 
 class SynthesizeResponse(BaseModel):
@@ -173,6 +177,17 @@ class SynthesizeResponse(BaseModel):
     answer: str
     citations: List[str]
     latency_ms: Dict[str, float]
+
+
+class PatchGenerateRequest(BaseModel):
+    instruction: str
+    repo_path: Optional[str] = None
+    top_k: int = Field(default=3)
+
+
+class PatchApplyRequest(BaseModel):
+    diff: str
+    repo_path: Optional[str] = None
 
 
 class IndexRequest(BaseModel):
@@ -251,30 +266,25 @@ async def get_stats(repo_path: Optional[str] = None, index_path: Optional[str] =
 
 
 @app.get("/api/index/stream")
-async def stream_index(
-    target_dir: str = Query(default="."),
-    index_dir: Optional[str] = Query(default=None),
-    force: bool = Query(default=False)
+async def stream_indexing(
+    target_dir: str = Query(default=".", description="Target repo directory"),
+    force: bool = Query(default=True, description="Force complete re-indexing")
 ):
-    """
-    Stream live Server-Sent Events (SSE) showing granular percentage, stage,
-    and message updates during repository indexing.
-    """
-    global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH
-    t_path, i_path = resolve_paths(target_dir, index_dir)
+    """Real-time SSE progress streaming endpoint for indexing animations."""
+    t_path, i_path = resolve_paths(target_dir)
 
     if not t_path.exists():
-        raise HTTPException(status_code=404, detail=f"Target directory not found: {t_path}")
+        raise HTTPException(status_code=404, detail=f"Target path does not exist: {t_path}")
 
-    event_q = queue.Queue()
+    event_q: queue.Queue = queue.Queue()
 
-    def progress_callback(stage: str, current: int, total: int, message: str = "", percentage: float = 0.0):
+    def progress_handler(stage: str, current: int, total: int, message: str = "", percentage: float = 0.0):
         event_q.put({
             "stage": stage,
             "current": current,
             "total": total,
-            "message": message,
-            "percentage": percentage
+            "percentage": round(percentage, 1),
+            "message": message
         })
 
     def run_indexer():
@@ -284,20 +294,22 @@ async def stream_index(
             metrics = indexer.index_codebase(
                 target_dir=t_path,
                 force_reindex=force,
-                progress_callback=progress_callback
+                progress_callback=progress_handler
             )
-            # Invalidate pipeline cache
             cache_key = f"{t_path}::{cfg.get_index_dir()}"
             if cache_key in _PIPELINES:
                 del _PIPELINES[cache_key]
 
             event_q.put({
                 "stage": "done",
-                "current": int(metrics.get("total_chunks", 0)),
-                "total": int(metrics.get("total_chunks", 0)),
-                "message": f"Successfully indexed {int(metrics.get('total_lines', 0)):,} lines of code across {int(metrics.get('total_files', 0)):,} files in {metrics.get('elapsed_seconds', 0):.2f}s!",
                 "percentage": 100.0,
-                "metrics": metrics
+                "message": f"Successfully indexed {metrics.total_files} files ({metrics.total_lines:,} LOC).",
+                "metrics": {
+                    "total_files": metrics.total_files,
+                    "total_lines": metrics.total_lines,
+                    "total_chunks": metrics.total_chunks,
+                    "indexing_time_seconds": metrics.indexing_time_seconds
+                }
             })
         except Exception as e:
             logger.exception("Indexing failed in background thread")
@@ -307,7 +319,7 @@ async def stream_index(
                 "percentage": 0.0
             })
         finally:
-            event_q.put(None)  # Sentinel to end stream
+            event_q.put(None)
 
     threading.Thread(target=run_indexer, daemon=True).start()
 
@@ -326,7 +338,6 @@ async def stream_index(
 @app.post("/api/index")
 async def trigger_index(req: IndexRequest):
     """Synchronous indexing fallback endpoint."""
-    global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH
     t_path, i_path = resolve_paths(req.target_dir, req.index_dir)
     
     if not t_path.exists():
@@ -339,9 +350,6 @@ async def trigger_index(req: IndexRequest):
     cache_key = f"{t_path}::{cfg.get_index_dir()}"
     if cache_key in _PIPELINES:
         del _PIPELINES[cache_key]
-
-    _ACTIVE_REPO_PATH = t_path
-    _ACTIVE_INDEX_PATH = cfg.get_index_dir()
 
     return {
         "status": "indexed",
@@ -396,16 +404,30 @@ async def search_code(req: SearchRequest):
         for r in res.results
     ]
 
-    latency_dict = res.latency.to_dict()
-
     return SearchResponse(
         query=req.query,
         repo_path=str(t_path),
         total_results=len(items),
         results=items,
-        latency_ms=latency_dict,
+        latency_ms=res.latency.to_dict(),
         index_status="ready"
     )
+
+
+# --- ADVANCED CAPABILITIES ENDPOINTS ---
+
+@app.get("/api/graph")
+async def get_symbol_graph(
+    repo_path: Optional[str] = None,
+    symbol: Optional[str] = None,
+    limit: int = 60
+):
+    """Retrieve the interactive symbol dependency and call graph."""
+    t_path, i_path = resolve_paths(repo_path)
+    cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
+    engine = SymbolGraphEngine(cfg)
+    graph_data = engine.extract_graph(target_symbol=symbol, limit_nodes=limit)
+    return graph_data
 
 
 @app.post("/api/synthesize", response_model=SynthesizeResponse)
@@ -422,7 +444,7 @@ async def ask_or_synthesize(req: SynthesizeRequest):
         )
 
     res = p.query(query_text=req.query, top_k=req.top_k, use_reranker=True)
-    synthesizer = CodeSynthesizer(provider=req.provider)
+    synthesizer = CodeSynthesizer(p.config, provider=req.provider)
     answer = synthesizer.synthesize(req.query, res.results)
 
     return SynthesizeResponse(
@@ -431,3 +453,73 @@ async def ask_or_synthesize(req: SynthesizeRequest):
         citations=answer.citations,
         latency_ms=res.latency.to_dict()
     )
+
+
+@app.post("/api/synthesize/stream")
+async def stream_synthesis(req: SynthesizeRequest):
+    """Stream AI / Extractive structured explanation for a query."""
+    t_path, i_path = resolve_paths(req.repo_path, req.index_path)
+    p = get_pipeline(str(t_path), str(i_path) if i_path else None)
+
+    if not p.is_indexed():
+        raise HTTPException(status_code=400, detail=f"Repository {t_path} is not indexed.")
+
+    res = p.query(query_text=req.query, top_k=req.top_k, use_reranker=True)
+    synthesizer = CodeSynthesizer(p.config)
+
+    async def event_generator():
+        async for chunk in synthesizer.stream_synthesis(req.query, res.results):
+            yield f"data: {chunk}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@app.post("/api/patch/generate")
+async def generate_patch(req: PatchGenerateRequest):
+    """Generate a multi-file unified diff based on the user's refactoring instruction."""
+    t_path, i_path = resolve_paths(req.repo_path)
+    p = get_pipeline(str(t_path), str(i_path) if i_path else None)
+
+    if not p.is_indexed():
+        raise HTTPException(status_code=400, detail=f"Repository {t_path} is not indexed.")
+
+    res = p.query(query_text=req.instruction, top_k=req.top_k, use_reranker=True)
+    patcher = CodePatcher(p.config)
+    result = patcher.generate_refactoring_diff(req.instruction, res.results)
+    return result
+
+
+@app.post("/api/patch/apply")
+async def apply_patch(req: PatchApplyRequest):
+    """Safely apply a generated diff to the repository with rollback protection."""
+    t_path, i_path = resolve_paths(req.repo_path)
+    cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
+    patcher = CodePatcher(cfg)
+    result = patcher.apply_patch(req.diff)
+    return result
+
+
+@app.get("/api/watcher/status")
+async def get_watcher_status():
+    """Check background incremental watcher status."""
+    global _WATCHER
+    return {
+        "running": _WATCHER.is_running if _WATCHER else False,
+        "watched_root": str(_WATCHER.config.project_root) if _WATCHER and _WATCHER.is_running else None
+    }
+
+
+@app.post("/api/watcher/toggle")
+async def toggle_watcher(repo_path: Optional[str] = None):
+    """Toggle background file watcher on/off."""
+    global _WATCHER
+    t_path, _ = resolve_paths(repo_path)
+    
+    if _WATCHER and _WATCHER.is_running:
+        _WATCHER.stop()
+        return {"running": False, "message": "Watcher stopped"}
+    else:
+        cfg = CodeIntelConfig(project_root=t_path)
+        _WATCHER = CodebaseWatcher(config=cfg)
+        _WATCHER.start()
+        return {"running": True, "watched_root": str(t_path), "message": "Watcher active"}

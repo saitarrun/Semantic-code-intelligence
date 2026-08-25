@@ -11,11 +11,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           True-Black Frosted Glassmorphism Design System
-           Refractive Glass Layers + Apple HIG Spacing + Figma Geometry
+           True-Black Frosted Glassmorphism Design System (Apple HIG + Figma)
            ========================================================================== */
         :root {
-            /* 1. Spatial Grid (8-Point Grid) */
+            /* 8-Point Spatial Grid */
             --space-1: 4px;
             --space-2: 8px;
             --space-3: 12px;
@@ -25,7 +24,7 @@
             --space-8: 32px;
             --space-12: 48px;
 
-            /* 2. Glassmorphic Surfaces (Multi-Layer Translucency) */
+            /* Glassmorphic Surfaces */
             --glass-bg-nav: rgba(10, 10, 14, 0.72);
             --glass-bg-toolbar: rgba(12, 12, 16, 0.55);
             --glass-bg-panel: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
@@ -35,14 +34,14 @@
             --glass-bg-active: rgba(255, 255, 255, 0.12);
             --glass-bg-subtle: rgba(255, 255, 255, 0.03);
 
-            /* 3. Refractive Edges & Specular Lighting */
+            /* Refraction Edges */
             --glass-border: rgba(255, 255, 255, 0.10);
             --glass-border-medium: rgba(255, 255, 255, 0.16);
             --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
             --glass-blur: blur(40px) saturate(210%);
             --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.75);
 
-            /* 4. Apple System Accents */
+            /* Apple Accents */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
             --system-blue-tint: rgba(10, 132, 255, 0.16);
@@ -50,9 +49,10 @@
             --system-green-tint: rgba(48, 209, 88, 0.14);
             --system-orange: #FF9F0A;
             --system-orange-tint: rgba(255, 159, 10, 0.14);
-            --system-red: #FF453A;
+            --system-purple: #BF5AF2;
+            --system-purple-tint: rgba(191, 90, 242, 0.14);
 
-            /* 5. Typography & High Contrast Labels */
+            /* Labels */
             --label-primary: #FFFFFF;
             --label-secondary: rgba(255, 255, 255, 0.70);
             --label-tertiary: rgba(255, 255, 255, 0.40);
@@ -61,7 +61,6 @@
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
 
-            /* 6. Radii & Curves */
             --radius-sm: 6px;
             --radius-md: 10px;
             --radius-lg: 16px;
@@ -158,7 +157,7 @@
         .nav-status {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
+            gap: var(--space-3);
         }
 
         .status-indicator {
@@ -183,6 +182,16 @@
 
         .status-dot.idle {
             background: var(--system-orange);
+        }
+
+        .status-dot.pulsing {
+            box-shadow: 0 0 8px var(--system-green);
+            animation: pulseDot 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
         }
 
         /* Repository Control Toolbar */
@@ -291,7 +300,7 @@
         .toolbar-meta {
             display: flex;
             align-items: center;
-            gap: var(--space-5);
+            gap: var(--space-4);
             font-size: 0.8rem;
             color: var(--label-secondary);
         }
@@ -335,6 +344,36 @@
             transform: scale(0.98);
         }
 
+        /* Workspace Tab Navigation */
+        .workspace-tabs-row {
+            display: flex;
+            gap: var(--space-2);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 var(--space-2);
+        }
+
+        .workspace-tab {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: var(--label-tertiary);
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: var(--space-2) var(--space-4);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .workspace-tab:hover {
+            color: var(--label-primary);
+        }
+
+        .workspace-tab.active {
+            color: var(--system-blue);
+            border-bottom-color: var(--system-blue);
+        }
+
         /* Main Workspace Container */
         main {
             position: relative;
@@ -343,13 +382,23 @@
             max-width: 1040px;
             width: 100%;
             margin: 0 auto;
-            padding: var(--space-8) var(--space-6);
+            padding: var(--space-6) var(--space-6) var(--space-12) var(--space-6);
             display: flex;
             flex-direction: column;
             gap: var(--space-6);
         }
 
-        /* Frosted Glass Search Card */
+        .tab-content-view {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-6);
+        }
+
+        .tab-content-view.hidden {
+            display: none;
+        }
+
+        /* Frosted Glass Panels */
         .glass-panel {
             background: var(--glass-bg-panel);
             backdrop-filter: var(--glass-blur);
@@ -638,16 +687,6 @@
             font-weight: 600;
         }
 
-        .results-summary-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8rem;
-            color: var(--label-tertiary);
-            padding: 0 var(--space-1);
-            display: none;
-        }
-
         /* Frosted Glass Code Cards */
         .results-list {
             display: flex;
@@ -791,49 +830,81 @@
             font-size: 0.72rem;
         }
 
-        /* Shimmer Loading Skeleton */
-        .skeleton-card {
+        /* Synthesizer & Explanation Output Card */
+        .synthesis-card {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
-            padding: var(--space-5);
+            box-shadow: var(--glass-specular), var(--glass-shadow);
+            padding: var(--space-6);
             display: flex;
             flex-direction: column;
-            gap: var(--space-3);
-            animation: pulseShimmer 1.5s infinite ease-in-out;
+            gap: var(--space-4);
+            line-height: 1.6;
         }
 
-        .skeleton-bar {
-            height: 14px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
+        .synthesis-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--label-primary);
         }
 
-        @keyframes pulseShimmer {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-
-        .empty-placeholder {
-            text-align: center;
-            padding: var(--space-12) var(--space-6);
-            color: var(--label-tertiary);
-        }
-
-        .empty-title {
+        .synthesis-card h4 {
             font-size: 0.95rem;
-            font-weight: 500;
+            font-weight: 600;
             color: var(--label-secondary);
-            margin-bottom: var(--space-1);
+            margin-top: var(--space-3);
         }
 
-        .empty-desc {
+        .synthesis-card a {
+            color: var(--system-blue);
+            text-decoration: none;
+        }
+
+        .synthesis-card a:hover {
+            text-decoration: underline;
+        }
+
+        /* Graph Visualization Canvas */
+        .graph-container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            height: 480px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Unified Diff Container */
+        .diff-container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            font-family: var(--font-mono);
             font-size: 0.82rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            overflow-x: auto;
         }
 
-        /* Frosted Glass Indexing Modal */
+        .diff-added {
+            color: var(--system-green);
+            background: rgba(48, 209, 88, 0.1);
+        }
+
+        .diff-removed {
+            color: var(--system-red);
+            background: rgba(255, 69, 58, 0.1);
+        }
+
+        /* Glassmorphic Indexing Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
@@ -975,9 +1046,13 @@
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
-            <span class="nav-badge">Hybrid RAG</span>
+            <span class="nav-badge">v0.2.0 • MCP & Graph Ready</span>
         </div>
         <div class="nav-status">
+            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Click to toggle background file watcher">
+                <span class="status-dot" id="watcherDot"></span>
+                <span id="watcherStatusText">Watcher: Off</span>
+            </div>
             <div class="status-indicator">
                 <span class="status-dot" id="systemStatusDot"></span>
                 <span id="systemStatusText">Ready</span>
@@ -1027,91 +1102,161 @@
 
     <!-- Main Workspace -->
     <main>
-        <!-- Suggestions Row -->
-        <div class="suggestions-row" id="suggestionsBox">
-            <span>Suggested:</span>
-            <span id="suggestionsList"></span>
+        <!-- Workspace Tabs -->
+        <div class="workspace-tabs-row">
+            <button class="workspace-tab active" data-tab="search" onclick="switchTab('search')">Search & Citations</button>
+            <button class="workspace-tab" data-tab="synthesize" onclick="switchTab('synthesize')">AI Synthesizer</button>
+            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Symbol Call-Graph</button>
+            <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Diff Patcher</button>
         </div>
 
-        <!-- Glass Search Card -->
-        <div class="glass-panel">
-            <div class="search-row">
-                <div class="search-input-wrapper">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="apple-search-input"
-                        placeholder="Search code logic, function names, error workflows..."
-                        autocomplete="off"
-                    />
-                    <span class="search-shortcut-badge">/</span>
-                </div>
-                <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
+        <!-- 1. SEARCH TAB -->
+        <div id="tab-search" class="tab-content-view">
+            <!-- Suggestions Row -->
+            <div class="suggestions-row" id="suggestionsBox">
+                <span>Suggested:</span>
+                <span id="suggestionsList"></span>
             </div>
 
-            <div class="controls-row">
-                <div class="controls-left">
-                    <!-- Segmented Mode Control -->
-                    <div class="segmented-control">
-                        <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
-                        <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
-                        <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
+            <!-- Glass Search Card -->
+            <div class="glass-panel">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            class="apple-search-input"
+                            placeholder="Search code logic, function names, error workflows..."
+                            autocomplete="off"
+                        />
+                        <span class="search-shortcut-badge">/</span>
                     </div>
-
-                    <!-- Top K Result Limit Filter -->
-                    <div class="topk-control">
-                        <button class="topk-btn" data-topk="3" onclick="setTopK(3)">3</button>
-                        <button class="topk-btn active" data-topk="5" onclick="setTopK(5)">5</button>
-                        <button class="topk-btn" data-topk="10" onclick="setTopK(10)">10</button>
-                    </div>
+                    <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
                 </div>
 
-                <!-- Apple Switch for Reranker -->
-                <label class="switch-control">
-                    <span class="apple-switch">
-                        <input type="checkbox" id="rerankToggle" checked>
-                        <span class="slider"></span>
-                    </span>
-                    <span>Cross-Encoder Reranking</span>
-                </label>
+                <div class="controls-row">
+                    <div class="controls-left">
+                        <div class="segmented-control">
+                            <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
+                            <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
+                            <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
+                        </div>
+
+                        <div class="topk-control">
+                            <button class="topk-btn" data-topk="3" onclick="setTopK(3)">3</button>
+                            <button class="topk-btn active" data-topk="5" onclick="setTopK(5)">5</button>
+                            <button class="topk-btn" data-topk="10" onclick="setTopK(10)">10</button>
+                        </div>
+                    </div>
+
+                    <label class="switch-control">
+                        <span class="apple-switch">
+                            <input type="checkbox" id="rerankToggle" checked>
+                            <span class="slider"></span>
+                        </span>
+                        <span>Cross-Encoder Reranking</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Latency Telemetry Row -->
+            <div class="telemetry-row" id="latencyDashboard">
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Dense Vector</div>
+                    <div class="telemetry-value" id="denseLatency">-- ms</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Sparse BM25</div>
+                    <div class="telemetry-value" id="bm25Latency">-- ms</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Rank Fusion</div>
+                    <div class="telemetry-value" id="rrfLatency">-- ms</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Reranker</div>
+                    <div class="telemetry-value" id="rerankLatency">-- ms</div>
+                </div>
+                <div class="telemetry-item">
+                    <div class="telemetry-label">Total Latency</div>
+                    <div class="telemetry-value accent" id="totalLatency">-- ms</div>
+                </div>
+            </div>
+
+            <!-- Results List -->
+            <div class="results-list" id="resultsContainer">
+                <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
+                    Enter a query above to retrieve exact line citations.
+                </div>
             </div>
         </div>
 
-        <!-- Latency Telemetry Row -->
-        <div class="telemetry-row" id="latencyDashboard">
-            <div class="telemetry-item">
-                <div class="telemetry-label">Dense Vector</div>
-                <div class="telemetry-value" id="denseLatency">-- ms</div>
+        <!-- 2. AI SYNTHESIZER TAB -->
+        <div id="tab-synthesize" class="tab-content-view hidden">
+            <div class="glass-panel">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="synthInput"
+                            class="apple-search-input"
+                            placeholder="Ask an architectural question (e.g. 'How does the rate limiter handle exponential backoff?')"
+                        />
+                    </div>
+                    <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
+                </div>
             </div>
-            <div class="telemetry-item">
-                <div class="telemetry-label">Sparse BM25</div>
-                <div class="telemetry-value" id="bm25Latency">-- ms</div>
-            </div>
-            <div class="telemetry-item">
-                <div class="telemetry-label">Rank Fusion</div>
-                <div class="telemetry-value" id="rrfLatency">-- ms</div>
-            </div>
-            <div class="telemetry-item">
-                <div class="telemetry-label">Reranker</div>
-                <div class="telemetry-value" id="rerankLatency">-- ms</div>
-            </div>
-            <div class="telemetry-item">
-                <div class="telemetry-label">Total Latency</div>
-                <div class="telemetry-value accent" id="totalLatency">-- ms</div>
+
+            <div class="synthesis-card" id="synthesisOutput" style="display: none;">
+                <div id="synthesisContent"></div>
             </div>
         </div>
 
-        <!-- Results Header Summary -->
-        <div class="results-summary-row" id="resultsSummaryRow">
-            <span id="resultsCountText">Showing 0 results</span>
-            <span id="resultsLatencyText"></span>
+        <!-- 3. SYMBOL CALL-GRAPH TAB -->
+        <div id="tab-graph" class="tab-content-view hidden">
+            <div class="glass-panel">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="graphSymbolInput"
+                            class="apple-search-input"
+                            placeholder="Filter by symbol (e.g. 'LeaderElector', 'parse_file', 'HybridIndexer') or leave empty for global"
+                        />
+                    </div>
+                    <button class="apple-btn-primary" onclick="loadSymbolGraph()">Render Graph</button>
+                </div>
+            </div>
+
+            <div class="graph-container" id="graphCanvas">
+                <div style="color: var(--label-tertiary); font-size: 0.85rem;" id="graphPlaceholder">
+                    Click "Render Graph" to inspect callers, callees, and dependencies.
+                </div>
+                <svg id="graphSvg" style="width: 100%; height: 100%; display: none;"></svg>
+            </div>
         </div>
 
-        <!-- Results List -->
-        <div class="results-list" id="resultsContainer">
-            <div class="empty-placeholder">
-                <div class="empty-title">No Search Results</div>
-                <div class="empty-desc">Enter a query above to retrieve exact line citations.</div>
+        <!-- 4. DIFF PATCHER TAB -->
+        <div id="tab-diff" class="tab-content-view hidden">
+            <div class="glass-panel">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <input
+                            type="text"
+                            id="diffInstructionInput"
+                            class="apple-search-input"
+                            placeholder="Describe refactoring instruction (e.g. 'Add input type validation to pipeline search method')"
+                        />
+                    </div>
+                    <button class="apple-btn-primary" onclick="generateDiffPatch()">Generate Patch</button>
+                </div>
+            </div>
+
+            <div id="patchOutputPanel" style="display: none; display: flex; flex-direction: column; gap: var(--space-4);">
+                <div class="diff-container" id="diffContent"></div>
+                <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+                    <button class="apple-btn-secondary" onclick="applyGeneratedPatch()">Apply to Codebase</button>
+                </div>
             </div>
         </div>
     </main>
@@ -1149,6 +1294,7 @@
     <script>
         let currentMode = 'hybrid';
         let currentTopK = 5;
+        let activeTab = 'search';
 
         const SAMPLE_QUERIES = {
             '.': [
@@ -1173,14 +1319,30 @@
             ]
         };
 
-        // Keyboard Shortcut: '/' focuses search, 'Esc' dismisses
+        function switchTab(tabName) {
+            activeTab = tabName;
+            document.querySelectorAll('.workspace-tab').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tabName);
+            });
+            document.querySelectorAll('.tab-content-view').forEach(v => {
+                v.classList.add('hidden');
+            });
+            const target = document.getElementById(`tab-${tabName}`);
+            if (target) target.classList.remove('hidden');
+
+            if (tabName === 'graph') {
+                loadSymbolGraph();
+            }
+        }
+
+        // Global shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
                 e.preventDefault();
-                document.getElementById('searchInput').focus();
+                if (activeTab === 'search') document.getElementById('searchInput').focus();
+                else if (activeTab === 'synthesize') document.getElementById('synthInput').focus();
             } else if (e.key === 'Escape') {
                 closeIndexingModal();
-                document.getElementById('searchInput').blur();
             }
         });
 
@@ -1220,11 +1382,42 @@
 
             updateSampleQueries();
             await loadRepoStats();
+            await checkWatcherStatus();
         }
 
         async function onCustomPathChanged() {
             updateSampleQueries();
             await loadRepoStats();
+            await checkWatcherStatus();
+        }
+
+        async function checkWatcherStatus() {
+            try {
+                const res = await fetch('/api/watcher/status');
+                const data = await res.json();
+                const dot = document.getElementById('watcherDot');
+                const text = document.getElementById('watcherStatusText');
+                if (data.running) {
+                    dot.className = 'status-dot pulsing';
+                    text.textContent = 'Watcher: Live';
+                } else {
+                    dot.className = 'status-dot idle';
+                    text.textContent = 'Watcher: Off';
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function toggleWatcher() {
+            const target = getActiveTarget();
+            try {
+                const res = await fetch(`/api/watcher/toggle?repo_path=${encodeURIComponent(target)}`, { method: 'POST' });
+                const data = await res.json();
+                await checkWatcherStatus();
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         async function loadRepoStats() {
@@ -1308,38 +1501,9 @@
 
                 eventSource.onerror = function() {
                     if (eventSource) eventSource.close();
-                    fallbackFetchIndex(target);
                 };
             } catch (err) {
-                fallbackFetchIndex(target);
-            }
-        }
-
-        async function fallbackFetchIndex(target) {
-            const statusText = document.getElementById('modalStatusPill');
-            const closeBtn = document.getElementById('btnModalClose');
-            const fillBar = document.getElementById('cleanProgressBar');
-            const pctText = document.getElementById('percentageClean');
-
-            statusText.textContent = 'Indexing in background...';
-            fillBar.style.width = '80%';
-            pctText.textContent = '80%';
-
-            try {
-                const res = await fetch('/api/index', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ target_dir: target, force: true })
-                });
-                const data = await res.json();
-                fillBar.style.width = '100%';
-                pctText.textContent = '100%';
-                statusText.textContent = `Completed ${data.metrics.total_lines} LOC in ${data.metrics.total_files} files.`;
-                closeBtn.style.display = 'block';
-                loadRepoStats();
-            } catch (e) {
-                statusText.textContent = 'Indexing error: ' + (e.message || e);
-                closeBtn.style.display = 'block';
+                console.error(err);
             }
         }
 
@@ -1399,6 +1563,10 @@
             if (e.key === 'Enter') performSearch();
         });
 
+        document.getElementById('synthInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startStreamingSynthesis();
+        });
+
         async function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
@@ -1406,21 +1574,7 @@
             const target = getActiveTarget();
             const searchBtn = document.getElementById('searchBtn');
             const container = document.getElementById('resultsContainer');
-            
             searchBtn.textContent = 'Searching...';
-
-            container.innerHTML = `
-                <div class="skeleton-card">
-                    <div class="skeleton-bar" style="width: 40%;"></div>
-                    <div class="skeleton-bar" style="width: 85%;"></div>
-                    <div class="skeleton-bar" style="width: 70%;"></div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-bar" style="width: 50%;"></div>
-                    <div class="skeleton-bar" style="width: 90%;"></div>
-                    <div class="skeleton-bar" style="width: 65%;"></div>
-                </div>
-            `;
 
             const rerank = document.getElementById('rerankToggle').checked;
 
@@ -1441,12 +1595,6 @@
                 renderResults(data);
             } catch (err) {
                 console.error(err);
-                container.innerHTML = `
-                    <div class="empty-placeholder">
-                        <div class="empty-title">Search Error</div>
-                        <div class="empty-desc">${err.message}</div>
-                    </div>
-                `;
             } finally {
                 searchBtn.textContent = 'Search';
             }
@@ -1465,17 +1613,14 @@
         function renderResults(data) {
             const container = document.getElementById('resultsContainer');
             const latencyDash = document.getElementById('latencyDashboard');
-            const summaryRow = document.getElementById('resultsSummaryRow');
 
             if (data.index_status === 'not_indexed') {
                 container.innerHTML = `
-                    <div class="empty-placeholder">
-                        <div class="empty-title">Repository Not Indexed</div>
-                        <div class="empty-desc">The repository at <code>${data.repo_path}</code> must be indexed first.</div>
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
+                        Repository <code>${data.repo_path}</code> must be indexed first.
                     </div>
                 `;
                 latencyDash.style.display = 'none';
-                summaryRow.style.display = 'none';
                 return;
             }
 
@@ -1485,23 +1630,16 @@
                 document.getElementById('bm25Latency').textContent = `${(data.latency_ms.sparse_search_ms || 0).toFixed(1)} ms`;
                 document.getElementById('rrfLatency').textContent = `${(data.latency_ms.rrf_fusion_ms || 0).toFixed(2)} ms`;
                 document.getElementById('rerankLatency').textContent = `${(data.latency_ms.reranker_ms || 0).toFixed(1)} ms`;
-                
                 const total = (data.latency_ms.total_end_to_end_ms || data.latency_ms.total_ms || 0).toFixed(1);
                 document.getElementById('totalLatency').textContent = `${total} ms`;
-
-                summaryRow.style.display = 'flex';
-                document.getElementById('resultsCountText').textContent = `Showing ${data.results.length} results`;
-                document.getElementById('resultsLatencyText').textContent = `Retrieved in ${total} ms`;
             }
 
             if (!data.results || data.results.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-placeholder">
-                        <div class="empty-title">No Matches Found</div>
-                        <div class="empty-desc">Try modifying the search query or changing retrieval modes.</div>
+                    <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
+                        No matches found.
                     </div>
                 `;
-                summaryRow.style.display = 'none';
                 return;
             }
 
@@ -1548,6 +1686,222 @@
             document.querySelectorAll('pre code').forEach((el) => {
                 hljs.highlightElement(el);
             });
+        }
+
+        /* --- STREAMING SYNTHESIS --- */
+        async function startStreamingSynthesis() {
+            const query = document.getElementById('synthInput').value.trim();
+            if (!query) return;
+
+            const target = getActiveTarget();
+            const outCard = document.getElementById('synthesisOutput');
+            const outContent = document.getElementById('synthesisContent');
+            const btn = document.getElementById('btnSynthesize');
+
+            outCard.style.display = 'block';
+            outContent.innerHTML = 'Synthesizing technical explanation...';
+            btn.textContent = 'Generating...';
+
+            try {
+                const res = await fetch('/api/synthesize/stream', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, repo_path: target, top_k: 4 })
+                });
+
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+
+                outContent.innerHTML = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const parsed = JSON.parse(line.slice(6));
+                                if (parsed.type === 'content' && parsed.delta) {
+                                    fullText += parsed.delta;
+                                    outContent.innerHTML = formatMarkdown(fullText);
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+            } catch (err) {
+                outContent.innerHTML = `Synthesis error: ${err.message}`;
+            } finally {
+                btn.textContent = 'Explain';
+            }
+        }
+
+        /* --- SYMBOL GRAPH VISUALIZER --- */
+        async function loadSymbolGraph() {
+            const target = getActiveTarget();
+            const symbol = document.getElementById('graphSymbolInput').value.trim();
+            const placeholder = document.getElementById('graphPlaceholder');
+            const svg = document.getElementById('graphSvg');
+
+            placeholder.textContent = 'Analyzing symbol references and building AST call graph...';
+            placeholder.style.display = 'block';
+            svg.style.display = 'none';
+
+            try {
+                const res = await fetch(`/api/graph?repo_path=${encodeURIComponent(target)}&symbol=${encodeURIComponent(symbol)}`);
+                const data = await res.json();
+
+                if (!data.nodes || data.nodes.length === 0) {
+                    placeholder.textContent = 'No graph nodes found. Ensure repository is indexed.';
+                    return;
+                }
+
+                placeholder.style.display = 'none';
+                svg.style.display = 'block';
+                renderSvgGraph(data);
+            } catch (err) {
+                placeholder.textContent = `Graph error: ${err.message}`;
+            }
+        }
+
+        function renderSvgGraph(data) {
+            const svg = document.getElementById('graphSvg');
+            svg.innerHTML = '';
+
+            const width = svg.clientWidth || 900;
+            const height = svg.clientHeight || 480;
+
+            const nodes = data.nodes;
+            const edges = data.edges;
+
+            // Simple radial node positioning
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) * 0.38;
+
+            const nodePositions = {};
+            nodes.forEach((n, i) => {
+                const angle = (i / nodes.length) * 2 * Math.PI;
+                nodePositions[n.id] = {
+                    x: centerX + radius * Math.cos(angle),
+                    y: centerY + radius * Math.sin(angle),
+                    data: n
+                };
+            });
+
+            // Draw Edges
+            edges.forEach(e => {
+                const p1 = nodePositions[e.source];
+                const p2 = nodePositions[e.target];
+                if (p1 && p2) {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", p1.x);
+                    line.setAttribute("y1", p1.y);
+                    line.setAttribute("x2", p2.x);
+                    line.setAttribute("y2", p2.y);
+                    line.setAttribute("stroke", "rgba(255, 255, 255, 0.15)");
+                    line.setAttribute("stroke-width", "1.2");
+                    svg.appendChild(line);
+                }
+            });
+
+            // Draw Nodes
+            nodes.forEach(n => {
+                const pos = nodePositions[n.id];
+                if (!pos) return;
+
+                const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", pos.x);
+                circle.setAttribute("cy", pos.y);
+                circle.setAttribute("r", n.group === 1 ? "7" : "5");
+                circle.setAttribute("fill", n.group === 1 ? "#0A84FF" : "#30D158");
+                circle.setAttribute("stroke", "rgba(255, 255, 255, 0.3)");
+                circle.setAttribute("stroke-width", "1.5");
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", pos.x + 9);
+                text.setAttribute("y", pos.y + 4);
+                text.setAttribute("fill", "rgba(255, 255, 255, 0.85)");
+                text.setAttribute("font-size", "11px");
+                text.setAttribute("font-family", "monospace");
+                text.textContent = n.label;
+
+                g.appendChild(circle);
+                g.appendChild(text);
+                svg.appendChild(g);
+            });
+        }
+
+        /* --- DIFF PATCHER --- */
+        let currentGeneratedDiff = '';
+
+        async function generateDiffPatch() {
+            const instr = document.getElementById('diffInstructionInput').value.trim();
+            if (!instr) return;
+
+            const target = getActiveTarget();
+            const panel = document.getElementById('patchOutputPanel');
+            const diffEl = document.getElementById('diffContent');
+
+            panel.style.display = 'block';
+            diffEl.innerHTML = 'Analyzing relevant code files and synthesizing unified diff...';
+
+            try {
+                const res = await fetch('/api/patch/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ instruction: instr, repo_path: target, top_k: 2 })
+                });
+
+                const data = await res.json();
+                currentGeneratedDiff = data.diff;
+
+                diffEl.innerHTML = renderDiffLines(data.diff);
+            } catch (err) {
+                diffEl.innerHTML = `Patch generation error: ${err.message}`;
+            }
+        }
+
+        function renderDiffLines(diffText) {
+            return diffText.split('\n').map(line => {
+                if (line.startsWith('+')) return `<span class="diff-added">${escapeHtml(line)}</span>`;
+                if (line.startsWith('-')) return `<span class="diff-removed">${escapeHtml(line)}</span>`;
+                return escapeHtml(line);
+            }).join('\n');
+        }
+
+        async function applyGeneratedPatch() {
+            if (!currentGeneratedDiff) return;
+            const target = getActiveTarget();
+            try {
+                const res = await fetch('/api/patch/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ diff: currentGeneratedDiff, repo_path: target })
+                });
+                const data = await res.json();
+                alert(data.message || 'Patch applied successfully.');
+            } catch (e) {
+                alert(`Error applying patch: ${e.message}`);
+            }
+        }
+
+        function formatMarkdown(text) {
+            return text
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/gim, '<code style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">$1</code>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="#" onclick="setAndSearch(\'$1\'); return false;">$1</a>')
+                .replace(/\n\n/gim, '<br><br>')
+                .replace(/\n/gim, '<br>');
         }
 
         function escapeHtml(str) {

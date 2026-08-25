@@ -258,9 +258,44 @@ def benchmark_cmd(
     )
 ):
     """Run full automated benchmark on a 30,000+ LOC codebase."""
-    runner = BenchmarkRunner(workspace_dir=workspace_dir, target_loc=target_loc)
-    runner.run_full_benchmark(num_test_queries=queries)
+@app.command(name="mcp")
+def mcp_cmd():
+    """Start the Model Context Protocol (MCP) JSON-RPC 2.0 stdio server."""
+    from semantic_code_intel.mcp.server import run_mcp_server
+    run_mcp_server()
+
+
+@app.command(name="watch")
+def watch_cmd(
+    target_dir: Path = typer.Option(
+        Path("."),
+        "--dir", "-d",
+        help="Root path of repository to watch"
+    )
+):
+    """Start the real-time background filesystem watcher for sub-50ms incremental indexing."""
+    import time
+    from semantic_code_intel.indexing.watcher import CodebaseWatcher
+
+    render_banner()
+    cfg = CodeIntelConfig(project_root=target_dir)
+    console.print(f"[bold green]Starting Incremental Watcher on:[/] [bold cyan]{target_dir.resolve()}[/]")
+    console.print("[dim]Press Ctrl+C to stop.[/]\n")
+
+    def on_change(event_type: str, file_path: str):
+        console.print(f"[cyan]⚡ Event:[/] [{ 'green' if event_type=='updated' else 'red' }]{event_type}[/] [yellow]{file_path}[/]")
+
+    watcher = CodebaseWatcher(config=cfg, on_change_callback=on_change)
+    watcher.start()
+
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Stopping watcher...[/]")
+        watcher.stop()
 
 
 if __name__ == "__main__":
     app()
+

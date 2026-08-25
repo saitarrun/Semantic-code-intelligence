@@ -114,6 +114,16 @@ class CodeIntelConfig(BaseModel):
             return self.index_dir.resolve()
         return (self.project_root / self.storage.index_dir_name).resolve()
 
+    def get_metadata_db_path(self) -> Path:
+        return self.get_index_dir() / self.storage.metadata_db_file
+
+    def get_faiss_index_path(self) -> Path:
+        return self.get_index_dir() / self.storage.faiss_index_file
+
+    def get_bm25_index_path(self) -> Path:
+        return self.get_index_dir() / self.storage.bm25_index_file
+
+
 
 # Global default configuration instance
 DEFAULT_CONFIG = CodeIntelConfig()
