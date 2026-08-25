@@ -4,22 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Semantic Code Intelligence Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         :root {
-            --bg-primary: #0d1117;
-            --bg-secondary: #161b22;
-            --bg-tertiary: #21262d;
-            --border-color: #30363d;
-            --accent: #58a6ff;
-            --accent-glow: rgba(88, 166, 255, 0.15);
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
-            --text-muted: #6e7681;
-            --success: #3fb950;
-            --warning: #d29922;
+            --bg-primary: #090d13;
+            --bg-secondary: #121820;
+            --bg-card: #161f2c;
+            --bg-input: #0d131a;
+            --border-color: #263342;
+            --border-hover: #3b82f6;
+            --accent: #38bdf8;
+            --accent-gradient: linear-gradient(135deg, #38bdf8, #818cf8);
+            --accent-glow: rgba(56, 189, 248, 0.2);
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --font-code: 'JetBrains Mono', monospace;
             --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
@@ -43,7 +47,7 @@
         header {
             background-color: var(--bg-secondary);
             border-bottom: 1px solid var(--border-color);
-            padding: 0.85rem 2rem;
+            padding: 0.9rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -59,84 +63,99 @@
         }
 
         .brand-logo {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
         }
 
         .brand-title {
-            font-size: 1.15rem;
-            font-weight: 700;
+            font-size: 1.2rem;
+            font-weight: 800;
             letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #58a6ff, #a371f7);
+            background: var(--accent-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .brand-badge {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--accent);
             font-size: 0.75rem;
-            padding: 0.2rem 0.5rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 12px;
             font-family: var(--font-code);
+            font-weight: 600;
         }
 
-        /* Repository Selection Bar */
-        .repo-bar {
-            background: #121820;
+        /* Prominent Repository Selector Bar */
+        .repo-toolbar {
+            background: #0f1622;
             border-bottom: 1px solid var(--border-color);
-            padding: 0.75rem 2rem;
+            padding: 0.85rem 2rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 1rem;
-            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        .repo-selector-group {
+        .repo-select-container {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.85rem;
             flex: 1;
-            min-width: 300px;
+            max-width: 750px;
         }
 
-        .repo-label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+        .repo-label-badge {
             display: flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.4rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            white-space: nowrap;
         }
 
-        .repo-select {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 0.45rem 0.85rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-family: var(--font-sans);
+        .repo-select-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .repo-dropdown {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1.5px solid #3b82f688;
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.55rem 1rem;
+            border-radius: 8px;
             outline: none;
             cursor: pointer;
-            min-width: 260px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.1);
         }
 
-        .repo-select:focus {
+        .repo-dropdown:hover, .repo-dropdown:focus {
             border-color: var(--accent);
+            box-shadow: 0 0 16px var(--accent-glow);
         }
 
         .custom-path-input {
-            background: var(--bg-primary);
+            margin-top: 0.5rem;
+            width: 100%;
+            background: var(--bg-input);
             border: 1px solid var(--border-color);
             color: var(--text-primary);
-            padding: 0.45rem 0.85rem;
+            padding: 0.5rem 0.85rem;
             border-radius: 6px;
             font-size: 0.85rem;
             font-family: var(--font-code);
             outline: none;
-            flex: 1;
             display: none;
         }
 
@@ -144,53 +163,53 @@
             border-color: var(--accent);
         }
 
-        .repo-stats {
+        .repo-stats-group {
             display: flex;
+            align-items: center;
             gap: 1.25rem;
             font-size: 0.85rem;
             color: var(--text-secondary);
-            align-items: center;
         }
 
-        .stat-item {
+        .stat-badge {
             display: flex;
             align-items: center;
-            gap: 0.35rem;
+            gap: 0.4rem;
         }
 
-        .stat-val {
-            color: var(--text-primary);
-            font-weight: 600;
+        .stat-badge .stat-num {
+            color: #ffffff;
+            font-weight: 700;
             font-family: var(--font-code);
         }
 
-        .repo-status-tag {
+        .status-pill {
             font-size: 0.75rem;
             font-family: var(--font-code);
-            padding: 0.2rem 0.6rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .status-ready {
-            background: rgba(63, 185, 80, 0.15);
+            background: rgba(34, 197, 94, 0.15);
             color: var(--success);
-            border: 1px solid rgba(63, 185, 80, 0.3);
+            border: 1px solid rgba(34, 197, 94, 0.35);
         }
 
         .status-unindexed {
-            background: rgba(210, 153, 34, 0.15);
+            background: rgba(245, 158, 11, 0.15);
             color: var(--warning);
-            border: 1px solid rgba(210, 153, 34, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.35);
         }
 
         .btn-index {
-            background: #238636;
-            color: white;
-            border: 1px solid rgba(240, 246, 252, 0.1);
-            padding: 0.45rem 0.9rem;
-            border-radius: 6px;
-            font-weight: 600;
+            background: #2563eb;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 0.82rem;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -198,11 +217,12 @@
         }
 
         .btn-index:hover {
-            background: #2ea043;
+            background: #1d4ed8;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .btn-index:disabled {
-            background: #21262d;
+            background: #1e293b;
             color: var(--text-muted);
             cursor: not-allowed;
         }
@@ -216,6 +236,33 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+        }
+
+        /* Suggested Queries Chips */
+        .sample-queries-box {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .query-chip {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 0.3rem 0.75rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-family: var(--font-sans);
+        }
+
+        .query-chip:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+            background: rgba(56, 189, 248, 0.1);
         }
 
         .search-panel {
@@ -236,10 +283,10 @@
 
         .search-input {
             flex: 1;
-            background-color: var(--bg-primary);
+            background-color: var(--bg-input);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 0.85rem 1.25rem;
+            padding: 0.95rem 1.25rem;
             color: var(--text-primary);
             font-size: 1rem;
             font-family: var(--font-sans);
@@ -253,12 +300,12 @@
         }
 
         .btn-search {
-            background: var(--accent);
-            color: #0d1117;
+            background: var(--accent-gradient);
+            color: #090d13;
             border: none;
             border-radius: 8px;
-            padding: 0.85rem 1.75rem;
-            font-weight: 600;
+            padding: 0.95rem 2rem;
+            font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s ease;
@@ -268,8 +315,8 @@
         }
 
         .btn-search:hover {
-            filter: brightness(1.1);
-            box-shadow: 0 4px 12px var(--accent-glow);
+            filter: brightness(1.15);
+            box-shadow: 0 4px 16px var(--accent-glow);
         }
 
         .search-options {
@@ -278,6 +325,8 @@
             align-items: center;
             font-size: 0.85rem;
             color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
 
         .mode-selectors {
@@ -302,9 +351,9 @@
         }
 
         .mode-btn.active {
-            background: var(--bg-tertiary);
+            background: var(--bg-card);
             color: var(--accent);
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .toggle-group {
@@ -340,7 +389,7 @@
         .latency-val {
             font-family: var(--font-code);
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: var(--accent);
         }
 
@@ -363,13 +412,13 @@
         }
 
         .result-card:hover {
-            border-color: #58a6ff66;
+            border-color: #38bdf866;
             transform: translateY(-1px);
         }
 
         .result-header {
-            background-color: var(--bg-tertiary);
-            padding: 0.65rem 1rem;
+            background-color: var(--bg-card);
+            padding: 0.7rem 1.1rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -378,8 +427,8 @@
 
         .result-citation {
             font-family: var(--font-code);
-            font-size: 0.88rem;
-            font-weight: 600;
+            font-size: 0.9rem;
+            font-weight: 700;
             color: var(--accent);
             display: flex;
             align-items: center;
@@ -403,24 +452,24 @@
 
         .score-pill.highlight {
             color: var(--success);
-            border-color: #3fb95044;
+            border-color: #22c55e44;
         }
 
         .result-body pre {
             margin: 0;
-            padding: 1rem;
+            padding: 1.1rem;
             background: var(--bg-primary) !important;
             font-family: var(--font-code);
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             line-height: 1.6;
             overflow-x: auto;
         }
 
         .result-footer {
-            padding: 0.5rem 1rem;
+            padding: 0.55rem 1.1rem;
             background: var(--bg-secondary);
             border-top: 1px solid var(--border-color);
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--text-secondary);
             display: flex;
             justify-content: space-between;
@@ -441,9 +490,9 @@
             display: inline-block;
             width: 16px;
             height: 16px;
-            border: 2px solid rgba(13, 17, 23, 0.3);
+            border: 2px solid rgba(9, 13, 19, 0.3);
             border-radius: 50%;
-            border-top-color: #0d1117;
+            border-top-color: #090d13;
             animation: spin 0.8s linear infinite;
         }
 
@@ -460,56 +509,66 @@
             <span class="brand-badge">FAISS + BM25 + CrossEncoder</span>
         </div>
         <div style="font-size: 0.8rem; color: var(--text-secondary); font-family: var(--font-code);">
-            Sub-Second Code Retrieval
+            Sub-Second Code Retrieval with Line Citations
         </div>
     </header>
 
-    <!-- Repository Selection & Control Bar -->
-    <div class="repo-bar">
-        <div class="repo-selector-group">
-            <label class="repo-label" for="repoSelect">📁 Repository:</label>
-            <select class="repo-select" id="repoSelect" onchange="onRepoChanged()">
-                <option value=".">Current Platform Codebase</option>
-                <option value="./oss_evaluation/client-go">Kubernetes client-go (406k LOC)</option>
-                <option value="./oss_evaluation/fastapi">FastAPI (112k LOC)</option>
-                <option value="./oss_evaluation/rich">Textualize Rich (67k LOC)</option>
-                <option value="CUSTOM">+ Custom Local Directory...</option>
-            </select>
-            <input
-                type="text"
-                id="customPathInput"
-                class="custom-path-input"
-                placeholder="/Users/xploit404/Projects/your-project-path"
-                onchange="onCustomPathChanged()"
-            />
+    <!-- Prominent Repository Selection Bar -->
+    <div class="repo-toolbar">
+        <div class="repo-select-container">
+            <div class="repo-label-badge">
+                <span>📁 Select Repository:</span>
+            </div>
+            <div class="repo-select-wrapper">
+                <select class="repo-dropdown" id="repoDropdown" onchange="onRepoChanged()">
+                    <option value=".">⚡ Current Platform Codebase (Python)</option>
+                    <option value="./oss_evaluation/client-go">🚢 Kubernetes client-go (Go — 406k LOC)</option>
+                    <option value="./oss_evaluation/fastapi">⚡ FastAPI Framework (Python — 112k LOC)</option>
+                    <option value="./oss_evaluation/rich">🎨 Textualize Rich (Python — 67k LOC)</option>
+                    <option value="CUSTOM">📂 + Custom Local Directory...</option>
+                </select>
+                <input
+                    type="text"
+                    id="customPathInput"
+                    class="custom-path-input"
+                    placeholder="/Users/xploit404/Projects/your-local-repo"
+                    onchange="onCustomPathChanged()"
+                />
+            </div>
         </div>
 
-        <div class="repo-stats">
-            <span id="repoStatusBadge" class="repo-status-tag status-ready">Ready</span>
-            <div class="stat-item">
+        <div class="repo-stats-group">
+            <span id="repoStatusBadge" class="status-pill status-ready">Ready</span>
+            <div class="stat-badge">
                 <span>Files:</span>
-                <span class="stat-val" id="statFiles">--</span>
+                <span class="stat-num" id="statFiles">--</span>
             </div>
-            <div class="stat-item">
+            <div class="stat-badge">
                 <span>LOC:</span>
-                <span class="stat-val" id="statLoc">--</span>
+                <span class="stat-num" id="statLoc">--</span>
             </div>
-            <div class="stat-item">
+            <div class="stat-badge">
                 <span>Chunks:</span>
-                <span class="stat-val" id="statChunks">--</span>
+                <span class="stat-num" id="statChunks">--</span>
             </div>
-            <button class="btn-index" id="btnReindex" onclick="triggerIndexCurrentRepo()">⚡ Index This Repo</button>
+            <button class="btn-index" id="btnReindex" onclick="triggerIndexCurrentRepo()">↻ Re-Index</button>
         </div>
     </div>
 
     <main>
+        <!-- Suggested Questions for the Active Repo -->
+        <div class="sample-queries-box" id="sampleQueriesBox">
+            <span>💡 Suggested Queries:</span>
+            <span id="sampleQueriesList"></span>
+        </div>
+
         <div class="search-panel">
             <div class="search-box">
                 <input
                     type="text"
                     id="searchInput"
                     class="search-input"
-                    placeholder="Ask or search code (e.g. 'LeaderElector lease loop', 'JWT authentication verify', 'exponential backoff')..."
+                    placeholder="Search codebase (e.g. 'Where is leader election lease loop?', 'JWT token verification')..."
                     autocomplete="off"
                 />
                 <button class="btn-search" id="searchBtn" onclick="performSearch()">
@@ -556,42 +615,77 @@
             <div class="empty-state">
                 <div class="empty-icon">🔍</div>
                 <h3>Ready to Query</h3>
-                <p>Select a repository above and enter a search query to retrieve exact line citations in sub-second latency.</p>
+                <p>Select a repository in the dropdown above and enter a search query.</p>
             </div>
         </div>
     </main>
 
     <script>
         let currentMode = 'hybrid';
-        let activeRepoPath = '.';
-        let activeIndexPath = null;
+
+        const SAMPLE_QUERIES = {
+            '.': [
+                'Where is ReciprocalRankFusion implemented?',
+                'How does the polyglot parser handle Go and TypeScript?',
+                'Where is CrossEncoder reranking executed?'
+            ],
+            './oss_evaluation/client-go': [
+                'Where is the LeaderElector acquire and renew lease loop implemented?',
+                'Where is the exponential backoff rate limiter calculated for workqueues?',
+                'How does Informer reflector watch and sync events?'
+            ],
+            './oss_evaluation/fastapi': [
+                'How does OAuth2PasswordBearer extract bearer token headers?',
+                'Where is exception handling middleware configured in FastAPI app?',
+                'How are path parameters converted and validated with Pydantic?'
+            ],
+            './oss_evaluation/rich': [
+                'Where is progress bar ETA time remaining calculated?',
+                'How does the Live display refresh renderables?',
+                'Where is syntax token color styling mapped?'
+            ]
+        };
 
         function getActiveTarget() {
-            const selectVal = document.getElementById('repoSelect').value;
+            const selectVal = document.getElementById('repoDropdown').value;
             if (selectVal === 'CUSTOM') {
                 return document.getElementById('customPathInput').value.trim() || '.';
             }
             return selectVal;
         }
 
+        function updateSampleQueries() {
+            const target = getActiveTarget();
+            const listEl = document.getElementById('sampleQueriesList');
+            const queries = SAMPLE_QUERIES[target] || ['Find authentication routes', 'Database connection pool', 'Error handling middleware'];
+            
+            listEl.innerHTML = queries.map(q => `
+                <span class="query-chip" onclick="setAndSearch('${q.replace(/'/g, "\\'")}')">${q}</span>
+            `).join('');
+        }
+
+        function setAndSearch(query) {
+            document.getElementById('searchInput').value = query;
+            performSearch();
+        }
+
         async function onRepoChanged() {
-            const select = document.getElementById('repoSelect');
+            const select = document.getElementById('repoDropdown');
             const customInput = document.getElementById('customPathInput');
             
             if (select.value === 'CUSTOM') {
                 customInput.style.display = 'block';
                 customInput.focus();
-                return;
             } else {
                 customInput.style.display = 'none';
             }
 
-            activeRepoPath = select.value;
+            updateSampleQueries();
             await loadRepoStats();
         }
 
         async function onCustomPathChanged() {
-            activeRepoPath = document.getElementById('customPathInput').value.trim();
+            updateSampleQueries();
             await loadRepoStats();
         }
 
@@ -606,14 +700,14 @@
 
                 if (data.status === 'ready') {
                     badge.textContent = 'Indexed & Ready';
-                    badge.className = 'repo-status-tag status-ready';
+                    badge.className = 'status-pill status-ready';
                     document.getElementById('statFiles').textContent = (data.total_files || 0).toLocaleString();
                     document.getElementById('statLoc').textContent = (data.total_lines || 0).toLocaleString();
                     document.getElementById('statChunks').textContent = (data.total_chunks || 0).toLocaleString();
                     btn.textContent = '↻ Re-Index';
                 } else {
                     badge.textContent = 'Not Indexed';
-                    badge.className = 'repo-status-tag status-unindexed';
+                    badge.className = 'status-pill status-unindexed';
                     document.getElementById('statFiles').textContent = '0';
                     document.getElementById('statLoc').textContent = '0';
                     document.getElementById('statChunks').textContent = '0';
@@ -706,7 +800,7 @@
                         <div class="empty-icon">📂</div>
                         <h3>Repository Not Indexed</h3>
                         <p>The repository at <code>${data.repo_path}</code> is not indexed yet.</p>
-                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index This Repo</strong> in the top bar to index it.</p>
+                        <p style="margin-top: 0.75rem;">Click <strong>⚡ Index This Repo</strong> in the top toolbar to index it.</p>
                     </div>
                 `;
                 latencyDash.style.display = 'none';
@@ -775,8 +869,8 @@
                 .replace(/'/g, "&#039;");
         }
 
-        // Initialize default repository stats
-        loadRepoStats();
+        // Initialize on load
+        onRepoChanged();
     </script>
 </body>
 </html>
