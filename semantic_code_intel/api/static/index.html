@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Intelligence</title>
+    <title>Semantic Code Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           True-Black Frosted Glassmorphism Design System (Apple HIG + Figma)
+           Apple HIG + Figma True-Black Glassmorphism Design System
            ========================================================================== */
         :root {
             /* 8-Point Spatial Grid */
@@ -22,29 +22,30 @@
             --space-5: 20px;
             --space-6: 24px;
             --space-8: 32px;
+            --space-10: 40px;
             --space-12: 48px;
 
-            /* Glassmorphic Surfaces */
-            --glass-bg-nav: rgba(10, 10, 14, 0.75);
-            --glass-bg-toolbar: rgba(12, 12, 16, 0.60);
-            --glass-bg-panel: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-            --glass-bg-card: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.008) 100%);
-            --glass-bg-input: rgba(255, 255, 255, 0.045);
+            /* Glassmorphic Surfaces (Obsidian OLED) */
+            --glass-bg-nav: rgba(8, 8, 12, 0.82);
+            --glass-bg-toolbar: rgba(10, 10, 14, 0.70);
+            --glass-bg-panel: linear-gradient(145deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 100%);
+            --glass-bg-card: linear-gradient(145deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.006) 100%);
+            --glass-bg-input: rgba(255, 255, 255, 0.04);
             --glass-bg-hover: rgba(255, 255, 255, 0.08);
             --glass-bg-active: rgba(255, 255, 255, 0.12);
-            --glass-bg-subtle: rgba(255, 255, 255, 0.03);
+            --glass-bg-subtle: rgba(255, 255, 255, 0.025);
 
-            /* Refraction Edges */
-            --glass-border: rgba(255, 255, 255, 0.10);
-            --glass-border-medium: rgba(255, 255, 255, 0.16);
-            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.16), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
-            --glass-blur: blur(40px) saturate(210%);
-            --glass-shadow: 0 16px 48px rgba(0, 0, 0, 0.75);
+            /* Specular Refraction Borders */
+            --glass-border: rgba(255, 255, 255, 0.09);
+            --glass-border-medium: rgba(255, 255, 255, 0.18);
+            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+            --glass-blur: blur(44px) saturate(210%);
+            --glass-shadow: 0 20px 48px rgba(0, 0, 0, 0.85);
 
             /* Apple Semantic Accents */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
-            --system-blue-tint: rgba(10, 132, 255, 0.16);
+            --system-blue-tint: rgba(10, 132, 255, 0.15);
             --system-green: #30D158;
             --system-green-tint: rgba(48, 209, 88, 0.14);
             --system-orange: #FF9F0A;
@@ -53,11 +54,11 @@
             --system-purple-tint: rgba(191, 90, 242, 0.14);
             --system-red: #FF453A;
 
-            /* Labels */
+            /* High-Contrast Labels */
             --label-primary: #FFFFFF;
-            --label-secondary: rgba(255, 255, 255, 0.70);
-            --label-tertiary: rgba(255, 255, 255, 0.40);
-            --label-quaternary: rgba(255, 255, 255, 0.20);
+            --label-secondary: rgba(255, 255, 255, 0.72);
+            --label-tertiary: rgba(255, 255, 255, 0.42);
+            --label-quaternary: rgba(255, 255, 255, 0.22);
 
             --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
             --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
@@ -89,16 +90,16 @@
             overflow-x: hidden;
         }
 
-        /* Ambient Glow Backdrops */
+        /* Ambient Glow Spheres */
         body::before {
             content: '';
             position: fixed;
-            top: -15%;
-            left: 25%;
-            width: 50vw;
-            height: 45vh;
-            background: radial-gradient(circle, rgba(10, 132, 255, 0.12) 0%, rgba(94, 92, 230, 0.06) 50%, transparent 75%);
-            filter: blur(80px);
+            top: -18%;
+            left: 20%;
+            width: 55vw;
+            height: 50vh;
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.10) 0%, rgba(94, 92, 230, 0.05) 50%, transparent 75%);
+            filter: blur(90px);
             pointer-events: none;
             z-index: 0;
         }
@@ -106,21 +107,21 @@
         body::after {
             content: '';
             position: fixed;
-            bottom: -10%;
+            bottom: -15%;
             right: 15%;
-            width: 40vw;
-            height: 40vh;
-            background: radial-gradient(circle, rgba(48, 209, 88, 0.05) 0%, rgba(10, 132, 255, 0.04) 50%, transparent 75%);
-            filter: blur(90px);
+            width: 45vw;
+            height: 45vh;
+            background: radial-gradient(circle, rgba(48, 209, 88, 0.04) 0%, rgba(10, 132, 255, 0.03) 50%, transparent 75%);
+            filter: blur(100px);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Top Navigation Bar */
+        /* Top Sticky Navigation Bar */
         nav {
             position: sticky;
             top: 0;
-            z-index: 50;
+            z-index: 100;
             background: var(--glass-bg-nav);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
@@ -172,6 +173,13 @@
             font-size: 0.75rem;
             font-weight: 500;
             color: var(--label-secondary);
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+
+        .status-indicator:hover {
+            background: var(--glass-bg-hover);
+            border-color: var(--glass-border-medium);
         }
 
         .status-dot {
@@ -192,13 +200,13 @@
 
         @keyframes pulseDot {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.4; transform: scale(0.85); }
+            50% { opacity: 0.35; transform: scale(0.8); }
         }
 
         /* Repository Control Toolbar */
         .toolbar {
             position: relative;
-            z-index: 10;
+            z-index: 50;
             background: var(--glass-bg-toolbar);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
@@ -229,7 +237,7 @@
 
         .select-wrapper {
             position: relative;
-            min-width: 270px;
+            min-width: 280px;
             flex-shrink: 0;
         }
 
@@ -244,7 +252,7 @@
             font-family: var(--font-sans);
             font-size: 0.85rem;
             font-weight: 500;
-            padding: 0.48rem 2.2rem 0.48rem 0.9rem;
+            padding: 0.52rem 2.2rem 0.52rem 0.95rem;
             border-radius: var(--radius-md);
             outline: none;
             cursor: pointer;
@@ -266,7 +274,7 @@
 
         .select-arrow {
             position: absolute;
-            right: 0.9rem;
+            right: 0.95rem;
             top: 50%;
             transform: translateY(-50%);
             pointer-events: none;
@@ -285,7 +293,7 @@
             color: var(--label-primary);
             font-family: var(--font-mono);
             font-size: 0.8rem;
-            padding: 0.48rem 0.85rem;
+            padding: 0.52rem 0.9rem;
             border-radius: var(--radius-md);
             outline: none;
             display: none;
@@ -328,7 +336,7 @@
             font-family: var(--font-sans);
             font-size: 0.8rem;
             font-weight: 500;
-            padding: 0.45rem var(--space-4);
+            padding: 0.48rem var(--space-4);
             border-radius: var(--radius-md);
             cursor: pointer;
             box-shadow: var(--glass-specular);
@@ -351,6 +359,7 @@
             gap: var(--space-2);
             border-bottom: 1px solid var(--glass-border);
             padding: 0 var(--space-2);
+            margin-bottom: var(--space-2);
         }
 
         .workspace-tab {
@@ -359,11 +368,11 @@
             border-bottom: 2px solid transparent;
             color: var(--label-tertiary);
             font-family: var(--font-sans);
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 500;
-            padding: var(--space-2) var(--space-4);
+            padding: var(--space-3) var(--space-4);
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.18s ease;
         }
 
         .workspace-tab:hover {
@@ -373,6 +382,7 @@
         .workspace-tab.active {
             color: var(--system-blue);
             border-bottom-color: var(--system-blue);
+            font-weight: 600;
         }
 
         /* Main Workspace Container */
@@ -380,7 +390,7 @@
             position: relative;
             z-index: 10;
             flex: 1;
-            max-width: 1080px;
+            max-width: 1100px;
             width: 100%;
             margin: 0 auto;
             padding: var(--space-6) var(--space-6) var(--space-12) var(--space-6);
@@ -392,7 +402,7 @@
         .tab-content-view {
             display: flex;
             flex-direction: column;
-            gap: var(--space-6);
+            gap: var(--space-5);
         }
 
         .tab-content-view.hidden {
@@ -433,7 +443,7 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius-md);
-            padding: 0.85rem 3.5rem 0.85rem 1.15rem;
+            padding: 0.88rem 3.5rem 0.88rem 1.15rem;
             color: var(--label-primary);
             font-family: var(--font-sans);
             font-size: 0.95rem;
@@ -455,7 +465,7 @@
 
         .search-shortcut-badge {
             position: absolute;
-            right: 0.85rem;
+            right: 0.9rem;
             pointer-events: none;
             background: var(--glass-bg-subtle);
             border: 1px solid var(--glass-border);
@@ -471,7 +481,7 @@
             color: #FFFFFF;
             border: none;
             border-radius: var(--radius-md);
-            padding: 0.85rem var(--space-6);
+            padding: 0.88rem var(--space-6);
             font-family: var(--font-sans);
             font-size: 0.9rem;
             font-weight: 500;
@@ -489,7 +499,7 @@
             transform: scale(0.98);
         }
 
-        /* Segmented Mode Controls */
+        /* Segmented Controls */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -507,7 +517,7 @@
 
         .segmented-control {
             display: inline-flex;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             padding: 3px;
@@ -522,7 +532,7 @@
             font-family: var(--font-sans);
             font-size: 0.78rem;
             font-weight: 500;
-            padding: 0.35rem var(--space-3);
+            padding: 0.38rem var(--space-3);
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.15s var(--spring-easing);
@@ -532,12 +542,13 @@
             background: var(--glass-bg-hover);
             color: var(--label-primary);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            font-weight: 600;
         }
 
         /* Top K Filter Control */
         .topk-control {
             display: inline-flex;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.55);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             padding: 3px;
@@ -552,7 +563,7 @@
             font-family: var(--font-sans);
             font-size: 0.78rem;
             font-weight: 500;
-            padding: 0.35rem var(--space-2);
+            padding: 0.38rem var(--space-2);
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.15s ease;
@@ -561,9 +572,10 @@
         .topk-btn.active {
             background: var(--glass-bg-hover);
             color: var(--label-primary);
+            font-weight: 600;
         }
 
-        /* Apple Switch Control */
+        /* Switch Control */
         .switch-control {
             display: flex;
             align-items: center;
@@ -636,7 +648,7 @@
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
             color: var(--label-secondary);
-            padding: 0.28rem var(--space-3);
+            padding: 0.3rem var(--space-3);
             border-radius: var(--radius-pill);
             cursor: pointer;
             transition: all 0.15s ease;
@@ -650,7 +662,7 @@
 
         /* Telemetry Dashboard */
         .telemetry-row {
-            background: rgba(14, 14, 18, 0.6);
+            background: rgba(12, 12, 16, 0.65);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border);
@@ -714,7 +726,7 @@
         .code-header {
             background: rgba(255, 255, 255, 0.025);
             border-bottom: 1px solid var(--glass-border);
-            padding: 0.65rem var(--space-4);
+            padding: 0.7rem var(--space-4);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -747,7 +759,7 @@
             color: var(--label-secondary);
             font-family: var(--font-sans);
             font-size: 0.72rem;
-            padding: 0.2rem var(--space-2);
+            padding: 0.22rem var(--space-3);
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.15s ease;
@@ -769,7 +781,7 @@
         .score-tag {
             background: var(--glass-bg-subtle);
             border: 1px solid var(--glass-border);
-            padding: 0.15rem 0.45rem;
+            padding: 0.18rem 0.48rem;
             border-radius: 4px;
             font-variant-numeric: tabular-nums;
         }
@@ -782,7 +794,7 @@
 
         .code-block-container {
             display: flex;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.6);
             overflow-x: auto;
             font-family: var(--font-mono);
             font-size: 0.82rem;
@@ -813,7 +825,7 @@
         .code-footer {
             background: rgba(255, 255, 255, 0.015);
             border-top: 1px solid var(--glass-border);
-            padding: 0.55rem var(--space-4);
+            padding: 0.6rem var(--space-4);
             font-size: 0.75rem;
             color: var(--label-tertiary);
             display: flex;
@@ -867,17 +879,14 @@
             text-decoration: underline;
         }
 
-        /* ==========================================================================
-           Master-Detail Clean Architecture & Symbol Table Matching
-           ========================================================================== */
+        /* Master-Detail Architecture View */
         .master-detail-view {
             display: grid;
-            grid-template-columns: 320px 1fr;
+            grid-template-columns: 330px 1fr;
             gap: var(--space-4);
             min-height: 600px;
         }
 
-        /* Left Master Panel: Files List */
         .master-files-panel {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
@@ -891,11 +900,11 @@
         }
 
         .master-header {
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1rem;
             border-bottom: 1px solid var(--glass-border);
             display: flex;
-            flex-direction: column;
-            gap: var(--space-2);
+            justify-content: space-between;
+            align-items: center;
             background: rgba(255, 255, 255, 0.02);
         }
 
@@ -915,7 +924,7 @@
         }
 
         .file-item-row {
-            padding: 0.75rem 1rem;
+            padding: 0.85rem 1rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             cursor: pointer;
             transition: all 0.15s var(--spring-easing);
@@ -974,7 +983,7 @@
             flex-shrink: 0;
         }
 
-        /* Right Detail Panel: Symbol Table Matching */
+        /* Detail Panel */
         .detail-symbols-panel {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
@@ -1023,7 +1032,7 @@
         }
 
         .symbol-matching-table th {
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.45);
             border-bottom: 1px solid var(--glass-border);
             padding: 0.75rem 1.25rem;
             font-size: 0.72rem;
@@ -1090,7 +1099,7 @@
             display: flex;
             gap: 4px;
             flex-wrap: wrap;
-            max-width: 280px;
+            max-width: 300px;
         }
 
         .relation-mini-pill {
@@ -1117,7 +1126,7 @@
             color: var(--label-secondary);
             font-family: var(--font-sans);
             font-size: 0.75rem;
-            padding: 0.3rem 0.65rem;
+            padding: 0.32rem 0.75rem;
             border-radius: var(--radius-sm);
             cursor: pointer;
             transition: all 0.15s ease;
@@ -1130,7 +1139,7 @@
             border-color: var(--glass-border-medium);
         }
 
-        /* Code Inspector Modal Sheet ("Open It") */
+        /* Inspector Modal Sheet ("Open It") */
         .inspector-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1148,7 +1157,7 @@
         }
 
         .inspector-modal {
-            background: rgba(18, 18, 22, 0.94);
+            background: rgba(16, 16, 20, 0.94);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border-medium);
@@ -1252,7 +1261,7 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Unified Diff Container */
+        /* Diff Container */
         .diff-container {
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid var(--glass-border);
@@ -1275,7 +1284,7 @@
             background: rgba(255, 69, 58, 0.1);
         }
 
-        /* Glassmorphic Indexing Modal */
+        /* Indexing Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1298,7 +1307,7 @@
         }
 
         .glass-modal {
-            background: rgba(20, 20, 24, 0.85);
+            background: rgba(18, 18, 22, 0.88);
             backdrop-filter: var(--glass-blur);
             -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--glass-border-medium);
@@ -1413,14 +1422,14 @@
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
+    <!-- Sticky Top Navigation Bar -->
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
             <span class="nav-badge">v0.2.0</span>
         </div>
         <div class="nav-status">
-            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Toggle automatic background indexing">
+            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Toggle automatic background indexing on file save">
                 <span class="status-dot" id="watcherDot"></span>
                 <span id="watcherStatusText">Watcher: Off</span>
             </div>
@@ -1471,14 +1480,14 @@
         </div>
     </div>
 
-    <!-- Main Workspace -->
+    <!-- Main Workspace Container -->
     <main>
         <!-- Workspace Tabs -->
         <div class="workspace-tabs-row">
             <button class="workspace-tab active" data-tab="search" onclick="switchTab('search')">Search & Citations</button>
             <button class="workspace-tab" data-tab="synthesize" onclick="switchTab('synthesize')">AI Synthesizer</button>
             <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Symbol Architecture</button>
-            <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Diff Patcher</button>
+            <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Developer Tools</button>
         </div>
 
         <!-- 1. SEARCH TAB -->
@@ -1579,9 +1588,8 @@
             </div>
         </div>
 
-        <!-- 3. SYMBOL ARCHITECTURE TAB (MINIMALIST TABLE MATCHING SPLIT VIEW) -->
+        <!-- 3. SYMBOL ARCHITECTURE TAB -->
         <div id="tab-graph" class="tab-content-view hidden">
-            <!-- Filter Bar -->
             <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
                 <div class="search-row">
                     <div class="search-input-wrapper">
@@ -1598,12 +1606,12 @@
                 </div>
             </div>
 
-            <!-- Master-Detail Table Split View -->
             <div class="master-detail-view">
                 <!-- Left: Files Master List -->
                 <div class="master-files-panel">
                     <div class="master-header">
                         <div class="master-title">Files & Modules</div>
+                        <span id="masterFilesCount" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--label-tertiary);">-- files</span>
                     </div>
                     <div class="master-files-list" id="masterFilesList">
                         <div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">
@@ -1644,11 +1652,11 @@
             </div>
         </div>
 
-        <!-- 4. DEVELOPER TOOLS TAB (DIFF PATCHER, GIT COMMIT, LSP) -->
+        <!-- 4. DEVELOPER TOOLS TAB -->
         <div id="tab-diff" class="tab-content-view hidden">
             <!-- Sub-mode Selector -->
             <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
-                <div class="arch-toolbar-row">
+                <div class="arch-toolbar-row" style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="segmented-control">
                         <button class="segment-btn active" id="btnDevDiff" onclick="switchDevSubMode('diff')">Diff Patcher</button>
                         <button class="segment-btn" id="btnDevCommit" onclick="switchDevSubMode('commit')">Git Commit Generator</button>
@@ -1763,7 +1771,7 @@
         </div>
     </div>
 
-    <!-- Glassmorphic Indexing Modal -->
+    <!-- Indexing Modal -->
     <div class="glass-modal-backdrop" id="indexingModal">
         <div class="glass-modal">
             <div class="modal-header-clean">
@@ -2251,9 +2259,7 @@
             }
         }
 
-        /* ==========================================================================
-           Minimalist Master-Detail Architecture Table Matching
-           ========================================================================== */
+        /* --- SYMBOL ARCHITECTURE TABLE --- */
         async function loadSymbolGraph() {
             const target = getActiveTarget();
             const filesListEl = document.getElementById('masterFilesList');
@@ -2266,6 +2272,7 @@
 
                 if (!data.nodes || data.nodes.length === 0) {
                     filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No files found. Index repository first.</div>`;
+                    document.getElementById('masterFilesCount').textContent = '0 files';
                     return;
                 }
 
@@ -2281,7 +2288,6 @@
             const symbols = data.nodes.filter(n => n.group === 2);
             const edges = data.edges || [];
 
-            // Count symbols per file
             const fileSymbolsMap = {};
             files.forEach(f => { fileSymbolsMap[f.id] = []; });
 
@@ -2292,8 +2298,8 @@
                 fileSymbolsMap[parentFileId].push(sym);
             });
 
-            // Filter out files with 0 symbols
             const activeFiles = files.filter(f => (fileSymbolsMap[f.id] || []).length > 0);
+            document.getElementById('masterFilesCount').textContent = `${activeFiles.length} files`;
 
             if (activeFiles.length === 0) {
                 filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No code symbols found.</div>`;
@@ -2313,7 +2319,6 @@
                 `;
             }).join('');
 
-            // Select first file by default
             if (activeFiles.length > 0) {
                 selectMasterFile(activeFiles[0].id, 'file_item_0');
             }
@@ -2336,18 +2341,15 @@
             const symbols = graphRawData.nodes.filter(n => n.group === 2);
             const edges = graphRawData.edges || [];
 
-            // Get symbols defined in this file
             const fileSymbols = symbols.filter(s => {
                 const parentEdge = edges.find(e => e.target === s.id && e.relation === 'defines');
                 return parentEdge ? parentEdge.source === fileId : (s.full_path === fileNode?.full_path);
             });
 
-            // Update Header
             document.getElementById('detailFileName').textContent = fileNode ? fileNode.label : 'File Symbols';
             document.getElementById('detailFilePath').textContent = fileNode ? fileNode.full_path : '';
             document.getElementById('detailFileStats').textContent = `${fileSymbols.length} Symbols Defined`;
 
-            // Build Callers and Callees map
             const callersMap = {};
             const calleesMap = {};
             edges.forEach(e => {
@@ -2498,8 +2500,25 @@
             });
         }
 
-        /* --- DIFF PATCHER --- */
+        /* --- DEV TOOLS SUB-MODES --- */
+        let currentDevMode = 'diff';
+        let currentGeneratedCommit = '';
         let currentGeneratedDiff = '';
+
+        function switchDevSubMode(mode) {
+            currentDevMode = mode;
+            document.getElementById('btnDevDiff').classList.toggle('active', mode === 'diff');
+            document.getElementById('btnDevCommit').classList.toggle('active', mode === 'commit');
+            document.getElementById('btnDevLsp').classList.toggle('active', mode === 'lsp');
+
+            document.getElementById('devPanelDiff').style.display = mode === 'diff' ? 'flex' : 'none';
+            document.getElementById('devPanelCommit').style.display = mode === 'commit' ? 'flex' : 'none';
+            document.getElementById('devPanelLsp').style.display = mode === 'lsp' ? 'flex' : 'none';
+
+            if (mode === 'commit' && !currentGeneratedCommit) {
+                generateGitCommitProposal();
+            }
+        }
 
         async function generateDiffPatch() {
             const instr = document.getElementById('diffInstructionInput').value.trim();
@@ -2552,45 +2571,6 @@
             }
         }
 
-        function formatMarkdown(text) {
-            return text
-                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
-                .replace(/`([^`]+)`/gim, '<code style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">$1</code>')
-                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="#" onclick="setAndSearch(\'$1\'); return false;">$1</a>')
-                .replace(/\n\n/gim, '<br><br>')
-                .replace(/\n/gim, '<br>');
-        }
-
-        function escapeHtml(str) {
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        /* --- DEV TOOLS SUB-MODES --- */
-        let currentDevMode = 'diff';
-        let currentGeneratedCommit = '';
-
-        function switchDevSubMode(mode) {
-            currentDevMode = mode;
-            document.getElementById('btnDevDiff').classList.toggle('active', mode === 'diff');
-            document.getElementById('btnDevCommit').classList.toggle('active', mode === 'commit');
-            document.getElementById('btnDevLsp').classList.toggle('active', mode === 'lsp');
-
-            document.getElementById('devPanelDiff').style.display = mode === 'diff' ? 'flex' : 'none';
-            document.getElementById('devPanelCommit').style.display = mode === 'commit' ? 'flex' : 'none';
-            document.getElementById('devPanelLsp').style.display = mode === 'lsp' ? 'flex' : 'none';
-
-            if (mode === 'commit' && !currentGeneratedCommit) {
-                generateGitCommitProposal();
-            }
-        }
-
         async function generateGitCommitProposal() {
             const target = getActiveTarget();
             const btn = document.getElementById('btnGenCommit');
@@ -2622,6 +2602,26 @@
                 btn.textContent = 'Copied';
                 setTimeout(() => { btn.textContent = 'Copy Message'; }, 1800);
             });
+        }
+
+        function formatMarkdown(text) {
+            return text
+                .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/gim, '<code style="background: rgba(255,255,255,0.06); padding: 2px 4px; border-radius: 4px;">$1</code>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/gim, '<a href="#" onclick="setAndSearch(\'$1\'); return false;">$1</a>')
+                .replace(/\n\n/gim, '<br><br>')
+                .replace(/\n/gim, '<br>');
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         // Initialize on load
