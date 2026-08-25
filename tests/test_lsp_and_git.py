@@ -6,7 +6,6 @@ and Semantic Git Commit Generator.
 import tempfile
 from pathlib import Path
 from semantic_code_intel.config import CodeIntelConfig
-from semantic_code_intel.git_intel.commit_generator import SemanticCommitGenerator
 from semantic_code_intel.indexing.engine import HybridIndexer
 from semantic_code_intel.lsp.server import CodeIntelLSPServer
 
@@ -81,16 +80,3 @@ def process_checkout(order_id: str, total_cents: int) -> bool:
         })
         labels = [item["label"] for item in comp_res["result"]]
         assert "PaymentGateway" in labels or "charge_card" in labels
-
-
-def test_semantic_commit_generator():
-    """Test git diff analysis and conventional commit construction."""
-    generator = SemanticCommitGenerator(repo_path=Path("."))
-    result = generator.generate_commit_message()
-    
-    assert "title" in result
-    assert "type" in result
-    assert "full_message" in result
-    # Guarantee no AI attribution lines
-    assert "Co-Authored-By" not in result["full_message"]
-    assert "Generated with" not in result["full_message"]
