@@ -14,7 +14,6 @@
            Apple HIG + Figma True-Black Glassmorphism Design System
            ========================================================================== */
         :root {
-            /* 8-Point Spatial Grid */
             --space-1: 4px;
             --space-2: 8px;
             --space-3: 12px;
@@ -25,9 +24,8 @@
             --space-10: 40px;
             --space-12: 48px;
 
-            /* Glassmorphic Surfaces (Obsidian OLED) */
-            --glass-bg-nav: rgba(8, 8, 12, 0.82);
-            --glass-bg-toolbar: rgba(10, 10, 14, 0.70);
+            --glass-bg-nav: rgba(8, 8, 12, 0.85);
+            --glass-bg-toolbar: rgba(10, 10, 14, 0.72);
             --glass-bg-panel: linear-gradient(145deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 100%);
             --glass-bg-card: linear-gradient(145deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.006) 100%);
             --glass-bg-input: rgba(255, 255, 255, 0.04);
@@ -35,14 +33,12 @@
             --glass-bg-active: rgba(255, 255, 255, 0.12);
             --glass-bg-subtle: rgba(255, 255, 255, 0.025);
 
-            /* Specular Refraction Borders */
             --glass-border: rgba(255, 255, 255, 0.09);
             --glass-border-medium: rgba(255, 255, 255, 0.18);
             --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
             --glass-blur: blur(44px) saturate(210%);
             --glass-shadow: 0 20px 48px rgba(0, 0, 0, 0.85);
 
-            /* Apple Semantic Accents */
             --system-blue: #0A84FF;
             --system-blue-hover: #0071E3;
             --system-blue-tint: rgba(10, 132, 255, 0.15);
@@ -54,7 +50,6 @@
             --system-purple-tint: rgba(191, 90, 242, 0.14);
             --system-red: #FF453A;
 
-            /* High-Contrast Labels */
             --label-primary: #FFFFFF;
             --label-secondary: rgba(255, 255, 255, 0.72);
             --label-tertiary: rgba(255, 255, 255, 0.42);
@@ -90,34 +85,21 @@
             overflow-x: hidden;
         }
 
-        /* Ambient Glow Spheres */
+        /* Subtle ambient glow */
         body::before {
             content: '';
             position: fixed;
-            top: -18%;
-            left: 20%;
-            width: 55vw;
-            height: 50vh;
-            background: radial-gradient(circle, rgba(10, 132, 255, 0.10) 0%, rgba(94, 92, 230, 0.05) 50%, transparent 75%);
-            filter: blur(90px);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -15%;
-            right: 15%;
-            width: 45vw;
+            top: -15%;
+            left: 25%;
+            width: 50vw;
             height: 45vh;
-            background: radial-gradient(circle, rgba(48, 209, 88, 0.04) 0%, rgba(10, 132, 255, 0.03) 50%, transparent 75%);
-            filter: blur(100px);
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.08) 0%, rgba(94, 92, 230, 0.04) 50%, transparent 75%);
+            filter: blur(80px);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Top Sticky Navigation Bar */
+        /* Top Sticky Navigation */
         nav {
             position: sticky;
             top: 0;
@@ -203,7 +185,7 @@
             50% { opacity: 0.35; transform: scale(0.8); }
         }
 
-        /* Repository Control Toolbar */
+        /* Toolbar */
         .toolbar {
             position: relative;
             z-index: 50;
@@ -353,7 +335,7 @@
             transform: scale(0.98);
         }
 
-        /* Workspace Tab Navigation */
+        /* Workspace Tabs */
         .workspace-tabs-row {
             display: flex;
             gap: var(--space-2);
@@ -385,7 +367,7 @@
             font-weight: 600;
         }
 
-        /* Main Workspace Container */
+        /* Main Container */
         main {
             position: relative;
             z-index: 10;
@@ -409,7 +391,7 @@
             display: none;
         }
 
-        /* Frosted Glass Panels */
+        /* Panels & Cards */
         .glass-panel {
             background: var(--glass-bg-panel);
             backdrop-filter: var(--glass-blur);
@@ -499,7 +481,6 @@
             transform: scale(0.98);
         }
 
-        /* Segmented Controls */
         .controls-row {
             display: flex;
             justify-content: space-between;
@@ -545,7 +526,6 @@
             font-weight: 600;
         }
 
-        /* Top K Filter Control */
         .topk-control {
             display: inline-flex;
             background: rgba(0, 0, 0, 0.55);
@@ -575,7 +555,6 @@
             font-weight: 600;
         }
 
-        /* Switch Control */
         .switch-control {
             display: flex;
             align-items: center;
@@ -632,7 +611,6 @@
             transform: translateX(16px);
         }
 
-        /* Suggested Queries Row */
         .suggestions-row {
             display: flex;
             align-items: center;
@@ -660,7 +638,6 @@
             border-color: var(--glass-border-medium);
         }
 
-        /* Telemetry Dashboard */
         .telemetry-row {
             background: rgba(12, 12, 16, 0.65);
             backdrop-filter: var(--glass-blur);
@@ -700,7 +677,6 @@
             font-weight: 600;
         }
 
-        /* Results Code Cards */
         .results-list {
             display: flex;
             flex-direction: column;
@@ -849,7 +825,6 @@
             font-size: 0.72rem;
         }
 
-        /* Synthesizer Output Card */
         .synthesis-card {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
@@ -886,7 +861,7 @@
             text-decoration: underline;
         }
 
-        /* Master-Detail Architecture View */
+        /* Master Detail Architecture */
         .master-detail-view {
             display: grid;
             grid-template-columns: 330px 1fr;
@@ -990,7 +965,6 @@
             flex-shrink: 0;
         }
 
-        /* Detail Panel */
         .detail-symbols-panel {
             background: var(--glass-bg-card);
             backdrop-filter: var(--glass-blur);
@@ -1146,7 +1120,7 @@
             border-color: var(--glass-border-medium);
         }
 
-        /* Inspector Modal Sheet ("Open It") */
+        /* Inspector Modal */
         .inspector-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1268,7 +1242,6 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
-        /* Diff Container */
         .diff-container {
             background: rgba(0, 0, 0, 0.6);
             border: 1px solid var(--glass-border);
@@ -1291,7 +1264,6 @@
             background: rgba(255, 69, 58, 0.1);
         }
 
-        /* Indexing Modal */
         .glass-modal-backdrop {
             position: fixed;
             top: 0;
@@ -1429,7 +1401,7 @@
     </style>
 </head>
 <body>
-    <!-- Sticky Top Navigation Bar -->
+    <!-- Top Navigation Bar -->
     <nav>
         <div class="nav-brand">
             <span class="nav-title">Code Intelligence</span>
@@ -1574,7 +1546,7 @@
             </div>
         </div>
 
-        <!-- 2. AI SYNTHESIZER TAB -->
+        <!-- 2. CODE WALKTHROUGH (SYNTHESIZER) TAB -->
         <div id="tab-synthesize" class="tab-content-view hidden">
             <div class="glass-panel">
                 <div class="search-row">
@@ -1595,7 +1567,7 @@
             </div>
         </div>
 
-        <!-- 3. SYMBOL ARCHITECTURE TAB -->
+        <!-- 3. DEPENDENCY MAP (ARCHITECTURE) TAB -->
         <div id="tab-graph" class="tab-content-view hidden">
             <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
                 <div class="search-row">
@@ -1659,11 +1631,10 @@
             </div>
         </div>
 
-        <!-- 4. DEVELOPER TOOLS TAB -->
+        <!-- 4. GIT & LSP TOOLS TAB -->
         <div id="tab-diff" class="tab-content-view hidden">
-            <!-- Sub-mode Selector -->
             <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
-                <div class="arch-toolbar-row" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="segmented-control">
                         <button class="segment-btn active" id="btnDevDiff" onclick="switchDevSubMode('diff')">Diff Patcher</button>
                         <button class="segment-btn" id="btnDevCommit" onclick="switchDevSubMode('commit')">Git Commit Generator</button>
@@ -1672,7 +1643,7 @@
                 </div>
             </div>
 
-            <!-- Panel 1: Diff Patcher -->
+            <!-- Subpanel 1: Diff Patcher -->
             <div id="devPanelDiff" style="display: flex; flex-direction: column; gap: var(--space-4);">
                 <div class="glass-panel">
                     <div class="search-row">
@@ -1696,7 +1667,7 @@
                 </div>
             </div>
 
-            <!-- Panel 2: Semantic Git Commit Generator -->
+            <!-- Subpanel 2: Semantic Git Commit Generator -->
             <div id="devPanelCommit" style="display: none; flex-direction: column; gap: var(--space-4);">
                 <div class="glass-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1719,7 +1690,7 @@
                 </div>
             </div>
 
-            <!-- Panel 3: LSP Server Bridge -->
+            <!-- Subpanel 3: LSP Server Bridge -->
             <div id="devPanelLsp" style="display: none; flex-direction: column; gap: var(--space-4);">
                 <div class="glass-panel">
                     <div style="display: flex; flex-direction: column; gap: var(--space-3);">
@@ -1857,7 +1828,6 @@
             }
         }
 
-        // Global shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
                 e.preventDefault();
@@ -1939,8 +1909,7 @@
         async function toggleWatcher() {
             const target = getActiveTarget();
             try {
-                const res = await fetch(`/api/watcher/toggle?repo_path=${encodeURIComponent(target)}`, { method: 'POST' });
-                const data = await res.json();
+                await fetch(`/api/watcher/toggle?repo_path=${encodeURIComponent(target)}`, { method: 'POST' });
                 await checkWatcherStatus();
             } catch (e) {
                 console.error(e);

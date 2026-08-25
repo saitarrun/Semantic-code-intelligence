@@ -17,7 +17,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+te from pydantic import BaseModel, Field
 
 from semantic_code_intel.config import CodeIntelConfig, DEFAULT_CONFIG
 from semantic_code_intel.generation.patcher import CodePatcher
