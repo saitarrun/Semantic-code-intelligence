@@ -124,6 +124,10 @@ class SymbolGraphEngine:
                 "file": clean_file_name,
                 "full_path": f_path,
                 "start_line": ch.start_line,
+                "end_line": ch.end_line,
+                "language": ch.language,
+                "citation": ch.citation,
+                "code": ch.content,
                 "group": 2
             }
 
