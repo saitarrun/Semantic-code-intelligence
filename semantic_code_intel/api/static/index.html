@@ -1644,26 +1644,79 @@
             </div>
         </div>
 
-        <!-- 4. DIFF PATCHER TAB -->
+        <!-- 4. DEVELOPER TOOLS TAB (DIFF PATCHER, GIT COMMIT, LSP) -->
         <div id="tab-diff" class="tab-content-view hidden">
-            <div class="glass-panel">
-                <div class="search-row">
-                    <div class="search-input-wrapper">
-                        <input
-                            type="text"
-                            id="diffInstructionInput"
-                            class="apple-search-input"
-                            placeholder="Describe refactoring instruction (e.g. 'Add input type validation to pipeline search method')"
-                        />
+            <!-- Sub-mode Selector -->
+            <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
+                <div class="arch-toolbar-row">
+                    <div class="segmented-control">
+                        <button class="segment-btn active" id="btnDevDiff" onclick="switchDevSubMode('diff')">Diff Patcher</button>
+                        <button class="segment-btn" id="btnDevCommit" onclick="switchDevSubMode('commit')">Git Commit Generator</button>
+                        <button class="segment-btn" id="btnDevLsp" onclick="switchDevSubMode('lsp')">LSP Server Bridge</button>
                     </div>
-                    <button class="apple-btn-primary" onclick="generateDiffPatch()">Generate Patch</button>
                 </div>
             </div>
 
-            <div id="patchOutputPanel" style="display: none; display: flex; flex-direction: column; gap: var(--space-4);">
-                <div class="diff-container" id="diffContent"></div>
-                <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
-                    <button class="apple-btn-secondary" onclick="applyGeneratedPatch()">Apply to Codebase</button>
+            <!-- Panel 1: Diff Patcher -->
+            <div id="devPanelDiff" style="display: flex; flex-direction: column; gap: var(--space-4);">
+                <div class="glass-panel">
+                    <div class="search-row">
+                        <div class="search-input-wrapper">
+                            <input
+                                type="text"
+                                id="diffInstructionInput"
+                                class="apple-search-input"
+                                placeholder="Describe refactoring instruction (e.g. 'Add input type validation to pipeline search method')"
+                            />
+                        </div>
+                        <button class="apple-btn-primary" onclick="generateDiffPatch()">Generate Patch</button>
+                    </div>
+                </div>
+
+                <div id="patchOutputPanel" style="display: none; display: flex; flex-direction: column; gap: var(--space-4);">
+                    <div class="diff-container" id="diffContent"></div>
+                    <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+                        <button class="apple-btn-secondary" onclick="applyGeneratedPatch()">Apply to Codebase</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Semantic Git Commit Generator -->
+            <div id="devPanelCommit" style="display: none; flex-direction: column; gap: var(--space-4);">
+                <div class="glass-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.95rem; font-weight: 600; color: var(--label-primary);">Semantic Git Commit Generator</div>
+                            <div style="font-size: 0.78rem; color: var(--label-tertiary); margin-top: 2px;">Analyzes working tree diffs to generate standardized Conventional Commits.</div>
+                        </div>
+                        <button class="apple-btn-primary" id="btnGenCommit" onclick="generateGitCommitProposal()">Analyze & Generate</button>
+                    </div>
+                </div>
+
+                <div class="glass-panel" id="commitOutputPanel" style="display: none;">
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                        <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--label-tertiary); font-weight: 600;">Proposed Commit Message</div>
+                        <div class="diff-container" id="commitMessageDisplay" style="color: var(--label-primary);"></div>
+                        <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+                            <button class="apple-btn-secondary" id="btnCopyCommit" onclick="copyCommitMessage()">Copy Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 3: LSP Server Bridge -->
+            <div id="devPanelLsp" style="display: none; flex-direction: column; gap: var(--space-4);">
+                <div class="glass-panel">
+                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                        <div style="font-size: 0.95rem; font-weight: 600; color: var(--label-primary);">Language Server Protocol (LSP) Bridge</div>
+                        <div style="font-size: 0.82rem; color: var(--label-secondary); line-height: 1.5;">
+                            Connect your IDE (VS Code, Cursor, Neovim, Helix) directly to the semantic index for native jump-to-definition, hover docs, and symbol completion over stdio JSON-RPC 2.0.
+                        </div>
+                        <div style="margin-top: var(--space-2);">
+                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--label-tertiary); font-weight: 600; margin-bottom: 4px;">Launch Command</div>
+                            <div class="diff-container" style="color: var(--system-blue); padding: 0.75rem 1rem;">code-intel lsp --dir .</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2517,6 +2570,58 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+        }
+
+        /* --- DEV TOOLS SUB-MODES --- */
+        let currentDevMode = 'diff';
+        let currentGeneratedCommit = '';
+
+        function switchDevSubMode(mode) {
+            currentDevMode = mode;
+            document.getElementById('btnDevDiff').classList.toggle('active', mode === 'diff');
+            document.getElementById('btnDevCommit').classList.toggle('active', mode === 'commit');
+            document.getElementById('btnDevLsp').classList.toggle('active', mode === 'lsp');
+
+            document.getElementById('devPanelDiff').style.display = mode === 'diff' ? 'flex' : 'none';
+            document.getElementById('devPanelCommit').style.display = mode === 'commit' ? 'flex' : 'none';
+            document.getElementById('devPanelLsp').style.display = mode === 'lsp' ? 'flex' : 'none';
+
+            if (mode === 'commit' && !currentGeneratedCommit) {
+                generateGitCommitProposal();
+            }
+        }
+
+        async function generateGitCommitProposal() {
+            const target = getActiveTarget();
+            const btn = document.getElementById('btnGenCommit');
+            const panel = document.getElementById('commitOutputPanel');
+            const display = document.getElementById('commitMessageDisplay');
+
+            panel.style.display = 'block';
+            display.textContent = 'Analyzing working tree diff and constructing Conventional Commit...';
+            btn.textContent = 'Analyzing...';
+
+            try {
+                const res = await fetch(`/api/git/commit/generate?repo_path=${encodeURIComponent(target)}`, {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                currentGeneratedCommit = data.full_message || data.title;
+                display.textContent = currentGeneratedCommit;
+            } catch (err) {
+                display.textContent = `Error generating commit: ${err.message}`;
+            } finally {
+                btn.textContent = 'Analyze & Generate';
+            }
+        }
+
+        function copyCommitMessage() {
+            const btn = document.getElementById('btnCopyCommit');
+            if (!currentGeneratedCommit) return;
+            navigator.clipboard.writeText(currentGeneratedCommit).then(() => {
+                btn.textContent = 'Copied';
+                setTimeout(() => { btn.textContent = 'Copy Message'; }, 1800);
+            });
         }
 
         // Initialize on load

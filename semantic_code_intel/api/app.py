@@ -523,3 +523,45 @@ async def toggle_watcher(repo_path: Optional[str] = None):
         _WATCHER = CodebaseWatcher(config=cfg)
         _WATCHER.start()
         return {"running": True, "watched_root": str(t_path), "message": "Watcher active"}
+
+
+@app.post("/api/git/commit/generate")
+async def generate_git_commit(repo_path: Optional[str] = None, staged_only: bool = False):
+    """Generate a conventional commit message based on local git diff."""
+    from semantic_code_intel.git_intel.commit_generator import SemanticCommitGenerator
+    t_path, _ = resolve_paths(repo_path)
+    generator = SemanticCommitGenerator(repo_path=t_path)
+    result = generator.generate_commit_message(staged_only=staged_only)
+    return result
+
+
+@app.get("/api/lsp/inspect")
+async def lsp_inspect(
+    repo_path: Optional[str] = None,
+    symbol: Optional[str] = None,
+    file_path: Optional[str] = None,
+    line: int = 1
+):
+    """Inspect LSP definitions, references, and hover data for a symbol or location."""
+    from semantic_code_intel.lsp.server import CodeIntelLSPServer
+    t_path, i_path = resolve_paths(repo_path)
+    cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
+    lsp_server = CodeIntelLSPServer(config=cfg)
+
+    params = {
+        "symbol": symbol,
+        "textDocument": {"uri": f"file://{t_path}/{file_path}" if file_path else ""},
+        "position": {"line": line - 1, "character": 0}
+    }
+
+    definitions = lsp_server._handle_definition(params)
+    references = lsp_server._handle_references(params)
+    hover = lsp_server._handle_hover(params)
+
+    return {
+        "symbol": symbol,
+        "definitions": definitions,
+        "references": references,
+        "hover": hover
+    }
+

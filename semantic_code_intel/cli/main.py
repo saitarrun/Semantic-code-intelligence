@@ -288,14 +288,62 @@ def watch_cmd(
     watcher = CodebaseWatcher(config=cfg, on_change_callback=on_change)
     watcher.start()
 
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        console.print("\n[yellow]Stopping watcher...[/]")
-        watcher.stop()
+@app.command(name="lsp")
+def lsp_cmd(
+    target_dir: Path = typer.Option(
+        Path("."),
+        "--dir", "-d",
+        help="Root path of target repository for Language Server"
+    )
+):
+    """Start the Language Server Protocol (LSP) stdio bridge for VS Code, Cursor, and Neovim."""
+    from semantic_code_intel.lsp.server import CodeIntelLSPServer
+    cfg = CodeIntelConfig(project_root=target_dir)
+    server = CodeIntelLSPServer(config=cfg)
+    server.run_stdio_server()
+
+
+@app.command(name="commit")
+def commit_cmd(
+    target_dir: Path = typer.Option(
+        Path("."),
+        "--dir", "-d",
+        help="Root path of repository"
+    ),
+    staged: bool = typer.Option(
+        False,
+        "--staged", "-s",
+        help="Analyze only staged changes"
+    ),
+    apply_commit: bool = typer.Option(
+        False,
+        "--apply", "-a",
+        help="Execute git commit directly with the generated message"
+    )
+):
+    """Generate a semantic Conventional Commit message from local git changes."""
+    import subprocess
+    from semantic_code_intel.git_intel.commit_generator import SemanticCommitGenerator
+
+    generator = SemanticCommitGenerator(repo_path=target_dir)
+    result = generator.generate_commit_message(staged_only=staged)
+
+    console.print(f"\n[bold green]Semantic Commit Proposal:[/]\n")
+    console.print(f"[bold cyan]{result['title']}[/]\n")
+    if result.get("body"):
+        console.print(f"{result['body']}\n")
+
+    if apply_commit:
+        try:
+            cmd = ["git", "commit", "-m", result["full_message"]]
+            proc = subprocess.run(cmd, cwd=str(target_dir), capture_output=True, text=True, check=True)
+            console.print("[bold green]✓ Commit applied successfully.[/]")
+            console.print(proc.stdout)
+        except Exception as err:
+            console.print(f"[bold red]Failed to apply commit:[/] {err}")
 
 
 if __name__ == "__main__":
     app()
+
 
