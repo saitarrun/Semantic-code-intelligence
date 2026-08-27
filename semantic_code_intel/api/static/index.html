@@ -514,6 +514,51 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* --- UNIVERSAL INPUT STYLES (NO RAW WHITE INPUTS) --- */
+        input[type="text"],
+        input[type="search"],
+        input[type="url"],
+        input[type="number"],
+        .apple-search-input,
+        .search-hero-input {
+            background: rgba(255, 255, 255, 0.04) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            border-radius: var(--radius-md) !important;
+            color: #FFFFFF !important;
+            font-family: var(--font-sans) !important;
+            font-size: 0.85rem !important;
+            padding: 0.6rem 1rem !important;
+            outline: none !important;
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+
+        input[type="text"]::placeholder,
+        input[type="search"]::placeholder,
+        .apple-search-input::placeholder,
+        .search-hero-input::placeholder {
+            color: rgba(255, 255, 255, 0.35) !important;
+        }
+
+        input[type="text"]:hover,
+        input[type="search"]:hover,
+        .apple-search-input:hover,
+        .search-hero-input:hover {
+            background: rgba(255, 255, 255, 0.065) !important;
+            border-color: rgba(255, 255, 255, 0.18) !important;
+        }
+
+        input[type="text"]:focus,
+        input[type="search"]:focus,
+        .apple-search-input:focus,
+        .search-hero-input:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #0A84FF !important;
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+        }
+
         /* --- HERO SEARCH BAR --- */
         .search-hero-box {
             position: relative;
@@ -533,16 +578,8 @@
 
         .search-hero-input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--radius-lg);
-            padding: 0.95rem 7.5rem 0.95rem 3.25rem;
-            font-family: var(--font-sans);
-            font-size: 0.96rem;
-            color: var(--text-primary);
-            outline: none;
-            box-shadow: var(--specular-glow);
-            transition: all 0.22s var(--ease-spring);
+            padding: 0.85rem 7.5rem 0.85rem 3.25rem !important;
+            font-size: 0.92rem !important;
         }
 
         .search-hero-input::placeholder {
@@ -1642,30 +1679,52 @@
                     </div>
                 </div>
 
-                <div id="devSubViewDiff" style="display: flex; flex-direction: column; gap: 10px;">
-                    <input
-                        type="text"
-                        id="diffBaseCommit"
-                        class="apple-search-input"
-                        style="padding: 0.55rem 0.85rem; font-size: 0.84rem;"
-                        placeholder="Base Git Ref (e.g., HEAD~1, main, origin/main)"
-                    />
-                    <button class="apple-btn-primary" onclick="generateIncrementalPatch()" style="align-self: flex-start;">Generate Diff Patch</button>
+                <div id="devSubViewDiff" style="display: flex; flex-direction: column; gap: 12px;">
+                    <div class="search-hero-box">
+                        <span class="search-hero-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="6" y1="3" x2="6" y2="15"></line>
+                                <circle cx="18" cy="6" r="3"></circle>
+                                <circle cx="6" cy="18" r="3"></circle>
+                                <path d="M18 9a9 9 0 0 1-9 9"></path>
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            id="diffBaseCommit"
+                            class="search-hero-input"
+                            style="padding-top: 0.65rem; padding-bottom: 0.65rem; font-size: 0.88rem;"
+                            placeholder="Base Git Ref (e.g. HEAD~1, main, origin/main, commit SHA)"
+                        />
+                        <div class="search-hero-action">
+                            <button class="apple-btn-primary" onclick="generateIncrementalPatch()">Generate Diff</button>
+                        </div>
+                    </div>
                     <div id="diffPatchOutput" class="synthesis-card" style="display: none;"></div>
                 </div>
 
-                <div id="devSubViewLsp" style="display: none; flex-direction: column; gap: 10px;">
+                <div id="devSubViewLsp" style="display: none; flex-direction: column; gap: 12px;">
                     <p style="font-size: 0.82rem; color: var(--text-secondary);">
                         Interactive JSON-RPC 2.0 Language Server Protocol (LSP) Bridge for VS Code, Neovim, and Emacs.
                     </p>
-                    <input
-                        type="text"
-                        id="lspSymbolQuery"
-                        class="apple-search-input"
-                        style="padding: 0.55rem 0.85rem; font-size: 0.84rem;"
-                        placeholder="Search symbol definition or hover..."
-                    />
-                    <button class="apple-btn-primary" onclick="queryLspSymbol()" style="align-self: flex-start;">Query LSP Bridge</button>
+                    <div class="search-hero-box">
+                        <span class="search-hero-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </span>
+                        <input
+                            type="text"
+                            id="lspSymbolQuery"
+                            class="search-hero-input"
+                            style="padding-top: 0.65rem; padding-bottom: 0.65rem; font-size: 0.88rem;"
+                            placeholder="Search symbol definition or hover in LSP bridge..."
+                        />
+                        <div class="search-hero-action">
+                            <button class="apple-btn-primary" onclick="queryLspSymbol()">Query LSP</button>
+                        </div>
+                    </div>
                     <div id="lspQueryResult" class="synthesis-card" style="display: none;"></div>
                 </div>
             </div>
