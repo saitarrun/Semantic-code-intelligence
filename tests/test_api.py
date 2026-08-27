@@ -15,7 +15,7 @@ def process_refund(order_id: str, amount_cents: int) -> bool:
 '''
     with tempfile.TemporaryDirectory() as tmpdir:
         repo_dir = Path(tmpdir) / "repo"
-        index_dir = Path(tmpdir) / "index"
+        index_dir = repo_dir / ".code_intel_index"
         repo_dir.mkdir()
         (repo_dir / "payments.py").write_text(sample_code, encoding="utf-8")
 
@@ -48,6 +48,7 @@ def process_refund(order_id: str, amount_cents: int) -> bool:
             "/api/search",
             json={
                 "query": "refund order stripe payment",
+                "repo_path": str(repo_dir),
                 "top_k": 3,
                 "mode": "hybrid",
                 "use_reranker": True
@@ -63,9 +64,9 @@ def process_refund(order_id: str, amount_cents: int) -> bool:
         res_synth = client.post(
             "/api/synthesize",
             json={
-                "query": "how to process refund?",
-                "top_k": 2,
-                "provider": "extractive"
+                "query": "How is order refund handled?",
+                "repo_path": str(repo_dir),
+                "retrieved_chunks": search_data["results"]
             }
         )
         assert res_synth.status_code == 200

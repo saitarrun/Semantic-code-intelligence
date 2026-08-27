@@ -43,7 +43,8 @@ class ParserConfig(BaseModel):
             ".DS_Store", "Thumbs.db", "*.min.js", "*.min.css", "*.map",
             "oss_evaluation", ".code_intel_index", "cloned_repos",
             ".env*", "*.pem", "*.key", "*.pkcs12", "*.pfx", "id_rsa*",
-            "id_ed25519*", "*credential*", "*secret*", ".aws*", ".ssh*"
+            "id_ed25519*", "*credential*", "*secret*", ".aws*", ".ssh*",
+            "vendor", "third_party", "deps", "redis-stable*", "*.tar.gz"
         ],
         description="Glob patterns to ignore"
     )
@@ -56,7 +57,7 @@ class EmbeddingConfig(BaseModel):
         description="HuggingFace model ID for dense code/text embeddings"
     )
     embedding_dim: int = Field(default=384, description="Dimension of embedding vectors")
-    batch_size: int = Field(default=64, description="Inference batch size")
+    batch_size: int = Field(default=128, description="Inference batch size")
     normalize_embeddings: bool = Field(default=True, description="L2 normalize embeddings for cosine similarity")
     device: str = Field(default_factory=detect_device, description="Inference compute device")
     local_files_only: bool = Field(

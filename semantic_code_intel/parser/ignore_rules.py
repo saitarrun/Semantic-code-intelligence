@@ -36,25 +36,24 @@ class IgnoreFilter:
     def should_ignore(self, path: Path) -> bool:
         """Check if a given file or directory should be ignored."""
         try:
-            rel_path = path.relative_to(self.repo_root)
+            rel_path = path.resolve().relative_to(self.repo_root)
             rel_str = str(rel_path).replace("\\", "/")
         except ValueError:
-            rel_str = str(path).replace("\\", "/")
+            rel_path = Path(path.name)
+            rel_str = str(path.name)
 
         name = path.name
 
-        # Check default pattern matches
+        # Check direct filename and relative path pattern matches
         for pat in self.patterns:
             pat_clean = pat.rstrip("/")
             if fnmatch.fnmatch(name, pat_clean):
                 return True
             if fnmatch.fnmatch(rel_str, pat_clean):
                 return True
-            if fnmatch.fnmatch(rel_str, f"*{pat_clean}*"):
-                return True
 
-        # Check path parts
-        for part in path.parts:
+        # Check relative path parts only (within repo hierarchy)
+        for part in rel_path.parts:
             if part.startswith(".") and part not in [".", ".."]:
                 # Ignore hidden directories by default (.git, .cache, etc.)
                 return True

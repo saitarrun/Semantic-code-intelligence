@@ -54,6 +54,11 @@ class HybridIndexer:
         """
         start_time = time.time()
         repo_root = (target_dir or self.config.project_root).resolve()
+        if target_dir and target_dir != self.config.project_root:
+            self.config.project_root = repo_root
+            self.index_dir = self.config.get_index_dir()
+            self.metadata_store = MetadataStore(self.index_dir / self.config.storage.metadata_db_file)
+
         self.index_dir.mkdir(parents=True, exist_ok=True)
 
         if force_reindex:

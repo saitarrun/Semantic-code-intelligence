@@ -93,6 +93,9 @@ STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 
+CLONED_REPOS_ROOT = (Path(__file__).resolve().parent.parent.parent / "cloned_repos").resolve()
+CLONED_REPOS_ROOT.mkdir(parents=True, exist_ok=True)
+
 _PIPELINE_CACHE_SIZE = max(1, int(os.getenv("CODE_INTEL_PIPELINE_CACHE_SIZE", "4")))
 _PIPELINES: OrderedDict[str, HybridRetrievalPipeline] = OrderedDict()
 _PIPELINES_LOCK = threading.RLock()
@@ -192,9 +195,8 @@ async def serve_ui():
 @app.get("/api/presets")
 async def get_presets():
     """List available repositories and presets."""
-    cloned_root = (config.project_root / "cloned_repos").resolve()
-    if cloned_root.exists():
-        for sub in cloned_root.iterdir():
+    if CLONED_REPOS_ROOT.exists():
+        for sub in CLONED_REPOS_ROOT.iterdir():
             if sub.is_dir() and not sub.name.startswith("."):
                 name_parts = sub.name.split("_", 1)
                 display_name = f"GitHub: {name_parts[0]}/{name_parts[1]}" if len(name_parts) == 2 else f"Cloned: {sub.name}"
@@ -384,10 +386,7 @@ async def stream_github_import(
     import shutil
 
     owner, repo, clone_url = sanitize_github_url(url)
-
-    cloned_root = (config.project_root / "cloned_repos").resolve()
-    cloned_root.mkdir(parents=True, exist_ok=True)
-    target_dir = cloned_root / f"{owner}_{repo}"
+    target_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
 
     event_q: queue.Queue = queue.Queue()
 
@@ -518,10 +517,7 @@ async def import_github_repo(req: GitHubImportRequest):
     import shutil
 
     owner, repo, clone_url = sanitize_github_url(req.url)
-
-    cloned_root = (config.project_root / "cloned_repos").resolve()
-    cloned_root.mkdir(parents=True, exist_ok=True)
-    target_dir = cloned_root / f"{owner}_{repo}"
+    target_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
 
     if target_dir.exists() and req.force:
         shutil.rmtree(target_dir, ignore_errors=True)

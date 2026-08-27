@@ -1953,9 +1953,14 @@
         });
 
         function getActiveTarget() {
-            const selectVal = document.getElementById('repoDropdown').value;
+            const select = document.getElementById('repoDropdown');
+            const selectVal = select ? select.value : '.';
             if (selectVal === 'CUSTOM') {
                 return document.getElementById('customPathInput').value.trim() || '.';
+            }
+            if (selectVal === 'GITHUB') {
+                const firstPreset = Array.from(select.options).find(o => o.value !== 'GITHUB' && o.value !== 'CUSTOM');
+                return firstPreset ? firstPreset.value : '.';
             }
             return selectVal;
         }
@@ -2197,6 +2202,10 @@
 
                         if (data.stage === 'done') {
                             eventSource.close();
+                            fillBar.style.width = '100%';
+                            pctText.textContent = '100%';
+                            statusText.textContent = data.message || 'Successfully imported & indexed repository.';
+                            updateStagePills('done', true);
                             closeBtn.style.display = 'block';
                             urlInput.value = '';
                             if (data.repo_path) {
@@ -2230,6 +2239,17 @@
 
             if (isGithub && pillClone) {
                 pillClone.style.display = 'block';
+                pillClone.textContent = '1. Git Clone';
+                pillScan.textContent = '2. AST Parsing';
+                pillPersist.textContent = '3. SQLite Store';
+                pillEmbed.textContent = '4. Dense Embeddings';
+                pillBM25.textContent = '5. Lexical Index';
+            } else {
+                if (pillClone) pillClone.style.display = 'none';
+                pillScan.textContent = '1. AST Parsing';
+                pillPersist.textContent = '2. SQLite Store';
+                pillEmbed.textContent = '3. Dense Embeddings';
+                pillBM25.textContent = '4. Lexical Index';
             }
 
             if (stage === 'cloning' && pillClone) {
