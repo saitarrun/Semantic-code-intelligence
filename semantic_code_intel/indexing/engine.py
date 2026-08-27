@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import os
 import time
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -65,35 +66,46 @@ class HybridIndexer:
             logger.info("Force reindex requested: Clearing existing metadata and indices.")
             self.metadata_store.clear()
 
-        # Step 1: Scan and parse codebase files (0% -> 25%)
+        # Step 1: Scan and parse codebase files in parallel (0% -> 25%)
         files = self.scanner.discover_files(repo_root)
         total_files = len(files)
         logger.info(f"Discovered {total_files} source files in {repo_root}")
 
         all_chunks: List[CodeChunk] = []
+        file_records: List[tuple[str, str, int, int, int]] = []
         total_lines = 0
         total_bytes = 0
 
-        for idx, file_path in enumerate(files):
-            pct = round((idx / max(total_files, 1)) * 25.0, 1)
-            if progress_callback:
-                progress_callback("parsing", idx + 1, total_files, f"Parsing AST: {file_path.name}", pct)
+        def _parse_single_file(fp: Path):
+            f_hash = compute_file_sha256(fp)
+            p = self.scanner.get_parser_for_file(fp)
+            p_res = p.parse_file(fp, repo_root)
+            return fp, f_hash, p_res
 
-            file_hash = compute_file_sha256(file_path)
-            parser = self.scanner.get_parser_for_file(file_path)
-            parse_res = parser.parse_file(file_path, repo_root)
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        max_workers = min(16, (os.cpu_count() or 4) * 2)
 
-            total_lines += parse_res.total_lines
-            total_bytes += parse_res.total_bytes
-            all_chunks.extend(parse_res.chunks)
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_file = {executor.submit(_parse_single_file, fp): fp for fp in files}
+            for idx, future in enumerate(as_completed(future_to_file)):
+                fp, f_hash, p_res = future.result()
+                total_lines += p_res.total_lines
+                total_bytes += p_res.total_bytes
+                all_chunks.extend(p_res.chunks)
+                file_records.append((
+                    p_res.file_path,
+                    f_hash,
+                    p_res.total_lines,
+                    p_res.total_bytes,
+                    len(p_res.chunks)
+                ))
 
-            self.metadata_store.record_file(
-                file_path=parse_res.file_path,
-                file_hash=file_hash,
-                total_lines=parse_res.total_lines,
-                total_bytes=parse_res.total_bytes,
-                chunk_count=len(parse_res.chunks)
-            )
+                if progress_callback and (idx % 5 == 0 or idx == total_files - 1):
+                    pct = round(((idx + 1) / max(total_files, 1)) * 25.0, 1)
+                    progress_callback("parsing", idx + 1, total_files, f"Parsing AST: {fp.name}", pct)
+
+        # Batch record file statuses into SQLite
+        self.metadata_store.record_files_batch(file_records)
 
         parse_time = time.time() - start_time
         logger.info(

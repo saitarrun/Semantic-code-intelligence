@@ -12,9 +12,11 @@ import torch
 
 
 def detect_device() -> str:
-    """Detect available hardware acceleration (CUDA if available, else CPU for stability)."""
+    """Detect available hardware acceleration (CUDA, Apple Silicon MPS, or CPU)."""
     if torch.cuda.is_available():
         return "cuda"
+    if hasattr(torch.backends, "mps") and torch.backends.mps.is_available():
+        return "mps"
     return "cpu"
 
 

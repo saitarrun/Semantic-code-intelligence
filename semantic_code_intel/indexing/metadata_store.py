@@ -144,6 +144,20 @@ class MetadataStore:
             rows = conn.execute("SELECT * FROM chunks ORDER BY file_path, start_line").fetchall()
             return [self._row_to_chunk(r) for r in rows]
 
+    def record_files_batch(self, file_records: List[Tuple[str, str, int, int, int]]) -> None:
+        """Batch record indexed file status and hashes for high-throughput indexing."""
+        if not file_records:
+            return
+        now = time.time()
+        records = [(r[0], r[1], r[2], r[3], r[4], now) for r in file_records]
+        with self._get_connection() as conn:
+            conn.executemany("""
+                INSERT OR REPLACE INTO files (
+                    file_path, file_hash, total_lines, total_bytes, chunk_count, indexed_at
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            """, records)
+            conn.commit()
+
     def record_file(
         self,
         file_path: str,
@@ -153,14 +167,7 @@ class MetadataStore:
         chunk_count: int
     ) -> None:
         """Record indexed file status and hash for incremental indexing."""
-        now = time.time()
-        with self._get_connection() as conn:
-            conn.execute("""
-                INSERT OR REPLACE INTO files (
-                    file_path, file_hash, total_lines, total_bytes, chunk_count, indexed_at
-                ) VALUES (?, ?, ?, ?, ?, ?)
-            """, (file_path, file_hash, total_lines, total_bytes, chunk_count, now))
-            conn.commit()
+        self.record_files_batch([(file_path, file_hash, total_lines, total_bytes, chunk_count)])
 
     def get_file_hash(self, file_path: str) -> Optional[str]:
         """Get the stored hash of a file."""
