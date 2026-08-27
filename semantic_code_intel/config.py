@@ -94,7 +94,7 @@ class GenerationConfig(BaseModel):
     """Settings for local generative answer synthesis."""
     provider: str = Field(default="ollama", description="Default provider: 'mlx', 'ollama', or 'extractive'")
     ollama_base_url: str = Field(default_factory=lambda: os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434"))
-    ollama_model: str = Field(default_factory=lambda: os.getenv("CODE_INTEL_OLLAMA_MODEL", "qwen2.5-coder:7b"))
+    ollama_model: str = Field(default_factory=lambda: os.getenv("CODE_INTEL_OLLAMA_MODEL", "qwen2.5-coder:1.5b"))
     mlx_model: str = Field(default_factory=lambda: os.getenv("CODE_INTEL_MLX_MODEL", "mlx-community/Qwen2.5-Coder-1.5B-Instruct-4bit"))
     timeout_seconds: float = Field(default=90.0, gt=0)
     fallback_to_extractive: bool = True
