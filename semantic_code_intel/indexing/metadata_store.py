@@ -144,6 +144,22 @@ class MetadataStore:
             rows = conn.execute("SELECT * FROM chunks ORDER BY file_path, start_line").fetchall()
             return [self._row_to_chunk(r) for r in rows]
 
+    def get_graph_chunks(self, limit: int = 1500) -> List[CodeChunk]:
+        """Retrieve top symbol chunks for dependency and architecture graphs directly via SQL."""
+        with self._get_connection() as conn:
+            rows = conn.execute(
+                """
+                SELECT * FROM chunks 
+                WHERE symbol_name IS NOT NULL 
+                  AND symbol_name != '' 
+                  AND symbol_name NOT LIKE 'block_L%' 
+                ORDER BY file_path, start_line 
+                LIMIT ?
+                """,
+                (limit,)
+            ).fetchall()
+            return [self._row_to_chunk(r) for r in rows]
+
     def record_files_batch(self, file_records: List[Tuple[str, str, int, int, int]]) -> None:
         """Batch record indexed file status and hashes for high-throughput indexing."""
         if not file_records:

@@ -61,7 +61,7 @@ class SymbolGraphEngine:
         Extracts clean symbol definition and call nodes.
         Filters out documentation/markdown files and anonymous blocks.
         """
-        chunks = self.metadata_store.get_all_chunks()
+        chunks = self.metadata_store.get_graph_chunks(limit=1500)
         if not chunks:
             return {"nodes": [], "edges": [], "metrics": {"total_nodes": 0, "total_edges": 0}}
 
@@ -141,18 +141,24 @@ class SymbolGraphEngine:
                     "relation": "defines"
                 })
 
-        # 3. Detect symbol-to-symbol call links
-        for ch in valid_chunks:
+        # 3. Detect symbol-to-symbol call links using AST-extracted dependencies and fast token sets
+        for ch in valid_chunks[:2000]:
             caller_sym = sanitize_label(ch.symbol_name) if ch.symbol_name else None
             caller_id = f"sym:{ch.file_path}:{caller_sym}" if caller_sym else f"file:{ch.file_path}"
 
-            for target_name, target_info in defined_symbols.items():
-                if target_name == caller_sym:
-                    continue  # Skip self call
+            # Fast path: Check Tree-sitter extracted dependencies
+            called_names = set(ch.dependencies) if ch.dependencies else set()
+            
+            # If no dependencies list, extract identifiers in O(N) by tokenizing once
+            if not called_names and ch.content:
+                called_names = set(re.findall(r'\b[A-Za-z_][A-Za-z0-9_]*\b', ch.content[:4096]))
 
-                # Word-boundary regex matching
-                pattern = r'\b' + re.escape(target_name) + r'\b'
-                if re.search(pattern, ch.content):
+            for target_name in called_names:
+                if target_name == caller_sym:
+                    continue
+                clean_target = sanitize_label(target_name)
+                if clean_target in defined_symbols:
+                    target_info = defined_symbols[clean_target]
                     target_id = target_info["id"]
                     edge_key = (caller_id, target_id, "calls")
                     if edge_key not in edges_set:

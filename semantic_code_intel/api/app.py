@@ -640,7 +640,7 @@ async def get_symbol_graph(
     t_path, i_path = resolve_paths(repo_path)
     cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
     engine = SymbolGraphEngine(cfg)
-    graph_data = engine.extract_graph(target_symbol=symbol, limit_nodes=limit)
+    graph_data = await asyncio.to_thread(engine.extract_graph, target_symbol=symbol, limit_nodes=limit)
     return graph_data
 
 
