@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semantic Code Intelligence</title>
+    <title>Semantic Code Intelligence — Apple Human Interface System</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,33 +11,34 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           ULTRA-PREMIUM PURE OLED BLACK GLASSMORPHIC DESIGN SYSTEM
+           APPLE HUMAN INTERFACE GUIDELINES (HIG) — VISIONOS / MACOS PRO DESIGN SYSTEM
            ========================================================================== */
         :root {
-            /* Pure Pitch Dark Palette */
+            /* Apple OLED Pitch Black & Material Surfaces */
             --bg-base: #000000;
-            --bg-surface-lowest: #050507;
-            --bg-surface: #0a0b0f;
-            --bg-surface-elevated: #0f1016;
+            --bg-surface-lowest: #050508;
+            --bg-surface: #0a0b10;
+            --bg-surface-elevated: #111218;
 
-            /* Glassmorphism 2.0 Layers */
-            --glass-nav: rgba(10, 11, 15, 0.85);
-            --glass-card: rgba(16, 17, 23, 0.65);
-            --glass-card-hover: rgba(22, 24, 32, 0.85);
-            --glass-panel: rgba(12, 13, 18, 0.7);
-            --glass-input: rgba(255, 255, 255, 0.035);
+            /* Apple Translucent Vibrancy Materials */
+            --glass-nav: rgba(12, 13, 18, 0.82);
+            --glass-card: rgba(18, 19, 26, 0.65);
+            --glass-card-hover: rgba(26, 28, 38, 0.85);
+            --glass-panel: rgba(14, 15, 22, 0.7);
+            --glass-input: rgba(255, 255, 255, 0.04);
             --glass-pill: rgba(255, 255, 255, 0.05);
             --glass-pill-hover: rgba(255, 255, 255, 0.09);
 
-            /* Hairline Translucent Specular Borders */
+            /* Apple Specular Strokes & Hairline Dividers */
             --border-subtle: rgba(255, 255, 255, 0.08);
             --border-medium: rgba(255, 255, 255, 0.16);
             --border-highlight: rgba(255, 255, 255, 0.28);
             --specular-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
             --specular-elevated: 0 16px 48px rgba(0, 0, 0, 0.8), inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
 
-            /* Apple Luminescent Color Palette */
+            /* Apple Luminescent Color Hierarchy */
             --accent-blue: #0A84FF;
+            --accent-blue-hover: #0071E3;
             --accent-blue-glow: rgba(10, 132, 255, 0.28);
             --accent-blue-tint: rgba(10, 132, 255, 0.14);
 
@@ -59,20 +60,21 @@
 
             /* Typography */
             --text-primary: #FFFFFF;
-            --text-secondary: rgba(255, 255, 255, 0.72);
-            --text-tertiary: rgba(255, 255, 255, 0.42);
-            --text-quaternary: rgba(255, 255, 255, 0.22);
+            --text-secondary: rgba(255, 255, 255, 0.75);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-quaternary: rgba(255, 255, 255, 0.25);
 
             --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
-            --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Consolas, monospace;
+            --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Monaco, Consolas, monospace;
 
-            /* Radii & Motion */
+            /* Radii (Apple Continuous Squircle Corners) */
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 18px;
             --radius-xl: 24px;
             --radius-full: 9999px;
 
+            /* Apple Spring Physics */
             --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -92,12 +94,12 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            letter-spacing: -0.015em;
+            letter-spacing: -0.018em;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Ambient Fluid Glow Mesh */
+        /* Ambient Lighting Backdrop */
         .ambient-mesh {
             position: fixed;
             top: 0;
@@ -115,7 +117,7 @@
             left: 12%;
             width: 55vw;
             height: 50vh;
-            background: radial-gradient(circle, rgba(10, 132, 255, 0.09) 0%, rgba(94, 92, 230, 0.04) 50%, transparent 75%);
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.08) 0%, rgba(94, 92, 230, 0.03) 50%, transparent 75%);
             filter: blur(110px);
             animation: orbFloat1 22s ease-in-out infinite alternate;
         }
@@ -126,7 +128,7 @@
             right: -10%;
             width: 45vw;
             height: 45vh;
-            background: radial-gradient(circle, rgba(191, 90, 242, 0.07) 0%, rgba(10, 132, 255, 0.03) 50%, transparent 75%);
+            background: radial-gradient(circle, rgba(191, 90, 242, 0.06) 0%, rgba(10, 132, 255, 0.02) 50%, transparent 75%);
             filter: blur(130px);
             animation: orbFloat2 26s ease-in-out infinite alternate;
         }
@@ -137,7 +139,7 @@
             left: 20%;
             width: 50vw;
             height: 40vh;
-            background: radial-gradient(circle, rgba(48, 209, 88, 0.05) 0%, rgba(100, 210, 255, 0.03) 50%, transparent 75%);
+            background: radial-gradient(circle, rgba(48, 209, 88, 0.04) 0%, rgba(100, 210, 255, 0.02) 50%, transparent 75%);
             filter: blur(120px);
         }
 
@@ -151,7 +153,7 @@
             100% { transform: translate(-8%, -6%) scale(1.06); }
         }
 
-        /* --- STICKY TOP NAVIGATION --- */
+        /* --- STICKY FLOATING TOP NAVIGATION --- */
         nav {
             position: sticky;
             top: 0;
@@ -231,6 +233,11 @@
             background: var(--glass-pill-hover);
             border-color: var(--border-medium);
             color: var(--text-primary);
+            transform: translateY(-1px);
+        }
+
+        .status-pill:active {
+            transform: scale(0.97);
         }
 
         .status-dot {
@@ -271,7 +278,7 @@
             flex: 1;
         }
 
-        /* --- FROSTED OBSIDIAN GLASS PANELS & CARDS --- */
+        /* --- FROSTED OBSIDIAN GLASS PANELS --- */
         .glass-panel {
             background: var(--glass-card);
             backdrop-filter: blur(36px) saturate(190%);
@@ -342,7 +349,7 @@
 
         select.apple-select:focus {
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            box-shadow: 0 0 0 3.5px var(--accent-blue-glow);
         }
 
         .select-arrow {
@@ -381,9 +388,9 @@
             color: var(--text-primary);
         }
 
-        /* --- BUTTONS --- */
+        /* --- BUTTONS (APPLE HIG INTERACTIVE STATES) --- */
         .apple-btn-primary {
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #005fd6 100%);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-blue-hover) 100%);
             color: #FFFFFF;
             font-family: var(--font-sans);
             font-size: 0.82rem;
@@ -408,7 +415,7 @@
         }
 
         .apple-btn-primary:active {
-            transform: translateY(0);
+            transform: scale(0.975);
         }
 
         .apple-btn-secondary {
@@ -435,6 +442,27 @@
             transform: translateY(-1px);
         }
 
+        .apple-btn-secondary:active {
+            transform: scale(0.975);
+        }
+
+        /* --- KEYBOARD SHORTCUT BADGES --- */
+        .apple-kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 6px;
+            font-family: var(--font-sans);
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
         /* --- UNIVERSAL INPUT STYLES (NEVER RAW WHITE) --- */
         input[type="text"],
         input[type="search"],
@@ -453,7 +481,7 @@
             padding: 0.62rem 1rem !important;
             outline: none !important;
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+            transition: all 0.2s var(--ease-spring) !important;
         }
 
         input[type="text"]::placeholder,
@@ -477,10 +505,10 @@
         .search-hero-input:focus {
             background: rgba(255, 255, 255, 0.08) !important;
             border-color: #0A84FF !important;
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+            box-shadow: 0 0 0 3.5px rgba(10, 132, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
         }
 
-        /* --- FLOATING SEGMENTED TAB BAR --- */
+        /* --- APPLE VISIONOS SEGMENTED TAB BAR --- */
         .tab-bar-container {
             display: flex;
             justify-content: center;
@@ -525,6 +553,10 @@
 
         .vision-tab-btn:hover {
             color: var(--text-primary);
+        }
+
+        .vision-tab-btn:active {
+            transform: scale(0.97);
         }
 
         .vision-tab-btn.active {
@@ -576,13 +608,16 @@
 
         .search-hero-input {
             width: 100%;
-            padding: 0.88rem 7.5rem 0.88rem 3.25rem !important;
+            padding: 0.88rem 8.5rem 0.88rem 3.25rem !important;
             font-size: 0.92rem !important;
         }
 
         .search-hero-action {
             position: absolute;
             right: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         /* --- SEARCH CONTROLS ROW --- */
@@ -621,6 +656,10 @@
 
         .mode-pill-btn:hover {
             color: var(--text-primary);
+        }
+
+        .mode-pill-btn:active {
+            transform: scale(0.97);
         }
 
         .mode-pill-btn.active {
@@ -805,7 +844,7 @@
         .arch-pill-select-wrapper:focus-within {
             border-color: var(--accent-blue);
             background: var(--accent-blue-tint);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            box-shadow: 0 0 0 3.5px var(--accent-blue-glow);
         }
 
         .arch-pill-icon {
@@ -891,7 +930,11 @@
             transform: translateY(-1px);
         }
 
-        /* --- MASTER-DETAIL SPLIT SCREEN --- */
+        .arch-reset-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* --- MASTER-DETAIL SPLIT SCREEN (APPLE XCODE / FINDER STYLE) --- */
         .master-detail-view {
             display: grid;
             grid-template-columns: 340px 1fr;
@@ -1130,6 +1173,7 @@
             background: rgba(10, 132, 255, 0.15);
             color: #FFFFFF;
             border-color: var(--accent-blue);
+            transform: translateY(-1px);
         }
 
         .btn-table-action {
@@ -1152,7 +1196,11 @@
             transform: translateY(-1px);
         }
 
-        /* --- CODE INSPECTOR MODAL --- */
+        .btn-table-action:active {
+            transform: scale(0.97);
+        }
+
+        /* --- MACOS CODE INSPECTOR WINDOW --- */
         .modal-backdrop {
             position: fixed;
             top: 0;
@@ -1212,6 +1260,11 @@
             height: 11px;
             border-radius: 50%;
             cursor: pointer;
+            transition: filter 0.15s ease;
+        }
+
+        .traffic-dot:hover {
+            filter: brightness(1.2);
         }
 
         .traffic-dot.close { background: #FF5F56; border: 1px solid #E0443E; }
@@ -1270,14 +1323,14 @@
     </style>
 </head>
 <body>
-    <!-- Ambient Fluid Lighting -->
+    <!-- Ambient Lighting Backdrop -->
     <div class="ambient-mesh">
         <div class="ambient-orb-1"></div>
         <div class="ambient-orb-2"></div>
         <div class="ambient-orb-3"></div>
     </div>
 
-    <!-- Navigation Header -->
+    <!-- Sticky Floating Navigation Header -->
     <nav>
         <div class="nav-brand">
             <div class="nav-logo-icon">
@@ -1289,16 +1342,16 @@
             </div>
             <span class="nav-title">
                 Semantic Code Intelligence
-                <span class="nav-version-badge">2.0 Core</span>
+                <span class="nav-version-badge">2.0 Pro</span>
             </span>
         </div>
 
         <div class="nav-status-group">
-            <div class="status-pill" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Click to toggle background real-time file watcher">
+            <div class="status-pill" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Click to toggle background file watcher">
                 <span class="status-dot warning" id="watcherDot"></span>
                 <span id="watcherStatusText">Watcher: Off</span>
             </div>
-            <div class="status-pill" title="Backend Search & Indexing Engine Status">
+            <div class="status-pill" title="Search & Indexing Engine Heartbeat">
                 <span class="status-dot" id="systemStatusDot"></span>
                 <span id="systemStatusText">Engine: Ready</span>
             </div>
@@ -1307,7 +1360,7 @@
 
     <!-- Main Application Canvas -->
     <main>
-        <!-- Top Toolbar: Repo Switcher & Metrics Strip -->
+        <!-- Top Toolbar: Project Switcher & Telemetry Strip -->
         <div class="glass-panel top-toolbar">
             <div class="repo-select-group">
                 <div class="select-wrapper">
@@ -1321,7 +1374,7 @@
                     </span>
                 </div>
 
-                <!-- GitHub Clone Drawer Wrapper -->
+                <!-- GitHub Clone Drawer -->
                 <div id="githubImportWrapper" style="display: none; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap;">
                     <input
                         type="text"
@@ -1371,12 +1424,12 @@
                         <polyline points="23 4 23 10 17 10"></polyline>
                         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
                     </svg>
-                    Index Repository
+                    Index Project
                 </button>
             </div>
         </div>
 
-        <!-- VisionOS Segmented Navigation Tabs -->
+        <!-- Apple VisionOS Segmented Navigation Tabs -->
         <div class="tab-bar-container">
             <div class="vision-segmented-tabs">
                 <button class="vision-tab-btn active" id="tabBtnSearch" onclick="switchMainTab('search')">
@@ -1390,7 +1443,7 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
                     </svg>
-                    Reasoning & Synthesis
+                    Reasoning Studio
                 </button>
                 <button class="vision-tab-btn" id="tabBtnGraph" onclick="switchMainTab('graph')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1426,9 +1479,10 @@
                         type="text"
                         id="searchInput"
                         class="search-hero-input"
-                        placeholder="Search symbols, logic, or natural language intent across codebase..."
+                        placeholder="Search symbols, AST logic, or natural language intent..."
                     />
                     <div class="search-hero-action">
+                        <kbd class="apple-kbd" style="display: inline-block;">⌘K</kbd>
                         <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
                     </div>
                 </div>
@@ -1478,7 +1532,7 @@
                     <span class="telemetry-label">Rerank Stage</span>
                     <span class="telemetry-val" id="rerankLatency">-- ms</span>
                 </div>
-                <div class="telemetry-card" style="border-color: rgba(48, 209, 88, 0.3);">
+                <div class="telemetry-card" style="border-color: rgba(48, 209, 88, 0.35);">
                     <span class="telemetry-label">Total Time</span>
                     <span class="telemetry-val highlight" id="totalLatency">-- ms</span>
                 </div>
@@ -1504,6 +1558,7 @@
                         placeholder="Ask a technical question about the codebase (e.g. 'How does incremental SHA-256 caching bypass re-indexing?')"
                     />
                     <div class="search-hero-action">
+                        <kbd class="apple-kbd">↵ Enter</kbd>
                         <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
                     </div>
                 </div>
@@ -1724,12 +1779,12 @@
         </div>
     </main>
 
-    <!-- Code Inspector Modal -->
+    <!-- macOS Code Inspector Window Modal -->
     <div class="modal-backdrop hidden" id="inspectorModal" onclick="closeInspectorModal(event)">
         <div class="inspector-window" onclick="event.stopPropagation()">
             <div class="traffic-lights-bar">
                 <div class="traffic-dots">
-                    <div class="traffic-dot close" onclick="closeInspectorModal()"></div>
+                    <div class="traffic-dot close" onclick="closeInspectorModal()" title="Close Window (ESC)"></div>
                     <div class="traffic-dot min"></div>
                     <div class="traffic-dot max"></div>
                 </div>
@@ -1739,7 +1794,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                     <span id="inspectorFileCitation" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-tertiary);"></span>
-                    <button class="btn-table-action" onclick="copyInspectorCode()">Copy</button>
+                    <button class="btn-table-action" onclick="copyInspectorCode()">Copy Code</button>
                 </div>
             </div>
             <div class="inspector-code-wrap">
@@ -1776,6 +1831,12 @@
                     if (currentActiveTab === 'search') document.getElementById('searchInput')?.focus();
                     else if (currentActiveTab === 'synthesize') document.getElementById('synthInput')?.focus();
                     else if (currentActiveTab === 'graph') document.getElementById('archFilterInput')?.focus();
+                }
+                if (e.key === 'Escape') {
+                    const modal = document.getElementById('inspectorModal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        closeInspectorModal();
+                    }
                 }
             });
 
@@ -1901,7 +1962,7 @@
             } catch (err) {
                 showToast(`Indexing failed: ${err.message}`, true);
             } finally {
-                btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Index Repository`;
+                btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Index Project`;
                 btn.disabled = false;
             }
         }
