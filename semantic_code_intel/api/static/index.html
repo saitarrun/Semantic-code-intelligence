@@ -468,44 +468,40 @@
         input[type="search"],
         input[type="url"],
         input[type="number"],
-        .apple-search-input,
-        .search-hero-input {
-            background: rgba(255, 255, 255, 0.04) !important;
+        .apple-search-input {
+            background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.09) !important;
-            border-radius: var(--radius-md) !important;
-            color: #FFFFFF !important;
-            font-family: var(--font-sans) !important;
-            font-size: 0.85rem !important;
-            padding: 0.62rem 1rem !important;
-            outline: none !important;
-            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            transition: all 0.2s var(--ease-spring) !important;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: var(--radius-md);
+            color: #FFFFFF;
+            font-family: var(--font-sans);
+            font-size: 0.85rem;
+            padding: 0.62rem 1rem;
+            outline: none;
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s var(--ease-spring);
         }
 
         input[type="text"]::placeholder,
         input[type="search"]::placeholder,
-        .apple-search-input::placeholder,
-        .search-hero-input::placeholder {
-            color: rgba(255, 255, 255, 0.38) !important;
+        .apple-search-input::placeholder {
+            color: rgba(255, 255, 255, 0.38);
         }
 
         input[type="text"]:hover,
         input[type="search"]:hover,
-        .apple-search-input:hover,
-        .search-hero-input:hover {
-            background: rgba(255, 255, 255, 0.065) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
+        .apple-search-input:hover {
+            background: rgba(255, 255, 255, 0.065);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         input[type="text"]:focus,
         input[type="search"]:focus,
-        .apple-search-input:focus,
-        .search-hero-input:focus {
-            background: rgba(255, 255, 255, 0.08) !important;
-            border-color: #0A84FF !important;
-            box-shadow: 0 0 0 3.5px rgba(10, 132, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
+        .apple-search-input:focus {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #0A84FF;
+            box-shadow: 0 0 0 3.5px rgba(10, 132, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
         }
 
         /* --- APPLE VISIONOS SEGMENTED TAB BAR --- */
@@ -604,20 +600,47 @@
             pointer-events: none;
             display: flex;
             align-items: center;
+            z-index: 2;
         }
 
         .search-hero-input {
             width: 100%;
-            padding: 0.88rem 8.5rem 0.88rem 3.25rem !important;
-            font-size: 0.92rem !important;
+            background: rgba(255, 255, 255, 0.04) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.09) !important;
+            border-radius: var(--radius-md) !important;
+            color: #FFFFFF !important;
+            font-family: var(--font-sans) !important;
+            font-size: 0.9rem !important;
+            padding: 0.85rem 10rem 0.85rem 3.4rem !important;
+            outline: none !important;
+            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            transition: all 0.2s var(--ease-spring) !important;
+        }
+
+        .search-hero-input::placeholder {
+            color: rgba(255, 255, 255, 0.38) !important;
+        }
+
+        .search-hero-input:hover {
+            background: rgba(255, 255, 255, 0.065) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .search-hero-input:focus {
+            background: rgba(255, 255, 255, 0.08) !important;
+            border-color: #0A84FF !important;
+            box-shadow: 0 0 0 3.5px rgba(10, 132, 255, 0.28), inset 0 1px 0 0 rgba(255, 255, 255, 0.15) !important;
         }
 
         .search-hero-action {
             position: absolute;
-            right: 0.6rem;
+            right: 0.65rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            z-index: 2;
         }
 
         /* --- SEARCH CONTROLS ROW --- */
