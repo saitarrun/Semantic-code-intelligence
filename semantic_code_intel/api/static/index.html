@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Semantic Code Intelligence — Apple Human Interface System</title>
+    <title>Semantic Code Intelligence — Apple Pro UX</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           APPLE HUMAN INTERFACE GUIDELINES (HIG) — VISIONOS / MACOS PRO DESIGN SYSTEM
+           APPLE HUMAN INTERFACE GUIDELINES (HIG) — PRO GLASSMORPHIC DESIGN SYSTEM
            ========================================================================== */
         :root {
             /* Apple OLED Pitch Black & Material Surfaces */
@@ -21,7 +21,7 @@
             --bg-surface-elevated: #111218;
 
             /* Apple Translucent Vibrancy Materials */
-            --glass-nav: rgba(12, 13, 18, 0.82);
+            --glass-nav: rgba(12, 13, 18, 0.85);
             --glass-card: rgba(18, 19, 26, 0.65);
             --glass-card-hover: rgba(26, 28, 38, 0.85);
             --glass-panel: rgba(14, 15, 22, 0.7);
@@ -463,6 +463,42 @@
             user-select: none;
         }
 
+        /* --- SUGGESTION PILLS (UX ACCELERATORS) --- */
+        .query-suggestions-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding-top: 2px;
+        }
+
+        .suggestion-pill {
+            background: rgba(255, 255, 255, 0.035);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            color: var(--text-secondary);
+            font-size: 0.74rem;
+            font-weight: 500;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.18s var(--ease-spring);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            user-select: none;
+        }
+
+        .suggestion-pill:hover {
+            background: rgba(10, 132, 255, 0.12);
+            border-color: rgba(10, 132, 255, 0.3);
+            color: #FFFFFF;
+            transform: translateY(-1px);
+        }
+
+        .suggestion-pill:active {
+            transform: scale(0.97);
+        }
+
         /* --- UNIVERSAL INPUT STYLES (NEVER RAW WHITE) --- */
         input[type="text"],
         input[type="search"],
@@ -568,6 +604,13 @@
             color: var(--accent-blue);
         }
 
+        .tab-number-badge {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            opacity: 0.45;
+            margin-left: 2px;
+        }
+
         /* --- TAB CONTENT CONTAINER --- */
         .tab-content-view {
             display: flex;
@@ -613,7 +656,7 @@
             color: #FFFFFF !important;
             font-family: var(--font-sans) !important;
             font-size: 0.9rem !important;
-            padding: 0.85rem 10rem 0.85rem 3.4rem !important;
+            padding: 0.85rem 10.5rem 0.85rem 3.4rem !important;
             outline: none !important;
             box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
             transition: all 0.2s var(--ease-spring) !important;
@@ -641,6 +684,25 @@
             align-items: center;
             gap: 8px;
             z-index: 2;
+        }
+
+        .search-clear-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .search-clear-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #FFFFFF;
         }
 
         /* --- SEARCH CONTROLS ROW --- */
@@ -728,6 +790,30 @@
             color: var(--accent-green);
         }
 
+        /* --- SHIMMER SKELETON LOADERS --- */
+        .shimmer-card {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: shimmerSlide 1.8s infinite ease-in-out;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-subtle);
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .shimmer-line {
+            height: 12px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        @keyframes shimmerSlide {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         /* --- CODE RESULTS LIST --- */
         .results-list {
             display: flex;
@@ -768,6 +854,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
+        }
+
+        .card-file-path:hover {
+            color: var(--accent-blue);
         }
 
         .badge-lines {
@@ -776,6 +867,12 @@
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.06);
             color: var(--text-tertiary);
+        }
+
+        .card-action-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .card-score-pill {
@@ -787,6 +884,33 @@
             border: 1px solid rgba(100, 210, 255, 0.22);
             padding: 2px 8px;
             border-radius: var(--radius-full);
+        }
+
+        .btn-card-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.72rem;
+            font-weight: 500;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s var(--ease-spring);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-card-action:hover {
+            background: var(--glass-pill-hover);
+            color: #FFFFFF;
+            border-color: var(--border-medium);
+            transform: translateY(-1px);
+        }
+
+        .btn-card-action:active {
+            transform: scale(0.97);
         }
 
         .code-snippet-body {
@@ -957,7 +1081,7 @@
             transform: scale(0.97);
         }
 
-        /* --- MASTER-DETAIL SPLIT SCREEN (APPLE XCODE / FINDER STYLE) --- */
+        /* --- MASTER-DETAIL SPLIT SCREEN --- */
         .master-detail-view {
             display: grid;
             grid-template-columns: 340px 1fr;
@@ -1461,12 +1585,14 @@
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                     Search & Explore
+                    <span class="tab-number-badge">1</span>
                 </button>
                 <button class="vision-tab-btn" id="tabBtnSynthesize" onclick="switchMainTab('synthesize')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
                     </svg>
                     Reasoning Studio
+                    <span class="tab-number-badge">2</span>
                 </button>
                 <button class="vision-tab-btn" id="tabBtnGraph" onclick="switchMainTab('graph')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1477,6 +1603,7 @@
                         <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                     </svg>
                     Dependency Map
+                    <span class="tab-number-badge">3</span>
                 </button>
                 <button class="vision-tab-btn" id="tabBtnDiff" onclick="switchMainTab('diff')">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1484,6 +1611,7 @@
                         <polyline points="8 6 2 12 8 18"></polyline>
                     </svg>
                     Dev Tools & LSP
+                    <span class="tab-number-badge">4</span>
                 </button>
             </div>
         </div>
@@ -1503,11 +1631,23 @@
                         id="searchInput"
                         class="search-hero-input"
                         placeholder="Search symbols, AST logic, or natural language intent..."
+                        oninput="onSearchInputChanged()"
                     />
                     <div class="search-hero-action">
-                        <kbd class="apple-kbd" style="display: inline-block;">⌘K</kbd>
+                        <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" title="Clear search">✕</button>
+                        <kbd class="apple-kbd">⌘K</kbd>
                         <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
                     </div>
+                </div>
+
+                <!-- Query Suggestions Pills -->
+                <div class="query-suggestions-strip">
+                    <span style="font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase;">Suggested:</span>
+                    <span class="suggestion-pill" onclick="applySuggestion('SHA-256 incremental cache verification')">⚡ Incremental Caching</span>
+                    <span class="suggestion-pill" onclick="applySuggestion('Tree-sitter polyglot structural AST parser')">🧬 Polyglot Parser</span>
+                    <span class="suggestion-pill" onclick="applySuggestion('Reciprocal Rank Fusion hybrid search scoring')">🔀 Hybrid RRF Scoring</span>
+                    <span class="suggestion-pill" onclick="applySuggestion('Symbol call graph dependency extraction')">🕸️ Symbol Call Graph</span>
+                    <span class="suggestion-pill" onclick="applySuggestion('Cross-encoder reranking latency optimization')">🚀 Reranker Engine</span>
                 </div>
 
                 <div class="search-modes-row">
@@ -1584,6 +1724,15 @@
                         <kbd class="apple-kbd">↵ Enter</kbd>
                         <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
                     </div>
+                </div>
+
+                <!-- Reasoning Prompt Suggestions -->
+                <div class="query-suggestions-strip">
+                    <span style="font-size: 0.7rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase;">Prompts:</span>
+                    <span class="suggestion-pill" onclick="applySynthSuggestion('How does SHA-256 hash tracking prevent unnecessary reindexing?')">💡 Incremental Hashing</span>
+                    <span class="suggestion-pill" onclick="applySynthSuggestion('Explain how Tree-sitter extracts symbols and dependencies across languages')">🧬 AST Parser Architecture</span>
+                    <span class="suggestion-pill" onclick="applySynthSuggestion('How does hybrid search combine dense embeddings with BM25 via Reciprocal Rank Fusion?')">🔀 Hybrid RRF Pipeline</span>
+                    <span class="suggestion-pill" onclick="applySynthSuggestion('How is the call-graph dependency network constructed in SymbolGraph?')">🕸️ Call Graph Engine</span>
                 </div>
             </div>
 
@@ -1836,6 +1985,7 @@
         let activeFilteredSymbolsMap = {};
         let currentInspectorData = null;
         let watcherActive = false;
+        let searchDebounceTimer = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
@@ -1849,17 +1999,31 @@
 
         function setupKeyboardShortcuts() {
             document.addEventListener('keydown', (e) => {
+                const isInputActive = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
+                // Global Shortcuts
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
                     if (currentActiveTab === 'search') document.getElementById('searchInput')?.focus();
                     else if (currentActiveTab === 'synthesize') document.getElementById('synthInput')?.focus();
                     else if (currentActiveTab === 'graph') document.getElementById('archFilterInput')?.focus();
                 }
+
                 if (e.key === 'Escape') {
                     const modal = document.getElementById('inspectorModal');
                     if (modal && !modal.classList.contains('hidden')) {
                         closeInspectorModal();
+                    } else if (isInputActive) {
+                        document.activeElement.blur();
                     }
+                }
+
+                // Quick Tab Numbers 1-4 when not typing
+                if (!isInputActive && !e.metaKey && !e.ctrlKey && !e.altKey) {
+                    if (e.key === '1') switchMainTab('search');
+                    else if (e.key === '2') switchMainTab('synthesize');
+                    else if (e.key === '3') switchMainTab('graph');
+                    else if (e.key === '4') switchMainTab('diff');
                 }
             });
 
@@ -1870,6 +2034,41 @@
             document.getElementById('synthInput')?.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') startStreamingSynthesis();
             });
+        }
+
+        /* --- UX SUGGESTIONS & INPUT HANDLING --- */
+        function onSearchInputChanged() {
+            const val = document.getElementById('searchInput').value;
+            const clearBtn = document.getElementById('searchClearBtn');
+            if (clearBtn) {
+                clearBtn.style.display = val ? 'inline-flex' : 'none';
+            }
+        }
+
+        function clearSearchInput() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+                onSearchInputChanged();
+            }
+        }
+
+        function applySuggestion(query) {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = query;
+                onSearchInputChanged();
+                performSearch();
+            }
+        }
+
+        function applySynthSuggestion(query) {
+            const input = document.getElementById('synthInput');
+            if (input) {
+                input.value = query;
+                startStreamingSynthesis();
+            }
         }
 
         /* --- NAVIGATION TABS --- */
@@ -2018,7 +2217,7 @@
             }
         }
 
-        /* --- SEARCH --- */
+        /* --- SEARCH WITH SHIMMER LOADING --- */
         function setMode(mode) {
             currentMode = mode;
             document.getElementById('modeDense').classList.toggle('active', mode === 'dense');
@@ -2035,11 +2234,18 @@
             if (!query) return;
 
             const btn = document.getElementById('searchBtn');
+            const container = document.getElementById('resultsContainer');
             const target = getActiveTarget();
             const rerank = document.getElementById('rerankToggle').checked;
 
             btn.textContent = 'Searching...';
             btn.disabled = true;
+
+            // Render Shimmer Skeleton Loaders
+            container.innerHTML = `
+                <div class="shimmer-card"><div class="shimmer-line" style="width: 40%;"></div><div class="shimmer-line" style="width: 80%;"></div><div class="shimmer-line" style="width: 65%;"></div></div>
+                <div class="shimmer-card"><div class="shimmer-line" style="width: 35%;"></div><div class="shimmer-line" style="width: 75%;"></div><div class="shimmer-line" style="width: 50%;"></div></div>
+            `;
 
             try {
                 const res = await fetch('/api/search', {
@@ -2077,27 +2283,53 @@
                 return;
             }
 
-            container.innerHTML = results.map(r => {
+            container.innerHTML = results.map((r, idx) => {
                 const lang = r.language || 'python';
                 const score = r.score !== undefined ? (r.score > 1 ? r.score.toFixed(2) : (r.score * 100).toFixed(1) + '%') : 'N/A';
+                const chunkId = `chunk_${idx}`;
                 return `
                 <div class="code-result-card">
                     <div class="card-header-bar">
-                        <div class="card-file-path">
+                        <div class="card-file-path" onclick="copyFilePath('${escapeHtml(r.file_path)}')" title="Click to copy path">
                             <span>${escapeHtml(r.file_path)}</span>
                             <span class="badge-lines">L${r.start_line}–L${r.end_line || r.start_line}</span>
                             ${r.symbol_name ? `<span class="symbol-type-chip ${r.symbol_type || 'function'}">${escapeHtml(r.symbol_name)}</span>` : ''}
                         </div>
-                        <span class="card-score-pill">Score: ${score}</span>
+                        <div class="card-action-strip">
+                            <span class="card-score-pill">Score: ${score}</span>
+                            <button class="btn-card-action" onclick="copyResultCode('${chunkId}')" id="copy_btn_${chunkId}">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                Copy
+                            </button>
+                        </div>
                     </div>
                     <div class="code-snippet-body">
-                        <pre><code class="language-${lang}">${escapeHtml(r.content || r.code || '')}</code></pre>
+                        <pre><code id="${chunkId}" class="language-${lang}">${escapeHtml(r.content || r.code || '')}</code></pre>
                     </div>
                 </div>
                 `;
             }).join('');
 
             container.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+        }
+
+        function copyFilePath(path) {
+            navigator.clipboard.writeText(path);
+            showToast(`Path copied: ${path}`);
+        }
+
+        function copyResultCode(elemId) {
+            const codeEl = document.getElementById(elemId);
+            if (!codeEl) return;
+            navigator.clipboard.writeText(codeEl.textContent);
+            const btn = document.getElementById(`copy_btn_${elemId}`);
+            if (btn) {
+                btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#30D158" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!`;
+                setTimeout(() => {
+                    btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copy`;
+                }, 2000);
+            }
+            showToast('Code snippet copied to clipboard');
         }
 
         /* --- REASONING & SYNTHESIS --- */
@@ -2113,7 +2345,13 @@
             btn.textContent = 'Explaining...';
             btn.disabled = true;
             outputCard.style.display = 'block';
-            outContent.innerHTML = `<div style="color: var(--text-tertiary); font-style: italic;">Reasoning across retrieved symbols and AST context...</div>`;
+            outContent.innerHTML = `
+                <div class="shimmer-card" style="padding: 0; background: transparent; border: none;">
+                    <div class="shimmer-line" style="width: 50%;"></div>
+                    <div class="shimmer-line" style="width: 90%;"></div>
+                    <div class="shimmer-line" style="width: 75%;"></div>
+                </div>
+            `;
 
             try {
                 const res = await fetch('/api/synthesize', {
