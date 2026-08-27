@@ -86,3 +86,9 @@ class OpenFileRequest(BaseModel):
     repo_path: Optional[str] = None
     line: int = Field(default=1, ge=1)
     action: str = Field(default="editor", pattern="^(editor|finder)$")
+
+
+class GitHubImportRequest(BaseModel):
+    url: str
+    branch: Optional[str] = None
+    force: bool = False

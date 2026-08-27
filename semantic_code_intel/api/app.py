@@ -29,9 +29,9 @@ from semantic_code_intel.indexing.embeddings import ModelUnavailableError
 from semantic_code_intel.indexing.watcher import CodebaseWatcher
 from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
 from semantic_code_intel.api.schemas import (
-    IndexRequest, OpenFileRequest, PatchApplyRequest, PatchGenerateRequest,
-    SearchRequest, SearchResponse, SearchResultItem, SynthesizeRequest,
-    SynthesizeResponse,
+    GitHubImportRequest, IndexRequest, OpenFileRequest, PatchApplyRequest,
+    PatchGenerateRequest, SearchRequest, SearchResponse, SearchResultItem,
+    SynthesizeRequest, SynthesizeResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -162,6 +162,21 @@ async def serve_ui():
 @app.get("/api/presets")
 async def get_presets():
     """List available repositories and presets."""
+    cloned_root = (config.project_root / "cloned_repos").resolve()
+    if cloned_root.exists():
+        for sub in cloned_root.iterdir():
+            if sub.is_dir() and not sub.name.startswith("."):
+                name_parts = sub.name.split("_", 1)
+                display_name = f"GitHub: {name_parts[0]}/{name_parts[1]}" if len(name_parts) == 2 else f"Cloned: {sub.name}"
+                preset_entry = {
+                    "name": display_name,
+                    "path": str(sub),
+                    "index_dir": str(sub / ".code_intel_index"),
+                    "description": f"Cloned repository in cloned_repos/{sub.name}"
+                }
+                if not any(p["path"] == str(sub) for p in KNOWN_PRESETS):
+                    KNOWN_PRESETS.append(preset_entry)
+
     resolved_presets = []
     for p in KNOWN_PRESETS:
         p_path = Path(p["path"]).resolve()
@@ -313,6 +328,211 @@ async def trigger_index(req: IndexRequest):
         "status": "indexed",
         "repo_path": str(t_path),
         "index_dir": str(cfg.get_index_dir()),
+        "metrics": metrics
+    }
+
+
+def parse_github_url(url: str) -> tuple[str, str, str]:
+    """Parse and sanitize a GitHub repository URL or slug into (owner, repo, clone_url)."""
+    import re
+    cleaned = url.strip().rstrip("/")
+    if cleaned.endswith(".git"):
+        cleaned = cleaned[:-4]
+
+    if "://" in cleaned or cleaned.startswith("git@"):
+        match = re.search(r"^(?:https?:\/\/)?(?:www\.)?github\.com[:/]([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
+        if not match:
+            match = re.search(r"^git@github\.com:([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
+    elif cleaned.startswith("github.com/"):
+        match = re.search(r"^github\.com/([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
+    else:
+        match = re.search(r"^([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
+
+    if not match:
+        raise ValueError(f"Invalid GitHub repository URL: '{url}'. Expected format: 'owner/repo' or 'https://github.com/owner/repo'")
+
+    owner, repo = match.group(1), match.group(2)
+    clone_url = f"https://github.com/{owner}/{repo}.git"
+    return owner, repo, clone_url
+
+
+@app.get("/api/github/import/stream")
+async def stream_github_import(
+    url: str = Query(..., description="GitHub repository URL or slug"),
+    branch: Optional[str] = Query(default=None, description="Optional branch or tag to clone"),
+    force: bool = Query(default=False, description="Force fresh clone if directory already exists")
+):
+    """Clone a GitHub repository with shallow depth=1 and stream full indexing progress via SSE."""
+    import subprocess
+    import shutil
+
+    try:
+        owner, repo, clone_url = parse_github_url(url)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    cloned_root = (config.project_root / "cloned_repos").resolve()
+    cloned_root.mkdir(parents=True, exist_ok=True)
+    target_dir = cloned_root / f"{owner}_{repo}"
+
+    event_q: queue.Queue = queue.Queue()
+
+    def run_import():
+        try:
+            event_q.put({
+                "stage": "cloning",
+                "percentage": 5.0,
+                "message": f"Cloning {owner}/{repo} from GitHub (shallow depth=1)...",
+                "repo_name": f"{owner}/{repo}"
+            })
+
+            if target_dir.exists() and force:
+                shutil.rmtree(target_dir, ignore_errors=True)
+
+            if not target_dir.exists():
+                cmd = ["git", "clone", "--depth", "1"]
+                if branch:
+                    cmd.extend(["--branch", branch])
+                cmd.extend([clone_url, str(target_dir)])
+
+                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                if res.returncode != 0:
+                    raise RuntimeError(f"Git clone failed: {res.stderr.strip() or res.stdout.strip()}")
+            else:
+                event_q.put({
+                    "stage": "cloning",
+                    "percentage": 10.0,
+                    "message": f"Updating existing local clone for {owner}/{repo}...",
+                    "repo_name": f"{owner}/{repo}"
+                })
+                subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False)
+
+            event_q.put({
+                "stage": "cloning",
+                "percentage": 20.0,
+                "message": f"Repository ready. Initializing code parser & indexer...",
+                "repo_name": f"{owner}/{repo}"
+            })
+
+            def progress_handler(stage: str, current: int, total: int, message: str = "", percentage: float = 0.0):
+                scaled_pct = 20.0 + (percentage * 0.78)
+                event_q.put({
+                    "stage": stage,
+                    "current": current,
+                    "total": total,
+                    "percentage": round(scaled_pct, 1),
+                    "message": message,
+                    "repo_name": f"{owner}/{repo}"
+                })
+
+            cfg = CodeIntelConfig(project_root=target_dir)
+            indexer = HybridIndexer(cfg)
+            metrics = indexer.index_codebase(
+                target_dir=target_dir,
+                force_reindex=True,
+                progress_callback=progress_handler
+            )
+
+            # Register as known preset
+            preset_entry = {
+                "name": f"GitHub: {owner}/{repo}",
+                "path": str(target_dir),
+                "index_dir": str(target_dir / ".code_intel_index"),
+                "description": f"Cloned from https://github.com/{owner}/{repo}"
+            }
+            if not any(p["path"] == str(target_dir) for p in KNOWN_PRESETS):
+                KNOWN_PRESETS.append(preset_entry)
+
+            t_files = getattr(metrics, 'total_files', None) if not isinstance(metrics, dict) else metrics.get('total_files', 0)
+            t_lines = getattr(metrics, 'total_lines', None) if not isinstance(metrics, dict) else metrics.get('total_lines', 0)
+            t_chunks = getattr(metrics, 'total_chunks', None) if not isinstance(metrics, dict) else metrics.get('total_chunks', 0)
+            t_time = getattr(metrics, 'indexing_time_seconds', None) if not isinstance(metrics, dict) else metrics.get('indexing_time_seconds', 0.0)
+
+            event_q.put({
+                "stage": "done",
+                "percentage": 100.0,
+                "message": f"Successfully imported & indexed {owner}/{repo} ({t_files} files, {t_lines:,} LOC).",
+                "repo_path": str(target_dir),
+                "repo_name": f"{owner}/{repo}",
+                "preset_name": f"GitHub: {owner}/{repo}",
+                "metrics": {
+                    "total_files": t_files,
+                    "total_lines": t_lines,
+                    "total_chunks": t_chunks,
+                    "indexing_time_seconds": t_time
+                }
+            })
+        except Exception as e:
+            logger.exception("GitHub import failed")
+            event_q.put({
+                "stage": "error",
+                "message": f"GitHub import error: {str(e)}",
+                "percentage": 0.0
+            })
+        finally:
+            event_q.put(None)
+
+    threading.Thread(target=run_import, daemon=True).start()
+
+    async def event_generator():
+        while True:
+            await asyncio.sleep(0.05)
+            while not event_q.empty():
+                item = event_q.get()
+                if item is None:
+                    return
+                yield f"data: {json.dumps(item)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@app.post("/api/github/import")
+async def import_github_repo(req: GitHubImportRequest):
+    """Synchronous endpoint to clone and index a GitHub repository."""
+    import subprocess
+    import shutil
+
+    try:
+        owner, repo, clone_url = parse_github_url(req.url)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    cloned_root = (config.project_root / "cloned_repos").resolve()
+    cloned_root.mkdir(parents=True, exist_ok=True)
+    target_dir = cloned_root / f"{owner}_{repo}"
+
+    if target_dir.exists() and req.force:
+        shutil.rmtree(target_dir, ignore_errors=True)
+
+    if not target_dir.exists():
+        cmd = ["git", "clone", "--depth", "1"]
+        if req.branch:
+            cmd.extend(["--branch", req.branch])
+        cmd.extend([clone_url, str(target_dir)])
+        res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        if res.returncode != 0:
+            raise HTTPException(status_code=500, detail=f"Git clone failed: {res.stderr.strip()}")
+    else:
+        subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False)
+
+    cfg = CodeIntelConfig(project_root=target_dir)
+    indexer = HybridIndexer(cfg)
+    metrics = indexer.index_codebase(target_dir=target_dir, force_reindex=True)
+
+    preset_entry = {
+        "name": f"GitHub: {owner}/{repo}",
+        "path": str(target_dir),
+        "index_dir": str(target_dir / ".code_intel_index"),
+        "description": f"Cloned from https://github.com/{owner}/{repo}"
+    }
+    if not any(p["path"] == str(target_dir) for p in KNOWN_PRESETS):
+        KNOWN_PRESETS.append(preset_entry)
+
+    return {
+        "status": "indexed",
+        "repo_path": str(target_dir),
+        "repo_name": f"{owner}/{repo}",
+        "preset_name": f"GitHub: {owner}/{repo}",
         "metrics": metrics
     }
 

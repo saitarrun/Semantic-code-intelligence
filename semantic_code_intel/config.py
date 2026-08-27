@@ -41,7 +41,7 @@ class ParserConfig(BaseModel):
             "*.so", "*.dylib", "*.dll", "*.a", "*.lib", "*.o", "*.obj",
             "*.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml",
             ".DS_Store", "Thumbs.db", "*.min.js", "*.min.css", "*.map",
-            "oss_evaluation", ".code_intel_index"
+            "oss_evaluation", ".code_intel_index", "cloned_repos"
         ],
         description="Glob patterns to ignore"
     )

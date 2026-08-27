@@ -1552,9 +1552,21 @@
                     <option value="./oss_evaluation/client-go">Kubernetes client-go (406k LOC)</option>
                     <option value="./oss_evaluation/fastapi">FastAPI (112k LOC)</option>
                     <option value="./oss_evaluation/rich">Textualize Rich (67k LOC)</option>
+                    <option value="GITHUB">Import from GitHub URL...</option>
                     <option value="CUSTOM">Custom Local Directory...</option>
                 </select>
                 <div class="select-arrow"></div>
+            </div>
+            <div id="githubImportWrapper" style="display: none; align-items: center; gap: var(--space-2); flex: 1; min-width: 340px;">
+                <input
+                    type="text"
+                    id="githubUrlInput"
+                    class="apple-input-custom"
+                    style="display: block; flex: 1;"
+                    placeholder="https://github.com/owner/repo or owner/repo"
+                    onkeydown="if (event.key === 'Enter') startGitHubImport()"
+                />
+                <button class="apple-btn-primary" id="btnImportGithub" style="padding: 0.5rem 0.95rem; font-size: 0.8rem;" onclick="startGitHubImport()">Import & Index</button>
             </div>
             <input
                 type="text"
@@ -1869,7 +1881,8 @@
                 Initializing code parser...
             </div>
 
-            <div class="modal-stages-grid">
+            <div class="modal-stages-grid" id="modalStagesGrid">
+                <div class="stage-pill" id="pillClone" style="display: none;">1. Git Clone</div>
                 <div class="stage-pill" id="pillScan">1. AST Parsing</div>
                 <div class="stage-pill" id="pillPersist">2. SQLite Store</div>
                 <div class="stage-pill" id="pillEmbed">3. Dense Embeddings</div>
@@ -1963,15 +1976,50 @@
             performSearch();
         }
 
+        async function loadPresets(selectTarget = null) {
+            try {
+                const res = await fetch('/api/presets');
+                if (!res.ok) return;
+                const data = await res.json();
+                const select = document.getElementById('repoDropdown');
+                const currentVal = selectTarget || select.value;
+
+                const presets = data.presets || [];
+                let html = '';
+                presets.forEach(p => {
+                    html += `<option value="${escapeHtml(p.path)}">${escapeHtml(p.name)}</option>`;
+                });
+                html += `<option value="GITHUB">Import from GitHub URL...</option>`;
+                html += `<option value="CUSTOM">Custom Local Directory...</option>`;
+                select.innerHTML = html;
+
+                if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+                    select.value = currentVal;
+                } else if (presets.length > 0) {
+                    select.value = presets[0].path;
+                }
+            } catch (e) {
+                console.error('Failed to load presets', e);
+            }
+        }
+
         async function onRepoChanged() {
             const select = document.getElementById('repoDropdown');
             const customInput = document.getElementById('customPathInput');
+            const githubWrapper = document.getElementById('githubImportWrapper');
+            const githubInput = document.getElementById('githubUrlInput');
             
-            if (select.value === 'CUSTOM') {
+            if (select.value === 'GITHUB') {
+                githubWrapper.style.display = 'flex';
+                customInput.style.display = 'none';
+                githubInput.focus();
+            } else if (select.value === 'CUSTOM') {
                 customInput.style.display = 'block';
+                githubWrapper.style.display = 'none';
                 customInput.focus();
             } else {
                 customInput.style.display = 'none';
+                githubWrapper.style.display = 'none';
             }
 
             updateSampleQueries();
@@ -2053,6 +2101,7 @@
             const fillBar = document.getElementById('cleanProgressBar');
             const pctText = document.getElementById('percentageClean');
             const statusText = document.getElementById('modalStatusPill');
+            const pillClone = document.getElementById('pillClone');
 
             modal.style.display = 'flex';
             closeBtn.style.display = 'none';
@@ -2061,6 +2110,7 @@
             statusText.textContent = `Connecting to indexer for ${target}...`;
             document.getElementById('modalTargetSubtitle').textContent = target;
 
+            pillClone.style.display = 'none';
             resetStagePills();
 
             const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=true`;
@@ -2078,7 +2128,7 @@
                         pctText.textContent = `${Math.round(pct)}%`;
                         statusText.textContent = data.message || 'Processing...';
 
-                        updateStagePills(data.stage);
+                        updateStagePills(data.stage, false);
 
                         if (data.stage === 'done') {
                             eventSource.close();
@@ -2102,27 +2152,108 @@
             }
         }
 
-        function updateStagePills(stage) {
+        async function startGitHubImport() {
+            const urlInput = document.getElementById('githubUrlInput');
+            const url = urlInput.value.trim();
+            if (!url) {
+                urlInput.focus();
+                return;
+            }
+
+            const modal = document.getElementById('indexingModal');
+            const closeBtn = document.getElementById('btnModalClose');
+            const fillBar = document.getElementById('cleanProgressBar');
+            const pctText = document.getElementById('percentageClean');
+            const statusText = document.getElementById('modalStatusPill');
+            const pillClone = document.getElementById('pillClone');
+
+            modal.style.display = 'flex';
+            closeBtn.style.display = 'none';
+            fillBar.style.width = '0%';
+            pctText.textContent = '0%';
+            statusText.textContent = `Connecting to GitHub to clone ${url}...`;
+            document.getElementById('modalTargetSubtitle').textContent = `GitHub: ${url}`;
+
+            pillClone.style.display = 'block';
+            resetStagePills();
+            pillClone.className = 'stage-pill active';
+
+            const sseUrl = `/api/github/import/stream?url=${encodeURIComponent(url)}&force=true`;
+            let eventSource = null;
+
+            try {
+                eventSource = new EventSource(sseUrl);
+
+                eventSource.onmessage = async function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        const pct = Math.min(Math.max(data.percentage || 0, 0), 100);
+
+                        fillBar.style.width = `${pct}%`;
+                        pctText.textContent = `${Math.round(pct)}%`;
+                        statusText.textContent = data.message || 'Processing GitHub repository...';
+
+                        updateStagePills(data.stage, true);
+
+                        if (data.stage === 'done') {
+                            eventSource.close();
+                            closeBtn.style.display = 'block';
+                            urlInput.value = '';
+                            if (data.repo_path) {
+                                await loadPresets(data.repo_path);
+                                onRepoChanged();
+                            }
+                        } else if (data.stage === 'error') {
+                            eventSource.close();
+                            statusText.textContent = data.message || 'An error occurred during GitHub import.';
+                            closeBtn.style.display = 'block';
+                        }
+                    } catch (e) {
+                        console.error('Error parsing SSE data:', e);
+                    }
+                };
+
+                eventSource.onerror = function() {
+                    if (eventSource) eventSource.close();
+                };
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function updateStagePills(stage, isGithub = false) {
+            const pillClone = document.getElementById('pillClone');
             const pillScan = document.getElementById('pillScan');
             const pillPersist = document.getElementById('pillPersist');
             const pillEmbed = document.getElementById('pillEmbed');
             const pillBM25 = document.getElementById('pillBM25');
 
-            if (stage === 'parsing') {
+            if (isGithub && pillClone) {
+                pillClone.style.display = 'block';
+            }
+
+            if (stage === 'cloning' && pillClone) {
+                pillClone.className = 'stage-pill active';
+            } else if (stage === 'parsing') {
+                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
                 pillScan.className = 'stage-pill active';
             } else if (stage === 'persisting') {
+                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
                 pillScan.className = 'stage-pill complete';
                 pillPersist.className = 'stage-pill active';
             } else if (stage === 'embedding') {
+                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
                 pillScan.className = 'stage-pill complete';
                 pillPersist.className = 'stage-pill complete';
                 pillEmbed.className = 'stage-pill active';
             } else if (stage === 'indexing' || stage === 'bm25') {
+                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
                 pillScan.className = 'stage-pill complete';
                 pillPersist.className = 'stage-pill complete';
                 pillEmbed.className = 'stage-pill complete';
                 pillBM25.className = 'stage-pill active';
             } else if (stage === 'done') {
+                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
                 pillScan.className = 'stage-pill complete';
                 pillPersist.className = 'stage-pill complete';
                 pillEmbed.className = 'stage-pill complete';
@@ -2131,8 +2262,9 @@
         }
 
         function resetStagePills() {
-            ['Scan', 'Persist', 'Embed', 'BM25'].forEach(name => {
-                document.getElementById(`pill${name}`).className = 'stage-pill';
+            ['Clone', 'Scan', 'Persist', 'Embed', 'BM25'].forEach(name => {
+                const el = document.getElementById(`pill${name}`);
+                if (el) el.className = 'stage-pill';
             });
         }
 
@@ -2834,7 +2966,7 @@
         }
 
         // Initialize on load
-        onRepoChanged();
+        loadPresets().then(onRepoChanged);
     </script>
 </body>
 </html>

@@ -73,3 +73,30 @@ def process_refund(order_id: str, amount_cents: int) -> bool:
         assert len(synth_data["citations"]) > 0
         assert "payments.py" in synth_data["citations"][0]
         assert "process_refund" in synth_data["answer"]
+
+
+def test_github_url_parsing():
+    from semantic_code_intel.api.app import parse_github_url
+    import pytest
+
+    # Test full HTTPS URL
+    owner, repo, clone = parse_github_url("https://github.com/tiangolo/fastapi.git")
+    assert owner == "tiangolo"
+    assert repo == "fastapi"
+    assert clone == "https://github.com/tiangolo/fastapi.git"
+
+    # Test shorthand slug
+    owner, repo, clone = parse_github_url("pallets/flask")
+    assert owner == "pallets"
+    assert repo == "flask"
+    assert clone == "https://github.com/pallets/flask.git"
+
+    # Test without https
+    owner, repo, clone = parse_github_url("github.com/torvalds/linux")
+    assert owner == "torvalds"
+    assert repo == "linux"
+    assert clone == "https://github.com/torvalds/linux.git"
+
+    # Invalid URL should raise ValueError
+    with pytest.raises(ValueError):
+        parse_github_url("https://notgithub.com/something")
