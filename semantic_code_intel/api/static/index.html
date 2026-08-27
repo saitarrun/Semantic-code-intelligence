@@ -6,12 +6,12 @@
     <title>Semantic Code Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <style>
         /* ==========================================================================
-           Apple HIG + Figma True-Black Glassmorphism Design System
+           ULTRA-PREMIUM MINIMALISTIC VISIONOS / MACOS GLASSMORPHISM DESIGN SYSTEM
            ========================================================================== */
         :root {
             --space-1: 4px;
@@ -24,45 +24,66 @@
             --space-10: 40px;
             --space-12: 48px;
 
-            --glass-bg-nav: rgba(8, 8, 12, 0.85);
-            --glass-bg-toolbar: rgba(10, 10, 14, 0.72);
-            --glass-bg-panel: linear-gradient(145deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.008) 100%);
-            --glass-bg-card: linear-gradient(145deg, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0.006) 100%);
-            --glass-bg-input: rgba(255, 255, 255, 0.04);
-            --glass-bg-hover: rgba(255, 255, 255, 0.08);
-            --glass-bg-active: rgba(255, 255, 255, 0.12);
-            --glass-bg-subtle: rgba(255, 255, 255, 0.025);
+            /* Deep Obsidian Canvas */
+            --bg-base: #06070a;
+            --bg-surface: #0a0c10;
+            --bg-surface-elevated: #0e1117;
 
-            --glass-border: rgba(255, 255, 255, 0.09);
-            --glass-border-medium: rgba(255, 255, 255, 0.18);
-            --glass-specular: inset 0 1px 0 0 rgba(255, 255, 255, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
-            --glass-blur: blur(44px) saturate(210%);
-            --glass-shadow: 0 20px 48px rgba(0, 0, 0, 0.85);
+            /* Frosted Glass Layers */
+            --glass-nav: rgba(10, 12, 16, 0.75);
+            --glass-card: rgba(255, 255, 255, 0.03);
+            --glass-card-hover: rgba(255, 255, 255, 0.055);
+            --glass-panel: rgba(255, 255, 255, 0.025);
+            --glass-input: rgba(255, 255, 255, 0.04);
+            --glass-pill: rgba(255, 255, 255, 0.05);
+            --glass-pill-hover: rgba(255, 255, 255, 0.09);
 
-            --system-blue: #0A84FF;
-            --system-blue-hover: #0071E3;
-            --system-blue-tint: rgba(10, 132, 255, 0.15);
-            --system-green: #30D158;
-            --system-green-tint: rgba(48, 209, 88, 0.14);
-            --system-orange: #FF9F0A;
-            --system-orange-tint: rgba(255, 159, 10, 0.14);
-            --system-purple: #BF5AF2;
-            --system-purple-tint: rgba(191, 90, 242, 0.14);
-            --system-red: #FF453A;
+            /* Specular Highlights & Hairline Borders */
+            --border-subtle: rgba(255, 255, 255, 0.07);
+            --border-medium: rgba(255, 255, 255, 0.14);
+            --border-highlight: rgba(255, 255, 255, 0.25);
+            --specular-glow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+            --specular-elevated: 0 12px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
 
-            --label-primary: #FFFFFF;
-            --label-secondary: rgba(255, 255, 255, 0.72);
-            --label-tertiary: rgba(255, 255, 255, 0.42);
-            --label-quaternary: rgba(255, 255, 255, 0.22);
+            /* Apple Luminescent Color Palette */
+            --accent-blue: #0A84FF;
+            --accent-blue-glow: rgba(10, 132, 255, 0.25);
+            --accent-blue-tint: rgba(10, 132, 255, 0.12);
 
-            --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Inter", "Helvetica Neue", sans-serif;
-            --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+            --accent-green: #30D158;
+            --accent-green-glow: rgba(48, 209, 88, 0.25);
+            --accent-green-tint: rgba(48, 209, 88, 0.12);
 
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 16px;
-            --radius-pill: 980px;
-            --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
+            --accent-purple: #BF5AF2;
+            --accent-purple-glow: rgba(191, 90, 242, 0.25);
+            --accent-purple-tint: rgba(191, 90, 242, 0.12);
+
+            --accent-indigo: #5E5CE6;
+            --accent-orange: #FF9F0A;
+            --accent-orange-tint: rgba(255, 159, 10, 0.12);
+            --accent-red: #FF453A;
+            --accent-red-tint: rgba(255, 69, 58, 0.12);
+            --accent-teal: #64D2FF;
+            --accent-teal-tint: rgba(100, 210, 255, 0.12);
+
+            /* Typography */
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.72);
+            --text-tertiary: rgba(255, 255, 255, 0.45);
+            --text-quaternary: rgba(255, 255, 255, 0.25);
+
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+            --font-mono: 'JetBrains Mono', "SF Mono", Menlo, Consolas, monospace;
+
+            /* Radii & Smooth Motion */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+
+            --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
@@ -74,42 +95,82 @@
         }
 
         body {
-            background-color: #000000;
-            color: var(--label-primary);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
             font-family: var(--font-sans);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            letter-spacing: -0.012em;
+            letter-spacing: -0.015em;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Subtle ambient glow */
-        body::before {
-            content: '';
+        /* Ambient Fluid Glow Mesh in Background */
+        .ambient-mesh {
             position: fixed;
-            top: -15%;
-            left: 25%;
-            width: 50vw;
-            height: 45vh;
-            background: radial-gradient(circle, rgba(10, 132, 255, 0.08) 0%, rgba(94, 92, 230, 0.04) 50%, transparent 75%);
-            filter: blur(80px);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Top Sticky Navigation */
+        .ambient-orb-1 {
+            position: absolute;
+            top: -15%;
+            left: 15%;
+            width: 55vw;
+            height: 50vh;
+            background: radial-gradient(circle, rgba(10, 132, 255, 0.12) 0%, rgba(94, 92, 230, 0.05) 50%, transparent 75%);
+            filter: blur(100px);
+            animation: orbFloat1 20s ease-in-out infinite alternate;
+        }
+
+        .ambient-orb-2 {
+            position: absolute;
+            top: 30%;
+            right: -10%;
+            width: 45vw;
+            height: 45vh;
+            background: radial-gradient(circle, rgba(191, 90, 242, 0.09) 0%, rgba(10, 132, 255, 0.04) 50%, transparent 75%);
+            filter: blur(120px);
+            animation: orbFloat2 24s ease-in-out infinite alternate;
+        }
+
+        .ambient-orb-3 {
+            position: absolute;
+            bottom: -10%;
+            left: 20%;
+            width: 50vw;
+            height: 40vh;
+            background: radial-gradient(circle, rgba(48, 209, 88, 0.06) 0%, rgba(100, 210, 255, 0.04) 50%, transparent 75%);
+            filter: blur(110px);
+        }
+
+        @keyframes orbFloat1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(6%, 8%) scale(1.1); }
+        }
+
+        @keyframes orbFloat2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-8%, -6%) scale(1.08); }
+        }
+
+        /* --- STICKY TOP NAVIGATION --- */
         nav {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: var(--glass-bg-nav);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular);
-            padding: var(--space-3) var(--space-8);
+            background: var(--glass-nav);
+            backdrop-filter: blur(32px) saturate(190%);
+            -webkit-backdrop-filter: blur(32px) saturate(190%);
+            border-bottom: 1px solid var(--border-subtle);
+            box-shadow: var(--specular-glow);
+            padding: 0.75rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -118,1144 +179,577 @@
         .nav-brand {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
+            gap: 12px;
+        }
+
+        .nav-logo-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 16px var(--accent-blue-glow);
+            color: #FFFFFF;
         }
 
         .nav-title {
             font-size: 0.95rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            color: var(--label-primary);
-        }
-
-        .nav-badge {
-            font-size: 0.72rem;
-            font-weight: 500;
-            color: var(--label-tertiary);
-            padding: 2px var(--space-2);
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-pill);
-        }
-
-        .nav-status {
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
             display: flex;
             align-items: center;
-            gap: var(--space-3);
+            gap: 8px;
         }
 
-        .status-indicator {
+        .nav-version-badge {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            background: var(--accent-blue-tint);
+            border: 1px solid rgba(10, 132, 255, 0.2);
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+            letter-spacing: 0.02em;
+        }
+
+        .nav-status-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-pill {
             display: inline-flex;
             align-items: center;
-            gap: var(--space-2);
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            padding: 3px var(--space-3);
-            border-radius: var(--radius-pill);
-            font-size: 0.75rem;
-            font-weight: 500;
-            color: var(--label-secondary);
+            gap: 6px;
+            padding: 4px 11px;
+            border-radius: var(--radius-full);
+            background: var(--glass-pill);
+            border: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            transition: all 0.2s var(--ease-spring);
             user-select: none;
-            transition: all 0.2s ease;
         }
 
-        .status-indicator:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--glass-border-medium);
+        .status-pill:hover {
+            background: var(--glass-pill-hover);
+            border-color: var(--border-medium);
+            color: var(--text-primary);
         }
 
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 6.5px;
+            height: 6.5px;
             border-radius: 50%;
-            background: var(--system-green);
+            background: var(--accent-green);
+            box-shadow: 0 0 8px var(--accent-green-glow);
+            animation: pulseGlow 2.5s infinite ease-in-out;
         }
 
-        .status-dot.idle {
-            background: var(--system-orange);
+        .status-dot.warning {
+            background: var(--accent-orange);
+            box-shadow: 0 0 8px var(--accent-orange-tint);
         }
 
-        .status-dot.pulsing {
-            box-shadow: 0 0 8px var(--system-green);
-            animation: pulseDot 2s infinite ease-in-out;
+        .status-dot.danger {
+            background: var(--accent-red);
+            box-shadow: 0 0 8px var(--accent-red-tint);
         }
 
-        @keyframes pulseDot {
+        @keyframes pulseGlow {
             0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.35; transform: scale(0.8); }
+            50% { opacity: 0.6; transform: scale(0.9); }
         }
 
-        /* Toolbar */
-        .toolbar {
+        /* --- MAIN CONTAINER --- */
+        main {
             position: relative;
-            z-index: 50;
-            background: var(--glass-bg-toolbar);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border-bottom: 1px solid var(--glass-border);
-            box-shadow: var(--glass-specular);
-            padding: var(--space-3) var(--space-8);
+            z-index: 1;
+            max-width: 1340px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem 2rem 3rem 2rem;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 1.25rem;
+            flex: 1;
+        }
+
+        /* --- FROSTED GLASS PANELS & CARDS --- */
+        .glass-panel {
+            background: var(--glass-card);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem 1.5rem;
+            box-shadow: var(--specular-elevated);
+            transition: border-color 0.25s var(--ease-smooth);
+        }
+
+        .glass-panel:hover {
+            border-color: var(--border-medium);
+        }
+
+        /* --- TOP CONTROL BAR (REPO SWITCHER & STATS) --- */
+        .top-toolbar {
+            display: flex;
             align-items: center;
-            gap: var(--space-6);
+            justify-content: space-between;
+            gap: 1rem;
             flex-wrap: wrap;
         }
 
-        .toolbar-group {
+        .repo-select-group {
             display: flex;
             align-items: center;
-            gap: var(--space-3);
+            gap: 10px;
             flex: 1;
-            min-width: 380px;
-        }
-
-        .toolbar-label {
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--label-tertiary);
-            white-space: nowrap;
+            min-width: 320px;
         }
 
         .select-wrapper {
             position: relative;
-            min-width: 280px;
-            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            min-width: 260px;
         }
 
         select.apple-select {
             width: 100%;
             appearance: none;
-            background: var(--glass-bg-input);
+            -webkit-appearance: none;
+            background: var(--glass-input);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            color: var(--label-primary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
             font-family: var(--font-sans);
-            font-size: 0.85rem;
-            font-weight: 500;
-            padding: 0.52rem 2.2rem 0.52rem 0.95rem;
+            font-size: 0.84rem;
+            font-weight: 600;
+            padding: 0.55rem 2.2rem 0.55rem 1rem;
             border-radius: var(--radius-md);
             outline: none;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
-            transition: all 0.2s var(--spring-easing);
-            white-space: nowrap;
+            box-shadow: var(--specular-glow);
+            transition: all 0.2s var(--ease-spring);
         }
 
         select.apple-select:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--glass-border-medium);
+            background: var(--glass-card-hover);
+            border-color: var(--border-medium);
         }
 
         select.apple-select:focus {
-            border-color: var(--system-blue);
-            background: var(--glass-bg-active);
-            box-shadow: 0 0 0 3px var(--system-blue-tint);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow);
         }
 
         .select-arrow {
             position: absolute;
-            right: 0.95rem;
-            top: 50%;
-            transform: translateY(-50%);
+            right: 0.85rem;
             pointer-events: none;
-            width: 8px;
-            height: 5px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath fill='none' stroke='rgba(255,255,255,0.65)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' d='M1 1l4 4 4-4'/%3E%3C/svg%3E") no-repeat center;
-        }
-
-        input.apple-input-custom {
-            flex: 1;
-            min-width: 240px;
-            background: var(--glass-bg-input);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            color: var(--label-primary);
-            font-family: var(--font-mono);
-            font-size: 0.8rem;
-            padding: 0.52rem 0.9rem;
-            border-radius: var(--radius-md);
-            outline: none;
-            display: none;
-            box-shadow: var(--glass-specular);
-            transition: all 0.2s var(--spring-easing);
-        }
-
-        input.apple-input-custom:focus {
-            border-color: var(--system-blue);
-            box-shadow: 0 0 0 3px var(--system-blue-tint);
-        }
-
-        .toolbar-meta {
+            color: var(--text-tertiary);
             display: flex;
             align-items: center;
-            gap: var(--space-4);
-            font-size: 0.8rem;
-            color: var(--label-secondary);
         }
 
-        .meta-stat {
+        .stats-strip {
             display: flex;
-            gap: var(--space-1);
+            align-items: center;
+            gap: 16px;
         }
 
-        .meta-stat-val {
-            color: var(--label-primary);
-            font-weight: 500;
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            font-variant-numeric: tabular-nums;
-        }
-
-        button.apple-btn-secondary {
-            background: var(--glass-bg-input);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            color: var(--label-primary);
-            border: 1px solid var(--glass-border);
-            font-family: var(--font-sans);
-            font-size: 0.8rem;
-            font-weight: 500;
-            padding: 0.48rem var(--space-4);
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            box-shadow: var(--glass-specular);
-            transition: all 0.2s var(--spring-easing);
-            white-space: nowrap;
-        }
-
-        button.apple-btn-secondary:hover {
-            background: var(--glass-bg-hover);
-            border-color: var(--glass-border-medium);
-        }
-
-        button.apple-btn-secondary:active {
-            transform: scale(0.98);
-        }
-
-        /* Workspace Tabs */
-        .workspace-tabs-row {
+        .stat-item {
             display: flex;
-            gap: var(--space-2);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0 var(--space-2);
-            margin-bottom: var(--space-2);
+            align-items: baseline;
+            gap: 6px;
         }
 
-        .workspace-tab {
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--label-tertiary);
-            font-family: var(--font-sans);
-            font-size: 0.88rem;
-            font-weight: 500;
-            padding: var(--space-3) var(--space-4);
-            cursor: pointer;
-            transition: all 0.18s ease;
-        }
-
-        .workspace-tab:hover {
-            color: var(--label-primary);
-        }
-
-        .workspace-tab.active {
-            color: var(--system-blue);
-            border-bottom-color: var(--system-blue);
+        .stat-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
             font-weight: 600;
         }
 
-        /* Main Container */
-        main {
-            position: relative;
-            z-index: 10;
-            flex: 1;
-            max-width: 1100px;
-            width: 100%;
-            margin: 0 auto;
-            padding: var(--space-6) var(--space-6) var(--space-12) var(--space-6);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-6);
-        }
-
-        .tab-content-view {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-5);
-        }
-
-        .tab-content-view.hidden {
-            display: none;
-        }
-
-        /* Panels & Cards */
-        .glass-panel {
-            background: var(--glass-bg-panel);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
-            padding: var(--space-6);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-4);
-        }
-
-        .search-row {
-            display: flex;
-            gap: var(--space-3);
-            position: relative;
-        }
-
-        .search-input-wrapper {
-            position: relative;
-            flex: 1;
-            display: flex;
-            align-items: center;
-        }
-
-        input.apple-search-input {
-            width: 100%;
-            background: var(--glass-bg-input);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 0.88rem 3.5rem 0.88rem 1.15rem;
-            color: var(--label-primary);
-            font-family: var(--font-sans);
-            font-size: 0.95rem;
-            outline: none;
-            box-shadow: var(--glass-specular);
-            transition: all 0.2s var(--spring-easing);
-        }
-
-        input.apple-search-input::placeholder {
-            color: var(--label-tertiary);
-            font-weight: 400;
-        }
-
-        input.apple-search-input:focus {
-            border-color: var(--system-blue);
-            background: var(--glass-bg-active);
-            box-shadow: 0 0 0 3px var(--system-blue-tint);
-        }
-
-        .search-shortcut-badge {
-            position: absolute;
-            right: 0.9rem;
-            pointer-events: none;
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            border-radius: 4px;
-            padding: 2px var(--space-2);
-            font-size: 0.7rem;
+        .stat-val {
             font-family: var(--font-mono);
-            color: var(--label-tertiary);
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        button.apple-btn-primary {
-            background: var(--system-blue);
+        /* --- BUTTONS --- */
+        .apple-btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #0066d6 100%);
             color: #FFFFFF;
-            border: none;
-            border-radius: var(--radius-md);
-            padding: 0.88rem var(--space-6);
             font-family: var(--font-sans);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.3), 0 4px 16px rgba(10, 132, 255, 0.35);
-            transition: all 0.2s var(--spring-easing);
-            white-space: nowrap;
-        }
-
-        button.apple-btn-primary:hover {
-            background: var(--system-blue-hover);
-        }
-
-        button.apple-btn-primary:active {
-            transform: scale(0.98);
-        }
-
-        .controls-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--space-4);
-        }
-
-        .controls-left {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            flex-wrap: wrap;
-        }
-
-        .segmented-control {
-            display: inline-flex;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 3px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--glass-border);
-        }
-
-        .segment-btn {
-            background: transparent;
-            border: none;
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.38rem var(--space-3);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s var(--spring-easing);
-        }
-
-        .segment-btn.active {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-            font-weight: 600;
-        }
-
-        .topk-control {
-            display: inline-flex;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 3px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--glass-border);
-        }
-
-        .topk-btn {
-            background: transparent;
-            border: none;
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.78rem;
-            font-weight: 500;
-            padding: 0.38rem var(--space-2);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .topk-btn.active {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-            font-weight: 600;
-        }
-
-        .switch-control {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
             font-size: 0.82rem;
-            color: var(--label-secondary);
+            font-weight: 600;
+            padding: 0.55rem 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             cursor: pointer;
+            box-shadow: 0 4px 14px var(--accent-blue-glow), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+            transition: all 0.2s var(--ease-spring);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .apple-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px var(--accent-blue-glow);
+            filter: brightness(1.08);
+        }
+
+        .apple-btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .apple-btn-secondary {
+            background: var(--glass-pill);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 0.55rem 1.15rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            cursor: pointer;
+            transition: all 0.2s var(--ease-spring);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .apple-btn-secondary:hover {
+            background: var(--glass-pill-hover);
+            border-color: var(--border-medium);
+            transform: translateY(-1px);
+        }
+
+        /* --- FLOATING VISIONOS SEGMENTED TAB BAR --- */
+        .tab-bar-container {
+            display: flex;
+            justify-content: center;
+            margin: 0.25rem 0 0.5rem 0;
+        }
+
+        .vision-segmented-tabs {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(18, 20, 26, 0.75);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            padding: 4px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-subtle);
+            box-shadow: var(--specular-glow);
+            gap: 3px;
+        }
+
+        .vision-tab-btn {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-tertiary);
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 0.45rem 1.15rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.22s var(--ease-spring);
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
             user-select: none;
         }
 
-        .apple-switch {
+        .vision-tab-btn svg {
+            color: currentColor;
+            transition: transform 0.2s var(--ease-spring);
+        }
+
+        .vision-tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .vision-tab-btn.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .vision-tab-btn.active svg {
+            transform: scale(1.08);
+            color: var(--accent-blue);
+        }
+
+        /* --- TAB CONTENT CONTAINER --- */
+        .tab-content-view {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: tabFadeIn 0.28s var(--ease-spring);
+        }
+
+        .tab-content-view.hidden {
+            display: none !important;
+        }
+
+        @keyframes tabFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- HERO SEARCH BAR --- */
+        .search-hero-box {
             position: relative;
-            display: inline-block;
-            width: 36px;
-            height: 20px;
-        }
-
-        .apple-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.15);
-            transition: 0.2s var(--spring-easing);
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: #FFFFFF;
-            transition: 0.2s var(--spring-easing);
-            border-radius: 50%;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-        }
-
-        input:checked + .slider {
-            background-color: var(--system-blue);
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(16px);
-        }
-
-        .suggestions-row {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
-            flex-wrap: wrap;
-            font-size: 0.78rem;
-            color: var(--label-tertiary);
+            width: 100%;
         }
 
-        .suggestion-pill {
-            background: var(--glass-bg-subtle);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            color: var(--label-secondary);
-            padding: 0.3rem var(--space-3);
-            border-radius: var(--radius-pill);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .suggestion-pill:hover {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-            border-color: var(--glass-border-medium);
-        }
-
-        .telemetry-row {
-            background: rgba(12, 12, 16, 0.65);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            box-shadow: var(--glass-specular);
-            padding: 0.85rem var(--space-6);
+        .search-hero-icon {
+            position: absolute;
+            left: 1.25rem;
+            color: var(--text-tertiary);
+            pointer-events: none;
             display: flex;
+            align-items: center;
+        }
+
+        .search-hero-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 0.95rem 7.5rem 0.95rem 3.25rem;
+            font-family: var(--font-sans);
+            font-size: 0.96rem;
+            color: var(--text-primary);
+            outline: none;
+            box-shadow: var(--specular-glow);
+            transition: all 0.22s var(--ease-spring);
+        }
+
+        .search-hero-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-hero-input:focus {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow), var(--specular-elevated);
+        }
+
+        .search-hero-action {
+            position: absolute;
+            right: 0.6rem;
+        }
+
+        /* --- SEARCH CONTROLS ROW --- */
+        .search-modes-row {
+            display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            display: none;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding-top: 0.25rem;
         }
 
-        .telemetry-item {
-            text-align: center;
+        .mode-pills-group {
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-full);
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .mode-pill-btn {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-tertiary);
+            font-family: var(--font-sans);
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.35rem 0.85rem;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: all 0.18s var(--ease-spring);
+        }
+
+        .mode-pill-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .mode-pill-btn.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        /* --- TELEMETRY LATENCY DASHBOARD --- */
+        .telemetry-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .telemetry-card {
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 0.65rem 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .telemetry-label {
             font-size: 0.68rem;
             text-transform: uppercase;
             letter-spacing: 0.06em;
-            color: var(--label-tertiary);
-            margin-bottom: 2px;
-        }
-
-        .telemetry-value {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--label-secondary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .telemetry-value.accent {
-            color: var(--system-blue);
+            color: var(--text-tertiary);
             font-weight: 600;
         }
 
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .telemetry-val.highlight {
+            color: var(--accent-green);
+        }
+
+        /* --- CODE RESULTS LIST --- */
         .results-list {
             display: flex;
             flex-direction: column;
-            gap: var(--space-5);
+            gap: 1rem;
         }
 
-        .code-card {
-            background: var(--glass-bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
+        .code-result-card {
+            background: var(--glass-card);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
             overflow: hidden;
-            transition: all 0.2s var(--spring-easing);
+            box-shadow: var(--specular-elevated);
+            transition: all 0.22s var(--ease-spring);
         }
 
-        .code-card:hover {
-            border-color: var(--glass-border-medium);
-            transform: translateY(-1px);
+        .code-result-card:hover {
+            border-color: var(--border-medium);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
-        .code-header {
-            background: rgba(255, 255, 255, 0.025);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0.7rem var(--space-4);
+        .card-header-bar {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.75rem 1.25rem;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
+            gap: 1rem;
         }
 
-        .code-citation {
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-            font-weight: 500;
-            color: var(--label-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            cursor: pointer;
-            transition: color 0.15s ease;
-        }
-
-        .code-citation:hover {
-            color: var(--system-blue);
-            text-decoration: underline;
-        }
-
-        .citation-index {
-            color: var(--label-tertiary);
-            font-size: 0.75rem;
-        }
-
-        .code-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .btn-copy {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.72rem;
-            padding: 0.22rem var(--space-3);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .btn-copy:hover {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-        }
-
-        .code-scores {
-            display: flex;
-            gap: var(--space-1);
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--label-tertiary);
-        }
-
-        .score-tag {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            padding: 0.18rem 0.48rem;
-            border-radius: 4px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .score-tag.active-score {
-            color: var(--system-green);
-            border-color: rgba(48, 209, 88, 0.25);
-            background: var(--system-green-tint);
-        }
-
-        .code-block-container {
-            display: flex;
-            background: rgba(0, 0, 0, 0.6);
-            overflow-x: auto;
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-            line-height: 1.6;
-        }
-
-        .line-numbers-gutter {
-            padding: var(--space-4) var(--space-3);
-            color: var(--label-quaternary);
-            text-align: right;
-            user-select: none;
-            border-right: 1px solid var(--glass-border);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .code-content-wrapper {
-            padding: var(--space-4);
-            flex: 1;
-            overflow-x: auto;
-        }
-
-        .code-content-wrapper pre {
-            margin: 0;
-            background: transparent !important;
-            padding: 0 !important;
-        }
-
-        .code-footer {
-            background: rgba(255, 255, 255, 0.015);
-            border-top: 1px solid var(--glass-border);
-            padding: 0.6rem var(--space-4);
-            font-size: 0.75rem;
-            color: var(--label-tertiary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .scope-badge {
-            background: var(--glass-bg-subtle);
-            padding: 2px var(--space-2);
-            border-radius: 4px;
-            color: var(--label-secondary);
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-        }
-
-        .search-reliability {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.75rem 0.9rem;
-            margin-bottom: var(--space-3);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            background: var(--glass-bg-subtle);
-            color: var(--label-secondary);
-            font-size: 0.78rem;
-        }
-
-        .reliability-pill {
-            padding: 0.18rem 0.5rem;
-            border-radius: var(--radius-pill);
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .reliability-pill.high { background: var(--system-green-tint); color: var(--system-green); }
-        .reliability-pill.medium { background: var(--system-orange-tint); color: var(--system-orange); }
-        .reliability-pill.low { background: rgba(255,69,58,.14); color: var(--system-red); }
-
-        .synthesis-card {
-            background: var(--glass-bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
-            padding: var(--space-6);
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-4);
-            line-height: 1.6;
-            max-width: 1120px;
-            margin: 0 auto;
-        }
-
-        .synthesis-card h2 {
-            font-size: 1.35rem;
-            font-weight: 650;
-            color: var(--label-primary);
-            letter-spacing: -0.025em;
-            margin: 1.5rem 0 0.7rem;
-        }
-
-        .synthesis-card h2:first-child {
-            margin-top: 0;
-        }
-
-        .synthesis-card h3 {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--label-primary);
-            margin: 1.25rem 0 0.55rem;
-            padding-left: 0.75rem;
-            border-left: 2px solid var(--system-blue);
-        }
-
-        .synthesis-card p {
-            color: var(--label-secondary);
-            line-height: 1.75;
-            margin: 0.55rem 0;
-        }
-
-        .synthesis-card ul,
-        .synthesis-card ol {
-            color: var(--label-secondary);
-            padding-left: 1.4rem;
-            margin: 0.6rem 0;
-        }
-
-        .synthesis-card li {
-            margin: 0.35rem 0;
-        }
-
-        .synthesis-card code:not(pre code) {
-            background: rgba(255, 255, 255, 0.075);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            padding: 0.12rem 0.38rem;
-            border-radius: 5px;
-            color: #e5e5ea;
-            font-family: var(--font-mono);
-            font-size: 0.86em;
-        }
-
-        .synthesis-card pre {
-            background: #08090b;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.1rem;
-            margin: 0.75rem 0 1rem;
-            overflow: auto;
-            max-height: 360px;
-            white-space: pre;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
-        }
-
-        .synthesis-card pre code {
+        .card-file-path {
             font-family: var(--font-mono);
             font-size: 0.8rem;
-            line-height: 1.65;
+            font-weight: 500;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-lines {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-tertiary);
+        }
+
+        .card-score-pill {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--accent-teal);
+            background: var(--accent-teal-tint);
+            border: 1px solid rgba(100, 210, 255, 0.2);
+            padding: 2px 8px;
+            border-radius: var(--radius-full);
+        }
+
+        .code-snippet-body {
+            position: relative;
+            background: #090a0d;
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+        }
+
+        .code-snippet-body pre code {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.55;
+        }
+
+        /* --- SYNTHESIS & REASONING STUDIO --- */
+        .synthesis-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            box-shadow: var(--specular-elevated);
+            line-height: 1.68;
+            font-size: 0.92rem;
         }
 
         .walkthrough-status {
-            display: flex;
-            align-items: center;
-            gap: 0.45rem;
             margin-top: 1.25rem;
-            padding-top: 0.8rem;
-            border-top: 1px solid var(--glass-border);
-            color: var(--label-tertiary);
-            font-size: 0.75rem;
+            padding-top: 0.85rem;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 0.76rem;
+            color: var(--text-tertiary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        .walkthrough-status .status-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: var(--system-orange);
-        }
-
-        .action-toast {
-            position: fixed;
-            right: 1.25rem;
-            bottom: 1.25rem;
-            z-index: 1000;
-            max-width: min(430px, calc(100vw - 2.5rem));
-            padding: 0.8rem 1rem;
-            border: 1px solid var(--glass-border-medium);
-            border-radius: var(--radius-md);
-            background: rgba(24, 24, 28, 0.96);
-            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.65);
-            color: var(--label-primary);
-            font-size: 0.8rem;
-            line-height: 1.45;
-            opacity: 0;
-            transform: translateY(8px);
-            transition: opacity 0.18s ease, transform 0.18s ease;
-            pointer-events: none;
-        }
-
-        .action-toast.visible { opacity: 1; transform: translateY(0); }
-        .action-toast.error { border-color: rgba(255, 69, 58, 0.55); color: #ffb4ae; }
-
-        .synthesis-card a {
-            color: var(--system-blue);
-            text-decoration: none;
-        }
-
-        .synthesis-card a:hover {
-            text-decoration: underline;
-        }
-
-        /* Master Detail Architecture */
-        .master-detail-view {
-            display: grid;
-            grid-template-columns: 330px 1fr;
-            gap: var(--space-4);
-            min-height: 600px;
-        }
-
-        .master-files-panel {
-            background: var(--glass-bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .master-header {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .master-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--label-tertiary);
-        }
-
-        .master-files-list {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .file-item-row {
-            padding: 0.85rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            cursor: pointer;
-            transition: all 0.15s var(--spring-easing);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .file-item-row:hover {
-            background: var(--glass-bg-hover);
-        }
-
-        .file-item-row.active {
-            background: rgba(10, 132, 255, 0.14);
-            border-left: 3px solid var(--system-blue);
-        }
-
-        .file-item-left {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-            overflow: hidden;
-        }
-
-        .file-item-name {
-            font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--label-primary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .file-item-row.active .file-item-name {
-            color: var(--system-blue);
-        }
-
-        .file-item-path {
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            color: var(--label-tertiary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .file-item-badge {
-            font-family: var(--font-mono);
-            font-size: 0.72rem;
-            color: var(--label-secondary);
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            padding: 2px 7px;
-            border-radius: var(--radius-pill);
-            flex-shrink: 0;
-        }
-
-        .detail-symbols-panel {
-            background: var(--glass-bg-card);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .detail-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .detail-file-title {
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--label-primary);
-        }
-
-        .detail-file-sub {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--label-tertiary);
-            margin-top: 2px;
-        }
-
-        .detail-table-wrap {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .symbol-matching-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.82rem;
-            text-align: left;
-        }
-
-        .symbol-matching-table th {
-            background: rgba(0, 0, 0, 0.45);
-            border-bottom: 1px solid var(--glass-border);
-            padding: 0.75rem 1.25rem;
-            font-size: 0.72rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--label-tertiary);
-            position: sticky;
-            top: 0;
-            z-index: 5;
-        }
-
-        .symbol-matching-table td {
-            padding: 0.85rem 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            vertical-align: middle;
-        }
-
-        .symbol-matching-table tr:hover td {
-            background: var(--glass-bg-hover);
-        }
-
-        .sym-name-cell {
-            font-family: var(--font-mono);
-            font-weight: 600;
-            color: var(--label-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-
-        .symbol-type-chip {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            padding: 1px 5px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-
-        .symbol-type-chip.function {
-            color: var(--system-green);
-            background: var(--system-green-tint);
-        }
-
-        .symbol-type-chip.class {
-            color: var(--system-purple);
-            background: var(--system-purple-tint);
-        }
-
-        .symbol-type-chip.method {
-            color: var(--system-blue);
-            background: var(--system-blue-tint);
-        }
-
-        .symbol-type-chip.interface, .symbol-type-chip.trait {
-            color: #5e5ce6;
-            background: rgba(94, 92, 230, 0.12);
-        }
-
-        .symbol-type-chip.struct, .symbol-type-chip.type {
-            color: var(--system-orange);
-            background: var(--system-orange-tint);
-        }
-
-        .symbol-type-chip.enum {
-            color: #ff9f0a;
-            background: rgba(255, 159, 10, 0.12);
-        }
-
-        .symbol-type-chip.module {
-            color: #64d2ff;
-            background: rgba(100, 210, 255, 0.12);
-        }
-
-        .sym-lines-cell {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            color: var(--label-secondary);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .sym-calls-cell {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
-            max-width: 300px;
-        }
-
-        .relation-mini-pill {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            color: var(--system-blue);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-family: var(--font-mono);
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-
-        .relation-mini-pill:hover {
-            background: var(--glass-bg-hover);
-            color: #FFFFFF;
-            border-color: var(--system-blue);
-        }
-
-        /* --- ARCHITECTURE FILTER BAR STYLES --- */
+        /* --- DEPENDENCY MAP & ARCHITECTURE VIEW --- */
         .arch-filter-bar {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(28px) saturate(190%);
             -webkit-backdrop-filter: blur(28px) saturate(190%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
             padding: 0.85rem 1.15rem;
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            box-shadow: var(--specular-elevated);
         }
 
         .arch-filter-row {
@@ -1270,30 +764,30 @@
             display: inline-flex;
             align-items: center;
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-full);
             padding: 0 0.75rem 0 0.65rem;
             height: 32px;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.2s var(--ease-spring);
         }
 
         .arch-pill-select-wrapper:hover {
             background: rgba(255, 255, 255, 0.09);
-            border-color: rgba(255, 255, 255, 0.22);
+            border-color: var(--border-medium);
             transform: translateY(-1px);
         }
 
         .arch-pill-select-wrapper:focus-within {
-            border-color: var(--system-blue);
-            background: rgba(10, 132, 255, 0.12);
-            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+            border-color: var(--accent-blue);
+            background: var(--accent-blue-tint);
+            box-shadow: 0 0 0 3px var(--accent-blue-glow);
         }
 
         .arch-pill-icon {
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--label-secondary);
+            color: var(--text-tertiary);
             margin-right: 6px;
             flex-shrink: 0;
         }
@@ -1304,7 +798,7 @@
             background: transparent;
             border: none;
             outline: none;
-            color: var(--label-primary);
+            color: var(--text-primary);
             font-family: var(--font-sans);
             font-size: 0.78rem;
             font-weight: 500;
@@ -1317,7 +811,7 @@
             position: absolute;
             right: 0.65rem;
             pointer-events: none;
-            color: var(--label-tertiary);
+            color: var(--text-tertiary);
             display: flex;
             align-items: center;
         }
@@ -1330,24 +824,24 @@
             padding: 3px 10px;
             border-radius: var(--radius-full);
             background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-subtle);
             font-family: var(--font-mono);
             font-size: 0.72rem;
-            color: var(--label-secondary);
+            color: var(--text-secondary);
         }
 
         .arch-stat-dot {
             width: 6px;
             height: 6px;
             border-radius: 50%;
-            background: var(--system-green);
-            box-shadow: 0 0 6px var(--system-green);
+            background: var(--accent-green);
+            box-shadow: 0 0 6px var(--accent-green-glow);
         }
 
         .arch-reset-btn {
             background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--label-secondary);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
             font-size: 0.74rem;
             font-weight: 500;
             padding: 0 10px;
@@ -1357,495 +851,631 @@
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            transition: all 0.2s var(--spring-easing);
+            transition: all 0.2s var(--ease-spring);
         }
 
         .arch-reset-btn:hover {
-            background: rgba(255, 69, 58, 0.15);
+            background: var(--accent-red-tint);
             border-color: rgba(255, 69, 58, 0.3);
-            color: var(--system-red);
+            color: var(--accent-red);
             transform: translateY(-1px);
         }
 
-        .btn-table-action {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            color: var(--label-secondary);
-            font-family: var(--font-sans);
-            font-size: 0.75rem;
-            padding: 0.32rem 0.75rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.15s ease;
-            white-space: nowrap;
+        /* --- MASTER-DETAIL SPLIT SCREEN --- */
+        .master-detail-view {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 1rem;
+            min-height: 520px;
         }
 
-        .btn-table-action:hover {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-            border-color: var(--glass-border-medium);
+        @media (max-width: 900px) {
+            .master-detail-view {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* Inspector Modal */
-        .inspector-modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(32px) saturate(190%);
-            -webkit-backdrop-filter: blur(32px) saturate(190%);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            animation: modalFadeIn 0.2s var(--spring-easing);
-        }
-
-        .inspector-modal {
-            background: rgba(16, 16, 20, 0.94);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border-medium);
-            border-radius: 16px;
-            width: 90%;
-            max-width: 820px;
-            max-height: 85vh;
-            box-shadow: var(--glass-specular), var(--glass-shadow);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .inspector-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .inspector-title-box {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-        }
-
-        .inspector-symbol-name {
-            font-family: var(--font-mono);
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--label-primary);
-        }
-
-        .inspector-meta-row {
-            padding: 0.65rem 1.5rem;
-            background: rgba(0, 0, 0, 0.35);
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            color: var(--label-tertiary);
-            font-family: var(--font-mono);
-        }
-
-        .inspector-code-body {
-            flex: 1;
-            overflow-y: auto;
-            display: flex;
-            background: #020203;
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-            line-height: 1.6;
-        }
-
-        .inspector-gutter {
-            padding: 1rem 0.85rem;
-            color: var(--label-quaternary);
-            text-align: right;
-            user-select: none;
-            border-right: 1px solid var(--glass-border);
-            font-variant-numeric: tabular-nums;
-        }
-
-        .inspector-code-wrap {
-            padding: 1rem 1.25rem;
-            flex: 1;
-            overflow-x: auto;
-        }
-
-        .inspector-code-wrap pre {
-            margin: 0;
-            background: transparent !important;
-            padding: 0 !important;
-        }
-
-        .inspector-relations-row {
-            padding: 0.75rem 1.5rem;
-            border-top: 1px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.015);
-            display: flex;
-            gap: 1.5rem;
-            font-size: 0.75rem;
-        }
-
-        .relation-group {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            color: var(--label-tertiary);
-        }
-
-        .inspector-footer {
-            padding: 0.75rem 1.5rem;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--space-3);
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .diff-container {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
+        .master-files-panel {
+            background: var(--glass-card);
+            border: 1px solid var(--border-subtle);
             border-radius: var(--radius-lg);
-            padding: var(--space-4);
-            font-family: var(--font-mono);
-            font-size: 0.82rem;
-            line-height: 1.5;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-
-        .diff-added {
-            color: var(--system-green);
-            background: rgba(48, 209, 88, 0.1);
-        }
-
-        .diff-removed {
-            color: var(--system-red);
-            background: rgba(255, 69, 58, 0.1);
-        }
-
-        .glass-modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(32px) saturate(190%);
-            -webkit-backdrop-filter: blur(32px) saturate(190%);
-            z-index: 1000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            animation: modalFadeIn 0.2s var(--spring-easing);
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .glass-modal {
-            background: rgba(18, 18, 22, 0.88);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--glass-border-medium);
-            border-radius: 18px;
-            width: 90%;
-            max-width: 500px;
-            padding: var(--space-6);
-            box-shadow: var(--glass-specular), var(--glass-shadow);
             display: flex;
             flex-direction: column;
-            gap: var(--space-5);
+            overflow: hidden;
+            box-shadow: var(--specular-elevated);
         }
 
-        .modal-header-clean {
+        .master-header {
+            padding: 0.85rem 1.15rem;
+            border-bottom: 1px solid var(--border-subtle);
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: baseline;
         }
 
-        .modal-heading {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: var(--label-primary);
+        .master-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .modal-pct-clean {
-            font-family: var(--font-mono);
-            font-size: 2.2rem;
-            font-weight: 600;
-            letter-spacing: -0.03em;
-            color: var(--system-blue);
-            line-height: 1;
-            font-variant-numeric: tabular-nums;
+        .master-files-list {
+            overflow-y: auto;
+            max-height: 540px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .clean-progress-track {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-pill);
+        .file-item-row {
+            padding: 0.75rem 1.15rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            transition: all 0.15s ease;
+        }
+
+        .file-item-row:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .file-item-row.active {
+            background: rgba(10, 132, 255, 0.12);
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .file-item-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
             overflow: hidden;
         }
 
-        .clean-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: var(--system-blue);
-            border-radius: var(--radius-pill);
-            box-shadow: 0 0 12px rgba(10, 132, 255, 0.6);
-            transition: width 0.25s var(--spring-easing);
-        }
-
-        .modal-status-pill {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 0.65rem 0.85rem;
-            font-family: var(--font-mono);
-            font-size: 0.78rem;
-            color: var(--label-secondary);
+        .file-item-name {
+            font-size: 0.84rem;
+            font-weight: 600;
+            color: var(--text-primary);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .modal-stages-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--space-2);
+        .file-item-path {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .stage-pill {
-            background: var(--glass-bg-subtle);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.75rem;
-            color: var(--label-tertiary);
-            transition: all 0.2s ease;
+        .file-item-badge {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-tertiary);
+            padding: 2px 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
         }
 
-        .stage-pill.active {
-            color: var(--system-blue);
-            border-color: rgba(10, 132, 255, 0.35);
-            background: var(--system-blue-tint);
+        .detail-symbols-panel {
+            background: var(--glass-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: var(--specular-elevated);
         }
 
-        .stage-pill.complete {
-            color: var(--system-green);
-            border-color: rgba(48, 209, 88, 0.35);
-            background: var(--system-green-tint);
+        .detail-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
         }
 
-        button.modal-close-btn {
-            background: var(--glass-bg-hover);
-            color: var(--label-primary);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-md);
-            padding: 0.75rem;
-            font-family: var(--font-sans);
-            font-size: 0.88rem;
-            font-weight: 500;
+        .detail-file-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .detail-file-sub {
+            font-size: 0.74rem;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+        }
+
+        .detail-table-wrap {
+            overflow-x: auto;
+            max-height: 520px;
+        }
+
+        table.detail-symbol-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            text-align: left;
+        }
+
+        table.detail-symbol-table th {
+            padding: 0.75rem 1.15rem;
+            color: var(--text-tertiary);
+            font-weight: 600;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border-subtle);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        table.detail-symbol-table td {
+            padding: 0.75rem 1.15rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            vertical-align: middle;
+        }
+
+        table.detail-symbol-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* --- SYMBOL TYPE CHIPS --- */
+        .symbol-type-chip {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .symbol-type-chip.function {
+            color: var(--accent-green);
+            background: var(--accent-green-tint);
+        }
+
+        .symbol-type-chip.class {
+            color: var(--accent-purple);
+            background: var(--accent-purple-tint);
+        }
+
+        .symbol-type-chip.method {
+            color: var(--accent-blue);
+            background: var(--accent-blue-tint);
+        }
+
+        .symbol-type-chip.interface, .symbol-type-chip.trait {
+            color: #7b79ff;
+            background: rgba(123, 121, 255, 0.12);
+        }
+
+        .symbol-type-chip.struct, .symbol-type-chip.type {
+            color: var(--accent-orange);
+            background: var(--accent-orange-tint);
+        }
+
+        .symbol-type-chip.enum {
+            color: #ffb340;
+            background: rgba(255, 179, 64, 0.12);
+        }
+
+        .symbol-type-chip.module {
+            color: var(--accent-teal);
+            background: var(--accent-teal-tint);
+        }
+
+        .sym-lines-cell {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            color: var(--text-tertiary);
+        }
+
+        .relation-mini-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--accent-blue);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             cursor: pointer;
-            box-shadow: var(--glass-specular);
-            display: none;
-            transition: all 0.2s var(--spring-easing);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
         }
 
-        button.modal-close-btn:hover {
-            background: var(--glass-bg-active);
+        .relation-mini-pill:hover {
+            background: rgba(10, 132, 255, 0.15);
+            color: #FFFFFF;
+            border-color: var(--accent-blue);
+        }
+
+        .btn-table-action {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.74rem;
+            font-weight: 500;
+            padding: 0.35rem 0.8rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.15s var(--ease-spring);
+        }
+
+        .btn-table-action:hover {
+            background: var(--glass-pill-hover);
+            color: #FFFFFF;
+            border-color: var(--border-medium);
+            transform: translateY(-1px);
+        }
+
+        /* --- CODE INSPECTOR MODAL --- */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            animation: modalFadeIn 0.25s var(--ease-spring);
+        }
+
+        .modal-backdrop.hidden {
+            display: none !important;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.97); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .inspector-window {
+            width: 100%;
+            max-width: 900px;
+            max-height: 85vh;
+            background: #0d0f14;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-xl);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+        }
+
+        .traffic-lights-bar {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .traffic-dots {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .traffic-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .traffic-dot.close { background: #FF5F56; border: 1px solid #E0443E; }
+        .traffic-dot.min { background: #FFBD2E; border: 1px solid #DEA123; }
+        .traffic-dot.max { background: #27C93F; border: 1px solid #1AAB29; }
+
+        .inspector-code-wrap {
+            display: flex;
+            overflow: auto;
+            flex: 1;
+            background: #090a0d;
+        }
+
+        .inspector-gutter {
+            padding: 1.25rem 0.85rem;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--text-quaternary);
+            text-align: right;
+            user-select: none;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .inspector-code-content {
+            padding: 1.25rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        /* --- TOAST ALERTS --- */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(18, 20, 26, 0.85);
+            backdrop-filter: blur(28px);
+            border: 1px solid var(--border-medium);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 2000;
+            animation: toastPop 0.25s var(--ease-spring);
+        }
+
+        @keyframes toastPop {
+            from { opacity: 0; transform: translateY(12px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
     </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
+    <!-- Ambient Fluid Lighting -->
+    <div class="ambient-mesh">
+        <div class="ambient-orb-1"></div>
+        <div class="ambient-orb-2"></div>
+        <div class="ambient-orb-3"></div>
+    </div>
+
+    <!-- Navigation Header -->
     <nav>
         <div class="nav-brand">
-            <span class="nav-title">Code Intelligence</span>
-            <span class="nav-badge">v0.2.0</span>
+            <div class="nav-logo-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+            </div>
+            <span class="nav-title">
+                Semantic Code Intelligence
+                <span class="nav-version-badge">2.0 Core</span>
+            </span>
         </div>
-        <div class="nav-status">
-            <div class="status-indicator" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Toggle automatic background indexing on file save">
-                <span class="status-dot" id="watcherDot"></span>
+
+        <div class="nav-status-group">
+            <div class="status-pill" id="watcherStatusPill" onclick="toggleWatcher()" style="cursor: pointer;" title="Click to toggle background real-time file watcher">
+                <span class="status-dot warning" id="watcherDot"></span>
                 <span id="watcherStatusText">Watcher: Off</span>
             </div>
-            <div class="status-indicator">
+            <div class="status-pill" title="Backend Search & Indexing Engine Status">
                 <span class="status-dot" id="systemStatusDot"></span>
-                <span id="systemStatusText">Ready</span>
+                <span id="systemStatusText">Engine: Ready</span>
             </div>
         </div>
     </nav>
 
-    <!-- Translucent Repository Toolbar -->
-    <div class="toolbar">
-        <div class="toolbar-group">
-            <span class="toolbar-label">Repository:</span>
-            <div class="select-wrapper">
-                <select class="apple-select" id="repoDropdown" onchange="onRepoChanged()">
-                    <option value=".">Current Platform Codebase</option>
-                    <option value="./oss_evaluation/client-go">Kubernetes client-go (406k LOC)</option>
-                    <option value="./oss_evaluation/fastapi">FastAPI (112k LOC)</option>
-                    <option value="./oss_evaluation/rich">Textualize Rich (67k LOC)</option>
-                    <option value="GITHUB">Import from GitHub URL...</option>
-                    <option value="CUSTOM">Custom Local Directory...</option>
-                </select>
-                <div class="select-arrow"></div>
-            </div>
-            <div id="githubImportWrapper" style="display: none; align-items: center; gap: var(--space-2); flex: 1; min-width: 480px; flex-wrap: wrap;">
-                <input
-                    type="text"
-                    id="githubUrlInput"
-                    class="apple-input-custom"
-                    style="display: block; flex: 2; min-width: 220px;"
-                    placeholder="GitHub URL (e.g. pallets/flask)"
-                    oninput="onGithubUrlInput(this.value)"
-                    onkeydown="if (event.key === 'Enter') startGitHubImport()"
-                />
-                <input
-                    type="text"
-                    id="githubDestInput"
-                    class="apple-input-custom"
-                    style="display: block; flex: 2; min-width: 200px;"
-                    placeholder="Destination folder (optional: cloned_repos/...)"
-                    onkeydown="if (event.key === 'Enter') startGitHubImport()"
-                />
-                <button class="apple-btn-primary" id="btnImportGithub" style="padding: 0.5rem 0.95rem; font-size: 0.8rem; white-space: nowrap;" onclick="startGitHubImport()">Import & Index</button>
-            </div>
-            <input
-                type="text"
-                id="customPathInput"
-                class="apple-input-custom"
-                placeholder="/Users/xploit404/Projects/your-local-repo"
-                onchange="onCustomPathChanged()"
-            />
-        </div>
-
-        <div class="toolbar-meta">
-            <div class="meta-stat">
-                <span>Files:</span>
-                <span class="meta-stat-val" id="statFiles">--</span>
-            </div>
-            <div class="meta-stat">
-                <span>LOC:</span>
-                <span class="meta-stat-val" id="statLoc">--</span>
-            </div>
-            <div class="meta-stat">
-                <span>Chunks:</span>
-                <span class="meta-stat-val" id="statChunks">--</span>
-            </div>
-            <button class="apple-btn-secondary" id="btnReindex" onclick="startAnimatedIndexing()">Index Repository</button>
-        </div>
-    </div>
-
-    <!-- Main Workspace Container -->
+    <!-- Main Application Canvas -->
     <main>
-        <!-- Workspace Tabs -->
-        <div class="workspace-tabs-row">
-            <button class="workspace-tab active" data-tab="search" onclick="switchTab('search')">Semantic Search</button>
-            <button class="workspace-tab" data-tab="synthesize" onclick="switchTab('synthesize')">Code Walkthrough</button>
-            <button class="workspace-tab" data-tab="graph" onclick="switchTab('graph')">Dependency Map</button>
-            <button class="workspace-tab" data-tab="diff" onclick="switchTab('diff')">Diff & LSP Tools</button>
+        <!-- Top Toolbar: Repo Switcher & Metrics Strip -->
+        <div class="glass-panel top-toolbar">
+            <div class="repo-select-group">
+                <div class="select-wrapper">
+                    <select class="apple-select" id="repoDropdown" onchange="onRepoChanged()">
+                        <option value=".">Current Project (semantic-code-intelligence)</option>
+                        <option value="__custom__">+ Add / Open Local Path...</option>
+                        <option value="__github__">+ Clone from GitHub Repository...</option>
+                    </select>
+                    <span class="select-arrow">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </span>
+                </div>
+
+                <!-- GitHub Clone Drawer Wrapper -->
+                <div id="githubImportWrapper" style="display: none; align-items: center; gap: 8px; flex: 1; flex-wrap: wrap;">
+                    <input
+                        type="text"
+                        id="githubUrlInput"
+                        class="apple-search-input"
+                        style="width: 200px; padding: 0.48rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-sm);"
+                        placeholder="https://github.com/org/repo"
+                    />
+                    <input
+                        type="text"
+                        id="githubDestInput"
+                        class="apple-search-input"
+                        style="width: 140px; padding: 0.48rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-sm);"
+                        placeholder="cloned_repos/org_repo"
+                    />
+                    <button class="apple-btn-primary" id="btnImportGithub" style="padding: 0.48rem 0.9rem; font-size: 0.78rem;" onclick="startGitHubImport()">Clone & Index</button>
+                </div>
+
+                <!-- Custom Local Path Drawer -->
+                <div id="customPathWrapper" style="display: none; align-items: center; gap: 8px; flex: 1;">
+                    <input
+                        type="text"
+                        id="customPathInput"
+                        class="apple-search-input"
+                        style="flex: 1; padding: 0.48rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-sm);"
+                        placeholder="/absolute/path/to/project"
+                    />
+                    <button class="apple-btn-primary" style="padding: 0.48rem 0.9rem; font-size: 0.78rem;" onclick="applyCustomPath()">Open</button>
+                </div>
+            </div>
+
+            <div class="stats-strip">
+                <div class="stat-item">
+                    <span class="stat-label">Files</span>
+                    <span class="stat-val" id="statFiles">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Lines</span>
+                    <span class="stat-val" id="statLoc">--</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Chunks</span>
+                    <span class="stat-val" id="statChunks">--</span>
+                </div>
+                <button class="apple-btn-secondary" id="btnReindex" onclick="startAnimatedIndexing()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                    </svg>
+                    Index Repository
+                </button>
+            </div>
         </div>
 
-        <!-- 1. SEARCH TAB -->
+        <!-- VisionOS Segmented Navigation Tabs -->
+        <div class="tab-bar-container">
+            <div class="vision-segmented-tabs">
+                <button class="vision-tab-btn active" id="tabBtnSearch" onclick="switchMainTab('search')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    Search & Explore
+                </button>
+                <button class="vision-tab-btn" id="tabBtnSynthesize" onclick="switchMainTab('synthesize')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+                    </svg>
+                    Reasoning & Synthesis
+                </button>
+                <button class="vision-tab-btn" id="tabBtnGraph" onclick="switchMainTab('graph')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    Dependency Map
+                </button>
+                <button class="vision-tab-btn" id="tabBtnDiff" onclick="switchMainTab('diff')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    Dev Tools & LSP
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== TAB 1: SEARCH & EXPLORE ==================== -->
         <div id="tab-search" class="tab-content-view">
-            <div class="suggestions-row" id="suggestionsBox">
-                <span>Suggested:</span>
-                <span id="suggestionsList"></span>
-            </div>
-
-            <div class="glass-panel">
-                <div class="search-row">
-                    <div class="search-input-wrapper">
-                        <input
-                            type="text"
-                            id="searchInput"
-                            class="apple-search-input"
-                            placeholder="Search code logic, function names, error workflows..."
-                            autocomplete="off"
-                        />
-                        <span class="search-shortcut-badge">/</span>
+            <div class="glass-panel" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div class="search-hero-box">
+                    <span class="search-hero-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="search-hero-input"
+                        placeholder="Search symbols, logic, or natural language intent across codebase..."
+                    />
+                    <div class="search-hero-action">
+                        <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
                     </div>
-                    <button class="apple-btn-primary" id="searchBtn" onclick="performSearch()">Search</button>
                 </div>
 
-                <div class="controls-row">
-                    <div class="controls-left">
-                        <div class="segmented-control">
-                            <button class="segment-btn active" data-mode="hybrid" onclick="setMode('hybrid')">Hybrid</button>
-                            <button class="segment-btn" data-mode="dense" onclick="setMode('dense')">Dense Vector</button>
-                            <button class="segment-btn" data-mode="sparse" onclick="setMode('sparse')">Sparse Lexical</button>
-                        </div>
-
-                        <div class="topk-control">
-                            <button class="topk-btn" data-topk="3" onclick="setTopK(3)">3</button>
-                            <button class="topk-btn active" data-topk="5" onclick="setTopK(5)">5</button>
-                            <button class="topk-btn" data-topk="10" onclick="setTopK(10)">10</button>
+                <div class="search-modes-row">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 0.72rem; color: var(--text-tertiary); font-weight: 600; text-transform: uppercase;">Mode:</span>
+                        <div class="mode-pills-group">
+                            <button class="mode-pill-btn active" id="modeDense" onclick="setMode('dense')">Dense Vector</button>
+                            <button class="mode-pill-btn" id="modeBm25" onclick="setMode('bm25')">BM25 Lexical</button>
+                            <button class="mode-pill-btn" id="modeHybrid" onclick="setMode('hybrid')">Hybrid RRF</button>
                         </div>
                     </div>
 
-                    <label class="switch-control">
-                        <span class="apple-switch">
-                            <input type="checkbox" id="rerankToggle" checked>
-                            <span class="slider"></span>
-                        </span>
-                        <span>Cross-Encoder Reranking</span>
-                    </label>
+                    <div style="display: flex; align-items: center; gap: 14px;">
+                        <label style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--text-secondary); cursor: pointer;">
+                            <input type="checkbox" id="rerankToggle" checked style="accent-color: var(--accent-blue);">
+                            Cross-Encoder Rerank
+                        </label>
+                        <div style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.76rem; color: var(--text-secondary);">
+                            <span>Top-K:</span>
+                            <select id="topkSelect" class="arch-pill-select" style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;" onchange="setTopK(this.value)">
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
+            <!-- Telemetry Dashboard -->
             <div class="telemetry-row" id="latencyDashboard">
-                <div class="telemetry-item">
-                    <div class="telemetry-label">Dense Vector</div>
-                    <div class="telemetry-value" id="denseLatency">-- ms</div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Dense Latency</span>
+                    <span class="telemetry-val" id="denseLatency">-- ms</span>
                 </div>
-                <div class="telemetry-item">
-                    <div class="telemetry-label">Sparse BM25</div>
-                    <div class="telemetry-value" id="bm25Latency">-- ms</div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">BM25 Latency</span>
+                    <span class="telemetry-val" id="bm25Latency">-- ms</span>
                 </div>
-                <div class="telemetry-item">
-                    <div class="telemetry-label">Rank Fusion</div>
-                    <div class="telemetry-value" id="rrfLatency">-- ms</div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">RRF Merge</span>
+                    <span class="telemetry-val" id="rrfLatency">-- ms</span>
                 </div>
-                <div class="telemetry-item">
-                    <div class="telemetry-label">Reranker</div>
-                    <div class="telemetry-value" id="rerankLatency">-- ms</div>
+                <div class="telemetry-card">
+                    <span class="telemetry-label">Rerank Stage</span>
+                    <span class="telemetry-val" id="rerankLatency">-- ms</span>
                 </div>
-                <div class="telemetry-item">
-                    <div class="telemetry-label">Total Latency</div>
-                    <div class="telemetry-value accent" id="totalLatency">-- ms</div>
+                <div class="telemetry-card" style="border-color: rgba(48, 209, 88, 0.3);">
+                    <span class="telemetry-label">Total Time</span>
+                    <span class="telemetry-val highlight" id="totalLatency">-- ms</span>
                 </div>
             </div>
 
-            <div class="results-list" id="resultsContainer">
-                <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                    Enter a query above to retrieve exact line citations.
-                </div>
-            </div>
+            <!-- Results Container -->
+            <div class="results-list" id="resultsContainer"></div>
         </div>
 
-        <!-- 2. CODE WALKTHROUGH (SYNTHESIZER) TAB -->
+        <!-- ==================== TAB 2: REASONING & SYNTHESIS ==================== -->
         <div id="tab-synthesize" class="tab-content-view hidden">
-            <div class="glass-panel">
-                <div class="search-row">
-                    <div class="search-input-wrapper">
-                        <input
-                            type="text"
-                            id="synthInput"
-                            class="apple-search-input"
-                            placeholder="Ask for exact behavior (e.g. 'What conditions make validate_token return false, and who calls it?')"
-                        />
+            <div class="glass-panel" style="display: flex; flex-direction: column; gap: 0.85rem;">
+                <div class="search-hero-box">
+                    <span class="search-hero-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                        </svg>
+                    </span>
+                    <input
+                        type="text"
+                        id="synthInput"
+                        class="search-hero-input"
+                        placeholder="Ask a technical question about the codebase (e.g. 'How does incremental SHA-256 caching bypass re-indexing?')"
+                    />
+                    <div class="search-hero-action">
+                        <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
                     </div>
-                    <button class="apple-btn-primary" id="btnSynthesize" onclick="startStreamingSynthesis()">Explain</button>
                 </div>
             </div>
 
@@ -1854,41 +1484,42 @@
             </div>
         </div>
 
-        <!-- 3. DEPENDENCY MAP (ARCHITECTURE) TAB -->
+        <!-- ==================== TAB 3: DEPENDENCY MAP ==================== -->
         <div id="tab-graph" class="tab-content-view hidden">
             <div class="arch-filter-bar">
-                <!-- Search & Refresh Row -->
-                <div class="search-row" style="margin-bottom: 0;">
-                    <div class="search-input-wrapper">
-                        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--label-tertiary); pointer-events: none;">
+                <div class="search-hero-box">
+                    <span class="search-hero-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
-                        <input
-                            type="text"
-                            id="archFilterInput"
-                            class="apple-search-input"
-                            style="padding-left: 2.4rem; padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 0.84rem;"
-                            placeholder="Filter files or symbols across codebase..."
-                            oninput="applyArchitectureFilters()"
-                        />
+                    </span>
+                    <input
+                        type="text"
+                        id="archFilterInput"
+                        class="search-hero-input"
+                        style="padding-top: 0.65rem; padding-bottom: 0.65rem; font-size: 0.88rem;"
+                        placeholder="Filter files or symbols across codebase..."
+                        oninput="applyArchitectureFilters()"
+                    />
+                    <div class="search-hero-action">
+                        <button class="apple-btn-secondary" onclick="loadSymbolGraph()" style="height: 36px;">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                                <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                            </svg>
+                            Refresh
+                        </button>
                     </div>
-                    <button class="apple-btn-secondary" onclick="loadSymbolGraph()" style="display: inline-flex; align-items: center; gap: 5px; height: 38px;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                        </svg>
-                        Refresh
-                    </button>
                 </div>
 
-                <!-- Sleek Filter Pills Row -->
+                <!-- Inline Pill Filter Controls -->
                 <div class="arch-filter-row">
-                    <span style="color: var(--label-tertiary); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px;">Filters</span>
+                    <span style="color: var(--text-tertiary); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;">Filters</span>
 
-                    <!-- Language Filter Pill -->
+                    <!-- Language Pill -->
                     <div class="arch-pill-select-wrapper">
                         <span class="arch-pill-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="16 18 22 12 16 6"></polyline>
                                 <polyline points="8 6 2 12 8 18"></polyline>
                             </svg>
@@ -1901,10 +1532,10 @@
                         </span>
                     </div>
 
-                    <!-- Symbol Type Filter Pill -->
+                    <!-- Symbol Type Pill -->
                     <div class="arch-pill-select-wrapper">
                         <span class="arch-pill-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
                             </svg>
                         </span>
@@ -1923,10 +1554,10 @@
                         </span>
                     </div>
 
-                    <!-- Connectivity Filter Pill -->
+                    <!-- Connectivity Pill -->
                     <div class="arch-pill-select-wrapper">
                         <span class="arch-pill-icon">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                             </svg>
@@ -1943,14 +1574,14 @@
 
                     <!-- Reset Button -->
                     <button class="arch-reset-btn" onclick="resetArchitectureFilters()" title="Reset all filters">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
                             <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
                             <path d="M3 3v5h5"/>
                         </svg>
                         Reset
                     </button>
 
-                    <!-- Live Match Stat Counter -->
+                    <!-- Live Match Counter Badge -->
                     <div class="arch-stat-badge" id="archMatchBadge">
                         <span class="arch-stat-dot"></span>
                         <span id="archMatchText">Ready</span>
@@ -1958,43 +1589,40 @@
                 </div>
             </div>
 
+            <!-- Master-Detail Split Screen -->
             <div class="master-detail-view">
-                <!-- Left: Files Master List -->
                 <div class="master-files-panel">
                     <div class="master-header">
-                        <div class="master-title">Files & Modules</div>
-                        <span id="masterFilesCount" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--label-tertiary);">-- files</span>
+                        <span class="master-title">Files & Modules</span>
+                        <span id="masterFilesCount" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-tertiary);">-- files</span>
                     </div>
                     <div class="master-files-list" id="masterFilesList">
-                        <div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">
-                            Loading files...
-                        </div>
+                        <div style="padding: 2rem; text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">Loading files...</div>
                     </div>
                 </div>
 
-                <!-- Right: Matching Symbols Detail Table -->
                 <div class="detail-symbols-panel">
                     <div class="detail-header" id="detailHeader">
                         <div>
                             <div class="detail-file-title" id="detailFileName">Select a file</div>
                             <div class="detail-file-sub" id="detailFilePath">Select a file on the left to inspect symbols and call relationships.</div>
                         </div>
-                        <div id="detailFileStats" style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--label-secondary);"></div>
+                        <div id="detailFileStats" style="font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-secondary);"></div>
                     </div>
                     <div class="detail-table-wrap">
-                        <table class="symbol-matching-table">
+                        <table class="detail-symbol-table">
                             <thead>
                                 <tr>
                                     <th>Symbol</th>
                                     <th>Lines</th>
-                                    <th>Calls & Dependencies</th>
+                                    <th>Call Relationships</th>
                                     <th style="text-align: right;">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="symbolTableBody">
                                 <tr>
-                                    <td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                                        Select a file on the left to view symbols.
+                                    <td colspan="4" style="text-align: center; padding: 4rem 1rem; color: var(--text-tertiary);">
+                                        Select a file from the list to explore defined symbols and call links.
                                     </td>
                                 </tr>
                             </tbody>
@@ -2004,585 +1632,278 @@
             </div>
         </div>
 
-        <!-- 4. DIFF & LSP TOOLS TAB -->
+        <!-- ==================== TAB 4: DEV TOOLS & LSP ==================== -->
         <div id="tab-diff" class="tab-content-view hidden">
-            <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div class="segmented-control">
-                        <button class="segment-btn active" id="btnDevDiff" onclick="switchDevSubMode('diff')">Diff Patcher</button>
-                        <button class="segment-btn" id="btnDevLsp" onclick="switchDevSubMode('lsp')">LSP Server Bridge</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Subpanel 1: Diff Patcher -->
-            <div id="devPanelDiff" style="display: flex; flex-direction: column; gap: var(--space-4);">
-                <div class="glass-panel">
-                    <div class="search-row">
-                        <div class="search-input-wrapper">
-                            <input
-                                type="text"
-                                id="diffInstructionInput"
-                                class="apple-search-input"
-                                placeholder="Describe refactoring instruction (e.g. 'Add input type validation to pipeline search method')"
-                            />
-                        </div>
-                        <button class="apple-btn-primary" onclick="generateDiffPatch()">Generate Patch</button>
+            <div class="glass-panel" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div class="mode-pills-group">
+                        <button class="mode-pill-btn active" id="btnDevDiff" onclick="switchDevSubMode('diff')">Diff Patcher</button>
+                        <button class="mode-pill-btn" id="btnDevLsp" onclick="switchDevSubMode('lsp')">LSP Server Bridge</button>
                     </div>
                 </div>
 
-                <div id="patchOutputPanel" style="display: none; display: flex; flex-direction: column; gap: var(--space-4);">
-                    <div class="diff-container" id="diffContent"></div>
-                    <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
-                        <button class="apple-btn-secondary" onclick="applyGeneratedPatch()">Apply to Codebase</button>
-                    </div>
+                <div id="devSubViewDiff" style="display: flex; flex-direction: column; gap: 10px;">
+                    <input
+                        type="text"
+                        id="diffBaseCommit"
+                        class="apple-search-input"
+                        style="padding: 0.55rem 0.85rem; font-size: 0.84rem;"
+                        placeholder="Base Git Ref (e.g., HEAD~1, main, origin/main)"
+                    />
+                    <button class="apple-btn-primary" onclick="generateIncrementalPatch()" style="align-self: flex-start;">Generate Diff Patch</button>
+                    <div id="diffPatchOutput" class="synthesis-card" style="display: none;"></div>
                 </div>
-            </div>
 
-            <!-- Subpanel 2: LSP Server Bridge -->
-            <div id="devPanelLsp" style="display: none; flex-direction: column; gap: var(--space-4);">
-                <div class="glass-panel">
-                    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-                        <div style="font-size: 0.95rem; font-weight: 600; color: var(--label-primary);">Language Server Protocol (LSP) Bridge</div>
-                        <div style="font-size: 0.82rem; color: var(--label-secondary); line-height: 1.5;">
-                            Connect your IDE (VS Code, Cursor, Neovim, Helix) directly to the semantic index for native jump-to-definition, hover docs, and symbol completion over stdio JSON-RPC 2.0.
-                        </div>
-                        <div style="margin-top: var(--space-2);">
-                            <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--label-tertiary); font-weight: 600; margin-bottom: 4px;">Launch Command</div>
-                            <div class="diff-container" style="color: var(--system-blue); padding: 0.75rem 1rem;">code-intel lsp --dir .</div>
-                        </div>
-                    </div>
+                <div id="devSubViewLsp" style="display: none; flex-direction: column; gap: 10px;">
+                    <p style="font-size: 0.82rem; color: var(--text-secondary);">
+                        Interactive JSON-RPC 2.0 Language Server Protocol (LSP) Bridge for VS Code, Neovim, and Emacs.
+                    </p>
+                    <input
+                        type="text"
+                        id="lspSymbolQuery"
+                        class="apple-search-input"
+                        style="padding: 0.55rem 0.85rem; font-size: 0.84rem;"
+                        placeholder="Search symbol definition or hover..."
+                    />
+                    <button class="apple-btn-primary" onclick="queryLspSymbol()" style="align-self: flex-start;">Query LSP Bridge</button>
+                    <div id="lspQueryResult" class="synthesis-card" style="display: none;"></div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Code Inspector Modal Sheet ("Open It") -->
-    <div class="inspector-modal-backdrop" id="inspectorModal">
-        <div class="inspector-modal">
-            <div class="inspector-header">
-                <div class="inspector-title-box">
+    <!-- Code Inspector Modal -->
+    <div class="modal-backdrop hidden" id="inspectorModal" onclick="closeInspectorModal(event)">
+        <div class="inspector-window" onclick="event.stopPropagation()">
+            <div class="traffic-lights-bar">
+                <div class="traffic-dots">
+                    <div class="traffic-dot close" onclick="closeInspectorModal()"></div>
+                    <div class="traffic-dot min"></div>
+                    <div class="traffic-dot max"></div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="symbol-type-chip function" id="inspectorTypeChip">FUNCTION</span>
-                    <span class="inspector-symbol-name" id="inspectorSymbolTitle">symbol_name</span>
+                    <span id="inspectorSymbolTitle" style="font-weight: 700; font-size: 0.86rem; color: var(--text-primary);">--</span>
                 </div>
-                <button class="btn-copy" onclick="closeInspector()">Close</button>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="inspectorFileCitation" style="font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-tertiary);"></span>
+                    <button class="btn-table-action" onclick="copyInspectorCode()">Copy</button>
+                </div>
             </div>
-
-            <div class="inspector-meta-row">
-                <span id="inspectorFileCitation" onclick="openCurrentInspectorFile()" style="cursor: pointer; color: var(--system-blue); text-decoration: underline;" title="Click to open in editor">file.py:L1-L20</span>
-                <span id="inspectorScopeText">Language: python</span>
-            </div>
-
-            <div class="inspector-code-body">
+            <div class="inspector-code-wrap">
                 <div class="inspector-gutter" id="inspectorGutter"></div>
-                <div class="inspector-code-wrap">
-                    <pre><code id="inspectorCodeBlock" class="language-python"></code></pre>
-                </div>
-            </div>
-
-            <div class="inspector-relations-row" id="inspectorRelationsRow">
-                <div class="relation-group" id="inspectorCallersGroup">
-                    <span>Callers:</span>
-                    <div id="inspectorCallersList" style="display: flex; gap: 4px; flex-wrap: wrap;">None</div>
-                </div>
-                <div class="relation-group" id="inspectorCalleesGroup">
-                    <span>Calls:</span>
-                    <div id="inspectorCalleesList" style="display: flex; gap: 4px; flex-wrap: wrap;">None</div>
-                </div>
-            </div>
-
-            <div class="inspector-footer">
-                <button class="apple-btn-secondary" onclick="openCurrentInspectorFinder()">Reveal in Finder</button>
-                <button class="apple-btn-secondary" onclick="openCurrentInspectorFile()">Open in Editor</button>
-                <button class="apple-btn-secondary" id="btnInspectorSearch" onclick="searchCurrentInspectorSymbol()">Search in Index</button>
-                <button class="apple-btn-primary" id="btnInspectorCopy" onclick="copyInspectorCode()">Copy Code</button>
+                <pre class="inspector-code-content"><code id="inspectorCodeBlock"></code></pre>
             </div>
         </div>
     </div>
 
-    <!-- Indexing Modal -->
-    <div class="glass-modal-backdrop" id="indexingModal">
-        <div class="glass-modal">
-            <div class="modal-header-clean">
-                <div>
-                    <div class="modal-heading">Indexing Repository</div>
-                    <div style="font-size: 0.78rem; color: var(--label-tertiary); margin-top: 2px;" id="modalTargetSubtitle">Processing codebase</div>
-                </div>
-                <div class="modal-pct-clean" id="percentageClean">0%</div>
-            </div>
-
-            <div class="clean-progress-track">
-                <div class="clean-progress-bar" id="cleanProgressBar"></div>
-            </div>
-
-            <div class="modal-status-pill" id="modalStatusPill">
-                Initializing code parser...
-            </div>
-
-            <div class="modal-stages-grid" id="modalStagesGrid">
-                <div class="stage-pill" id="pillClone" style="display: none;">1. Git Clone</div>
-                <div class="stage-pill" id="pillScan">1. AST Parsing</div>
-                <div class="stage-pill" id="pillPersist">2. SQLite Store</div>
-                <div class="stage-pill" id="pillEmbed">3. Dense Embeddings</div>
-                <div class="stage-pill" id="pillBM25">4. Lexical Index</div>
-            </div>
-
-            <button class="modal-close-btn" id="btnModalClose" onclick="closeIndexingModal()">Done</button>
-        </div>
-    </div>
-
+    <!-- JavaScript Backend Integrations -->
     <script>
-        let currentMode = 'hybrid';
+        let currentMode = 'dense';
         let currentTopK = 5;
-        let activeTab = 'search';
+        let currentActiveTab = 'search';
         let graphRawData = null;
-        let selectedFileId = null;
+        let activeFilteredSymbolsMap = {};
         let currentInspectorData = null;
+        let watcherActive = false;
 
-        const SAMPLE_QUERIES = {
-            '.': [
-                'Where is ReciprocalRankFusion implemented?',
-                'How does polyglot parser extract AST chunks?',
-                'CrossEncoder sequence classification'
-            ],
-            './oss_evaluation/client-go': [
-                'Where is LeaderElector lease renew loop implemented?',
-                'Exponential backoff rate limiter calculation',
-                'Informer reflector watch and sync events'
-            ],
-            './oss_evaluation/fastapi': [
-                'OAuth2PasswordBearer extract bearer token',
-                'Exception handling middleware configuration',
-                'Path parameters validation with Pydantic'
-            ],
-            './oss_evaluation/rich': [
-                'Progress bar ETA time remaining calculated',
-                'Live display refresh renderables',
-                'Syntax token color styling map'
-            ]
-        };
-
-        function switchTab(tabName) {
-            activeTab = tabName;
-            document.querySelectorAll('.workspace-tab').forEach(b => {
-                b.classList.toggle('active', b.dataset.tab === tabName);
-            });
-            document.querySelectorAll('.tab-content-view').forEach(v => {
-                v.classList.add('hidden');
-            });
-            const target = document.getElementById(`tab-${tabName}`);
-            if (target) target.classList.remove('hidden');
-
-            if (tabName === 'graph') {
-                loadSymbolGraph();
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
-                e.preventDefault();
-                if (activeTab === 'search') document.getElementById('searchInput').focus();
-                else if (activeTab === 'synthesize') document.getElementById('synthInput').focus();
-                else if (activeTab === 'graph') document.getElementById('archFilterInput').focus();
-            } else if (e.key === 'Escape') {
-                closeInspector();
-                closeIndexingModal();
-            }
+        document.addEventListener('DOMContentLoaded', () => {
+            initApp();
         });
 
+        async function initApp() {
+            await fetchStatus();
+            await fetchReposList();
+            setupKeyboardShortcuts();
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                    e.preventDefault();
+                    if (currentActiveTab === 'search') document.getElementById('searchInput')?.focus();
+                    else if (currentActiveTab === 'synthesize') document.getElementById('synthInput')?.focus();
+                    else if (currentActiveTab === 'graph') document.getElementById('archFilterInput')?.focus();
+                }
+            });
+
+            document.getElementById('searchInput')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') performSearch();
+            });
+
+            document.getElementById('synthInput')?.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') startStreamingSynthesis();
+            });
+        }
+
+        /* --- NAVIGATION TABS --- */
+        function switchMainTab(tabId) {
+            currentActiveTab = tabId;
+            document.querySelectorAll('.vision-tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content-view').forEach(v => v.classList.add('hidden'));
+
+            if (tabId === 'search') {
+                document.getElementById('tabBtnSearch').classList.add('active');
+                document.getElementById('tab-search').classList.remove('hidden');
+            } else if (tabId === 'synthesize') {
+                document.getElementById('tabBtnSynthesize').classList.add('active');
+                document.getElementById('tab-synthesize').classList.remove('hidden');
+            } else if (tabId === 'graph') {
+                document.getElementById('tabBtnGraph').classList.add('active');
+                document.getElementById('tab-graph').classList.remove('hidden');
+                if (!graphRawData) loadSymbolGraph();
+            } else if (tabId === 'diff') {
+                document.getElementById('tabBtnDiff').classList.add('active');
+                document.getElementById('tab-diff').classList.remove('hidden');
+            }
+        }
+
+        function switchDevSubMode(mode) {
+            document.getElementById('btnDevDiff').classList.toggle('active', mode === 'diff');
+            document.getElementById('btnDevLsp').classList.toggle('active', mode === 'lsp');
+            document.getElementById('devSubViewDiff').style.display = mode === 'diff' ? 'flex' : 'none';
+            document.getElementById('devSubViewLsp').style.display = mode === 'lsp' ? 'flex' : 'none';
+        }
+
+        /* --- STATUS & REPO SWITCHING --- */
         function getActiveTarget() {
-            const select = document.getElementById('repoDropdown');
-            const selectVal = select ? select.value : '.';
-            if (selectVal === 'CUSTOM') {
-                return document.getElementById('customPathInput').value.trim() || '.';
-            }
-            if (selectVal === 'GITHUB') {
-                const firstPreset = Array.from(select.options).find(o => o.value !== 'GITHUB' && o.value !== 'CUSTOM');
-                return firstPreset ? firstPreset.value : '.';
-            }
-            return selectVal;
+            const val = document.getElementById('repoDropdown').value;
+            if (val === '__custom__') return document.getElementById('customPathInput').value.trim() || '.';
+            if (val === '__github__') return document.getElementById('githubDestInput').value.trim() || '.';
+            return val;
         }
 
-        function updateSampleQueries() {
-            const target = getActiveTarget();
-            const listEl = document.getElementById('suggestionsList');
-            const queries = SAMPLE_QUERIES[target] || ['Authentication routes', 'Database connection pool', 'Error middleware'];
-            
-            listEl.innerHTML = queries.map(q => `
-                <span class="suggestion-pill" onclick="setAndSearch('${q.replace(/'/g, "\\'")}')">${q}</span>
-            `).join('');
-        }
-
-        function setAndSearch(query) {
-            document.getElementById('searchInput').value = query;
-            switchTab('search');
-            performSearch();
-        }
-
-        async function loadPresets(selectTarget = null) {
+        async function fetchStatus() {
             try {
-                const res = await fetch('/api/presets');
-                if (!res.ok) return;
+                const target = getActiveTarget();
+                const res = await fetch(`/api/status?repo_path=${encodeURIComponent(target)}`);
                 const data = await res.json();
-                const select = document.getElementById('repoDropdown');
-                const currentVal = selectTarget || select.value;
+                document.getElementById('statFiles').textContent = data.total_files || 0;
+                document.getElementById('statLoc').textContent = (data.total_lines || 0).toLocaleString();
+                document.getElementById('statChunks').textContent = data.total_chunks || 0;
 
-                const presets = data.presets || [];
-                let html = '';
-                presets.forEach(p => {
-                    html += `<option value="${escapeHtml(p.path)}">${escapeHtml(p.name)}</option>`;
-                });
-                html += `<option value="GITHUB">Import from GitHub URL...</option>`;
-                html += `<option value="CUSTOM">Custom Local Directory...</option>`;
-                select.innerHTML = html;
-
-                if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
-                    select.value = currentVal;
-                } else if (presets.length > 0) {
-                    select.value = presets[0].path;
-                }
-            } catch (e) {
-                console.error('Failed to load presets', e);
-            }
-        }
-
-        async function onRepoChanged() {
-            const select = document.getElementById('repoDropdown');
-            const customInput = document.getElementById('customPathInput');
-            const githubWrapper = document.getElementById('githubImportWrapper');
-            const githubInput = document.getElementById('githubUrlInput');
-            
-            if (select.value === 'GITHUB') {
-                githubWrapper.style.display = 'flex';
-                customInput.style.display = 'none';
-                githubInput.focus();
-            } else if (select.value === 'CUSTOM') {
-                customInput.style.display = 'block';
-                githubWrapper.style.display = 'none';
-                customInput.focus();
-            } else {
-                customInput.style.display = 'none';
-                githubWrapper.style.display = 'none';
-            }
-
-            updateSampleQueries();
-            await loadRepoStats();
-            await checkWatcherStatus();
-            if (activeTab === 'graph') loadSymbolGraph();
-        }
-
-        async function onCustomPathChanged() {
-            updateSampleQueries();
-            await loadRepoStats();
-            await checkWatcherStatus();
-            if (activeTab === 'graph') loadSymbolGraph();
-        }
-
-        async function checkWatcherStatus() {
-            try {
-                const res = await fetch('/api/watcher/status');
-                const data = await res.json();
-                const dot = document.getElementById('watcherDot');
-                const text = document.getElementById('watcherStatusText');
-                if (data.running) {
-                    dot.className = 'status-dot pulsing';
-                    text.textContent = 'Watcher: Live';
+                const sysDot = document.getElementById('systemStatusDot');
+                const sysText = document.getElementById('systemStatusText');
+                if (data.indexed) {
+                    sysDot.className = 'status-dot';
+                    sysText.textContent = 'Engine: Ready';
                 } else {
-                    dot.className = 'status-dot idle';
-                    text.textContent = 'Watcher: Off';
+                    sysDot.className = 'status-dot warning';
+                    sysText.textContent = 'Engine: Not Indexed';
                 }
-            } catch (e) {
-                console.error(e);
+            } catch (err) {
+                console.error('Error fetching status:', err);
             }
         }
 
-        async function toggleWatcher() {
-            const target = getActiveTarget();
+        async function fetchReposList() {
             try {
-                await fetch(`/api/watcher/toggle?repo_path=${encodeURIComponent(target)}`, { method: 'POST' });
-                await checkWatcherStatus();
-            } catch (e) {
-                console.error(e);
+                const res = await fetch('/api/repos');
+                const data = await res.json();
+                const dropdown = document.getElementById('repoDropdown');
+                const currentVal = dropdown.value;
+
+                dropdown.innerHTML = `
+                    <option value=".">Current Project (semantic-code-intelligence)</option>
+                    ${(data.cloned_repos || []).map(r => `<option value="${r.path}">Cloned: ${r.name}</option>`).join('')}
+                    <option value="__custom__">+ Add / Open Local Path...</option>
+                    <option value="__github__">+ Clone from GitHub Repository...</option>
+                `;
+
+                if (currentVal && Array.from(dropdown.options).some(o => o.value === currentVal)) {
+                    dropdown.value = currentVal;
+                }
+            } catch (err) {
+                console.error('Error fetching repos:', err);
             }
         }
 
-        async function loadRepoStats() {
-            const target = getActiveTarget();
-            const dot = document.getElementById('systemStatusDot');
-            const statusText = document.getElementById('systemStatusText');
+        function onRepoChanged() {
+            const val = document.getElementById('repoDropdown').value;
+            document.getElementById('githubImportWrapper').style.display = val === '__github__' ? 'flex' : 'none';
+            document.getElementById('customPathWrapper').style.display = val === '__custom__' ? 'flex' : 'none';
+            graphRawData = null;
+            fetchStatus();
+            if (currentActiveTab === 'graph') loadSymbolGraph();
+        }
+
+        function applyCustomPath() {
+            fetchStatus();
+            if (currentActiveTab === 'graph') loadSymbolGraph();
+            showToast('Custom project path updated');
+        }
+
+        /* --- REINDEXING --- */
+        async function startAnimatedIndexing() {
             const btn = document.getElementById('btnReindex');
-
-            try {
-                const res = await fetch(`/api/stats?repo_path=${encodeURIComponent(target)}`);
-                if (!res.ok) return;
-                const data = await res.json();
-
-                if (data.status === 'ready') {
-                    dot.className = 'status-dot';
-                    statusText.textContent = 'Indexed';
-                    document.getElementById('statFiles').textContent = (data.total_files || 0).toLocaleString();
-                    document.getElementById('statLoc').textContent = (data.total_lines || 0).toLocaleString();
-                    document.getElementById('statChunks').textContent = (data.total_chunks || 0).toLocaleString();
-                    btn.textContent = 'Re-Index';
-                } else {
-                    dot.className = 'status-dot idle';
-                    statusText.textContent = 'Unindexed';
-                    document.getElementById('statFiles').textContent = '0';
-                    document.getElementById('statLoc').textContent = '0';
-                    document.getElementById('statChunks').textContent = '0';
-                    btn.textContent = 'Index Repository';
-                }
-            } catch (err) {
-                console.error('Failed to load stats', err);
-            }
-        }
-
-        function startAnimatedIndexing(force = false) {
             const target = getActiveTarget();
-            const modal = document.getElementById('indexingModal');
-            const closeBtn = document.getElementById('btnModalClose');
-            const fillBar = document.getElementById('cleanProgressBar');
-            const pctText = document.getElementById('percentageClean');
-            const statusText = document.getElementById('modalStatusPill');
-            const pillClone = document.getElementById('pillClone');
-
-            modal.style.display = 'flex';
-            closeBtn.style.display = 'none';
-            fillBar.style.width = '0%';
-            pctText.textContent = '0%';
-            statusText.textContent = `Connecting to indexer for ${target}...`;
-            document.getElementById('modalTargetSubtitle').textContent = target;
-
-            pillClone.style.display = 'none';
-            resetStagePills();
-
-            const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=${force}`;
-            let eventSource = null;
+            btn.innerHTML = `Indexing...`;
+            btn.disabled = true;
 
             try {
-                eventSource = new EventSource(sseUrl);
-
-                eventSource.onmessage = function(event) {
-                    try {
-                        const data = JSON.parse(event.data);
-                        const pct = Math.min(Math.max(data.percentage || 0, 0), 100);
-
-                        fillBar.style.width = `${pct}%`;
-                        pctText.textContent = `${Math.round(pct)}%`;
-                        statusText.textContent = data.message || 'Processing...';
-
-                        updateStagePills(data.stage, false);
-
-                        if (data.stage === 'done') {
-                            eventSource.close();
-                            closeBtn.style.display = 'block';
-                            loadRepoStats();
-                        } else if (data.stage === 'error') {
-                            eventSource.close();
-                            statusText.textContent = data.message || 'An error occurred during indexing.';
-                            closeBtn.style.display = 'block';
-                        }
-                    } catch (e) {
-                        console.error('Error parsing SSE data:', e);
-                    }
-                };
-
-                eventSource.onerror = function() {
-                    if (eventSource) eventSource.close();
-                };
+                const res = await fetch(`/api/index?repo_path=${encodeURIComponent(target)}&force=false`, { method: 'POST' });
+                const data = await res.json();
+                await fetchStatus();
+                if (currentActiveTab === 'graph') loadSymbolGraph();
+                showToast(`Indexed ${data.total_chunks || 0} chunks in ${(data.duration_ms || 0).toFixed(1)}ms`);
             } catch (err) {
-                console.error(err);
-            }
-        }
-
-        function onGithubUrlInput(val) {
-            const destInput = document.getElementById('githubDestInput');
-            if (!destInput) return;
-            const cleaned = val.trim().replace(/\.git$/, '');
-            if (cleaned) {
-                const parts = cleaned.split(/[/:]/);
-                const repo = parts.pop();
-                const owner = parts.pop();
-                if (owner && repo && !destInput.dataset.userEdited) {
-                    destInput.placeholder = `cloned_repos/${owner}_${repo}`;
-                }
+                showToast(`Indexing failed: ${err.message}`, true);
+            } finally {
+                btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg> Index Repository`;
+                btn.disabled = false;
             }
         }
 
         async function startGitHubImport() {
-            const urlInput = document.getElementById('githubUrlInput');
-            const destInput = document.getElementById('githubDestInput');
-            const url = urlInput.value.trim();
-            const customDest = destInput ? destInput.value.trim() : '';
+            const url = document.getElementById('githubUrlInput').value.trim();
+            const dest = document.getElementById('githubDestInput').value.trim();
+            if (!url) return showToast('Please enter a GitHub repository URL', true);
 
-            if (!url) {
-                urlInput.focus();
-                return;
-            }
-
-            const modal = document.getElementById('indexingModal');
-            const closeBtn = document.getElementById('btnModalClose');
-            const fillBar = document.getElementById('cleanProgressBar');
-            const pctText = document.getElementById('percentageClean');
-            const statusText = document.getElementById('modalStatusPill');
-            const pillClone = document.getElementById('pillClone');
-
-            modal.style.display = 'flex';
-            closeBtn.style.display = 'none';
-            fillBar.style.width = '0%';
-            pctText.textContent = '0%';
-            statusText.textContent = `Connecting to GitHub to clone ${url}...`;
-            document.getElementById('modalTargetSubtitle').textContent = customDest ? `GitHub: ${url} → ${customDest}` : `GitHub: ${url}`;
-
-            pillClone.style.display = 'block';
-            resetStagePills();
-            pillClone.className = 'stage-pill active';
-
-            let sseUrl = `/api/github/import/stream?url=${encodeURIComponent(url)}&force=true`;
-            if (customDest) {
-                sseUrl += `&target_dir=${encodeURIComponent(customDest)}`;
-            }
-            let eventSource = null;
+            const btn = document.getElementById('btnImportGithub');
+            btn.textContent = 'Cloning...';
+            btn.disabled = true;
 
             try {
-                eventSource = new EventSource(sseUrl);
-
-                eventSource.onmessage = async function(event) {
-                    try {
-                        const data = JSON.parse(event.data);
-                        const pct = Math.min(Math.max(data.percentage || 0, 0), 100);
-
-                        fillBar.style.width = `${pct}%`;
-                        pctText.textContent = `${Math.round(pct)}%`;
-                        statusText.textContent = data.message || 'Processing GitHub repository...';
-
-                        updateStagePills(data.stage, true);
-
-                        if (data.stage === 'done') {
-                            eventSource.close();
-                            fillBar.style.width = '100%';
-                            pctText.textContent = '100%';
-                            statusText.textContent = data.message || 'Successfully imported & indexed repository.';
-                            updateStagePills('done', true);
-                            closeBtn.style.display = 'block';
-                            urlInput.value = '';
-                            if (destInput) destInput.value = '';
-                            if (data.repo_path) {
-                                await loadPresets(data.repo_path);
-                                onRepoChanged();
-                            }
-                        } else if (data.stage === 'error') {
-                            eventSource.close();
-                            statusText.textContent = data.message || 'An error occurred during GitHub import.';
-                            closeBtn.style.display = 'block';
-                        }
-                    } catch (e) {
-                        console.error('Error parsing SSE data:', e);
-                    }
-                };
-
-                eventSource.onerror = function() {
-                    if (eventSource) eventSource.close();
-                };
+                const res = await fetch('/api/import/github', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ repo_url: url, destination: dest || null, force_reindex: false })
+                });
+                const data = await res.json();
+                await fetchReposList();
+                document.getElementById('repoDropdown').value = data.repo_path || dest;
+                onRepoChanged();
+                showToast(`Successfully cloned and indexed ${data.total_chunks || 0} chunks`);
             } catch (err) {
-                console.error(err);
+                showToast(`GitHub clone failed: ${err.message}`, true);
+            } finally {
+                btn.textContent = 'Clone & Index';
+                btn.disabled = false;
             }
         }
 
-        function updateStagePills(stage, isGithub = false) {
-            const pillClone = document.getElementById('pillClone');
-            const pillScan = document.getElementById('pillScan');
-            const pillPersist = document.getElementById('pillPersist');
-            const pillEmbed = document.getElementById('pillEmbed');
-            const pillBM25 = document.getElementById('pillBM25');
-
-            if (isGithub && pillClone) {
-                pillClone.style.display = 'block';
-                pillClone.textContent = '1. Git Clone';
-                pillScan.textContent = '2. AST Parsing';
-                pillPersist.textContent = '3. SQLite Store';
-                pillEmbed.textContent = '4. Dense Embeddings';
-                pillBM25.textContent = '5. Lexical Index';
-            } else {
-                if (pillClone) pillClone.style.display = 'none';
-                pillScan.textContent = '1. AST Parsing';
-                pillPersist.textContent = '2. SQLite Store';
-                pillEmbed.textContent = '3. Dense Embeddings';
-                pillBM25.textContent = '4. Lexical Index';
-            }
-
-            if (stage === 'cloning' && pillClone) {
-                pillClone.className = 'stage-pill active';
-            } else if (stage === 'parsing') {
-                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
-                pillScan.className = 'stage-pill active';
-            } else if (stage === 'persisting') {
-                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
-                pillScan.className = 'stage-pill complete';
-                pillPersist.className = 'stage-pill active';
-            } else if (stage === 'embedding') {
-                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
-                pillScan.className = 'stage-pill complete';
-                pillPersist.className = 'stage-pill complete';
-                pillEmbed.className = 'stage-pill active';
-            } else if (stage === 'indexing' || stage === 'bm25') {
-                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
-                pillScan.className = 'stage-pill complete';
-                pillPersist.className = 'stage-pill complete';
-                pillEmbed.className = 'stage-pill complete';
-                pillBM25.className = 'stage-pill active';
-            } else if (stage === 'done') {
-                if (isGithub && pillClone) pillClone.className = 'stage-pill complete';
-                pillScan.className = 'stage-pill complete';
-                pillPersist.className = 'stage-pill complete';
-                pillEmbed.className = 'stage-pill complete';
-                pillBM25.className = 'stage-pill complete';
-            }
-        }
-
-        function resetStagePills() {
-            ['Clone', 'Scan', 'Persist', 'Embed', 'BM25'].forEach(name => {
-                const el = document.getElementById(`pill${name}`);
-                if (el) el.className = 'stage-pill';
-            });
-        }
-
-        function closeIndexingModal() {
-            document.getElementById('indexingModal').style.display = 'none';
-        }
-
+        /* --- SEARCH --- */
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.segment-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.mode === mode);
-            });
+            document.getElementById('modeDense').classList.toggle('active', mode === 'dense');
+            document.getElementById('modeBm25').classList.toggle('active', mode === 'bm25');
+            document.getElementById('modeHybrid').classList.toggle('active', mode === 'hybrid');
         }
 
         function setTopK(val) {
-            currentTopK = val;
-            document.querySelectorAll('.topk-btn').forEach(btn => {
-                btn.classList.toggle('active', parseInt(btn.dataset.topk) === val);
-            });
+            currentTopK = parseInt(val, 10);
         }
-
-        document.getElementById('searchInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') performSearch();
-        });
-
-        document.getElementById('synthInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') startStreamingSynthesis();
-        });
 
         async function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             if (!query) return;
 
+            const btn = document.getElementById('searchBtn');
             const target = getActiveTarget();
-            const searchBtn = document.getElementById('searchBtn');
-            const container = document.getElementById('resultsContainer');
-            searchBtn.textContent = 'Searching...';
-
             const rerank = document.getElementById('rerankToggle').checked;
+
+            btn.textContent = 'Searching...';
+            btn.disabled = true;
 
             try {
                 const res = await fetch('/api/search', {
@@ -2591,208 +1912,102 @@
                     body: JSON.stringify({
                         query: query,
                         repo_path: target,
-                        top_k: currentTopK,
                         mode: currentMode,
+                        top_k: currentTopK,
                         rerank: rerank
                     })
                 });
-
                 const data = await res.json();
-                renderResults(data);
+
+                // Update latencies
+                document.getElementById('denseLatency').textContent = data.timings?.dense_latency_ms ? `${data.timings.dense_latency_ms.toFixed(1)} ms` : '-- ms';
+                document.getElementById('bm25Latency').textContent = data.timings?.bm25_latency_ms ? `${data.timings.bm25_latency_ms.toFixed(1)} ms` : '-- ms';
+                document.getElementById('rrfLatency').textContent = data.timings?.rrf_latency_ms ? `${data.timings.rrf_latency_ms.toFixed(1)} ms` : '-- ms';
+                document.getElementById('rerankLatency').textContent = data.timings?.rerank_latency_ms ? `${data.timings.rerank_latency_ms.toFixed(1)} ms` : '-- ms';
+                document.getElementById('totalLatency').textContent = data.total_latency_ms ? `${data.total_latency_ms.toFixed(1)} ms` : '-- ms';
+
+                renderResults(data.results || []);
             } catch (err) {
-                console.error(err);
+                showToast(`Search error: ${err.message}`, true);
             } finally {
-                searchBtn.textContent = 'Search';
+                btn.textContent = 'Search';
+                btn.disabled = false;
             }
         }
 
-        function copySnippet(id, btnEl) {
-            const codeEl = document.getElementById(id);
-            if (!codeEl) return;
-            navigator.clipboard.writeText(codeEl.innerText).then(() => {
-                const original = btnEl.textContent;
-                btnEl.textContent = 'Copied';
-                setTimeout(() => { btnEl.textContent = original; }, 1800);
-            });
-        }
-
-        function renderResults(data) {
+        function renderResults(results) {
             const container = document.getElementById('resultsContainer');
-            const latencyDash = document.getElementById('latencyDashboard');
-
-            if (data.index_status === 'not_indexed') {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                        Repository <code>${data.repo_path}</code> must be indexed first.
-                    </div>
-                `;
-                latencyDash.style.display = 'none';
+            if (results.length === 0) {
+                container.innerHTML = `<div class="glass-panel" style="text-align: center; color: var(--text-tertiary); padding: 3rem;">No matching code chunks found.</div>`;
                 return;
             }
 
-            if (data.latency_ms) {
-                latencyDash.style.display = 'flex';
-                document.getElementById('denseLatency').textContent = `${(data.latency_ms.dense_search_ms || 0).toFixed(1)} ms`;
-                document.getElementById('bm25Latency').textContent = `${(data.latency_ms.sparse_search_ms || 0).toFixed(1)} ms`;
-                document.getElementById('rrfLatency').textContent = `${(data.latency_ms.rrf_fusion_ms || 0).toFixed(2)} ms`;
-                document.getElementById('rerankLatency').textContent = `${(data.latency_ms.reranker_ms || 0).toFixed(1)} ms`;
-                const total = (data.latency_ms.total_end_to_end_ms || data.latency_ms.total_ms || 0).toFixed(1);
-                document.getElementById('totalLatency').textContent = `${total} ms`;
-            }
-
-            if (!data.results || data.results.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                        No matches found.
-                    </div>
-                `;
-                return;
-            }
-
-            const reliability = data.reliability || 'low';
-            const reliabilityReasons = (data.reliability_reasons || []).join(' · ') || 'No exact identifier agreement';
-            const reliabilityHtml = `
-                <div class="search-reliability">
-                    <span class="reliability-pill ${escapeHtml(reliability)}">${escapeHtml(reliability)}</span>
-                    <span>${Math.round((data.reliability_score || 0) * 100)}% retrieval agreement · ${escapeHtml(reliabilityReasons)}</span>
-                </div>`;
-
-            container.innerHTML = reliabilityHtml + data.results.map((r, idx) => {
-                const snippetId = `code_snippet_${idx}`;
-                const openPath = r.absolute_path || r.file_path;
-                const start = r.start_line || 1;
-                const end = r.end_line || start;
-                let gutterHtml = '';
-                for (let l = start; l <= end; l++) {
-                    gutterHtml += `<div>${l}</div>`;
-                }
-
+            container.innerHTML = results.map(r => {
+                const lang = r.language || 'python';
+                const score = r.score !== undefined ? (r.score > 1 ? r.score.toFixed(2) : (r.score * 100).toFixed(1) + '%') : 'N/A';
                 return `
-                <div class="code-card">
-                    <div class="code-header">
-                        <div class="code-citation" onclick="openFileInEditor('${openPath}', ${start})" title="Click to open in Editor (${r.file_path}:${start})">
-                            <span class="citation-index">${idx + 1}.</span>
-                            <span>${r.citation}</span>
+                <div class="code-result-card">
+                    <div class="card-header-bar">
+                        <div class="card-file-path">
+                            <span>${escapeHtml(r.file_path)}</span>
+                            <span class="badge-lines">L${r.start_line}–L${r.end_line || r.start_line}</span>
+                            ${r.symbol_name ? `<span class="symbol-type-chip ${r.symbol_type || 'function'}">${escapeHtml(r.symbol_name)}</span>` : ''}
                         </div>
-                        <div class="code-actions">
-                            <div class="code-scores">
-                                <span class="score-tag active-score">Score: ${r.score}</span>
-                                ${r.rerank_score !== null ? `<span class="score-tag">Rerank: ${r.rerank_score}</span>` : ''}
-                                ${r.dense_score !== null ? `<span class="score-tag">Dense: ${r.dense_score}</span>` : ''}
-                                ${r.sparse_score !== null ? `<span class="score-tag">BM25: ${r.sparse_score}</span>` : ''}
-                                ${(r.match_reasons || []).map(reason => `<span class="score-tag active-score">${escapeHtml(reason)}</span>`).join('')}
-                            </div>
-                            <button class="btn-copy" onclick="openFileInFinder('${openPath}')" title="Reveal in Finder">Finder</button>
-                            <button class="btn-copy" onclick="openFileInEditor('${openPath}', ${start})" title="Open in Editor">Editor</button>
-                            <button class="btn-copy" onclick="copySnippet('${snippetId}', this)">Copy</button>
-                        </div>
+                        <span class="card-score-pill">Score: ${score}</span>
                     </div>
-                    <div class="code-block-container">
-                        <div class="line-numbers-gutter">${gutterHtml}</div>
-                        <div class="code-content-wrapper">
-                            <pre><code id="${snippetId}" class="language-${r.language}">${escapeHtml(r.code)}</code></pre>
-                        </div>
-                    </div>
-                    <div class="code-footer">
-                        <span>Scope: ${r.symbol_name ? `<span class="scope-badge">${r.symbol_name}</span> (${r.symbol_type || 'symbol'})` : r.file_path}</span>
-                        <span>Lines ${r.start_line} – ${r.end_line}</span>
+                    <div class="code-snippet-body">
+                        <pre><code class="language-${lang}">${escapeHtml(r.content || r.code || '')}</code></pre>
                     </div>
                 </div>
-            `;
+                `;
             }).join('');
 
-            document.querySelectorAll('pre code').forEach((el) => {
-                hljs.highlightElement(el);
-            });
+            container.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
         }
 
-        /* --- STREAMING SYNTHESIS --- */
+        /* --- REASONING & SYNTHESIS --- */
         async function startStreamingSynthesis() {
             const query = document.getElementById('synthInput').value.trim();
             if (!query) return;
 
-            const target = getActiveTarget();
-            const outCard = document.getElementById('synthesisOutput');
-            const outContent = document.getElementById('synthesisContent');
             const btn = document.getElementById('btnSynthesize');
+            const outputCard = document.getElementById('synthesisOutput');
+            const outContent = document.getElementById('synthesisContent');
+            const target = getActiveTarget();
 
-            outCard.style.display = 'block';
-            outContent.innerHTML = 'Synthesizing technical explanation...';
-            btn.textContent = 'Generating...';
+            btn.textContent = 'Explaining...';
+            btn.disabled = true;
+            outputCard.style.display = 'block';
+            outContent.innerHTML = `<div style="color: var(--text-tertiary); font-style: italic;">Reasoning across retrieved symbols and AST context...</div>`;
 
             try {
-                const res = await fetch('/api/synthesize/stream', {
+                const res = await fetch('/api/synthesize', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ query: query, repo_path: target, top_k: 8 })
+                    body: JSON.stringify({
+                        query: query,
+                        repo_path: target,
+                        provider: 'ollama',
+                        top_k: 5
+                    })
                 });
-
-                if (!res.ok) {
-                    const errorBody = await res.json().catch(() => ({}));
-                    throw new Error(errorBody.detail || `Request failed with HTTP ${res.status}`);
-                }
-
-                const reader = res.body.getReader();
-                const decoder = new TextDecoder();
-                let fullText = '';
-                let sseBuffer = '';
-                let answerProvider = '';
-                let answerCitations = [];
-
-                outContent.innerHTML = '';
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break;
-
-                    sseBuffer += decoder.decode(value, { stream: true });
-                    const lines = sseBuffer.split('\n');
-                    sseBuffer = lines.pop() || '';
-
-                    for (const line of lines) {
-                        if (line.startsWith('data: ')) {
-                            try {
-                                const parsed = JSON.parse(line.slice(6));
-                                if (parsed.type === 'content' && parsed.delta) {
-                                    fullText += parsed.delta;
-                                    outContent.innerHTML = formatMarkdown(fullText);
-                                } else if (parsed.type === 'done') {
-                                    answerProvider = parsed.provider || '';
-                                    answerCitations = parsed.citations || [];
-                                }
-                            } catch (e) {}
-                        }
-                    }
-                }
-
-                let providerLabel = 'Deterministic source evidence';
-                if (answerProvider === 'mlx') {
-                    providerLabel = 'Generated locally with Apple Silicon MLX';
-                } else if (answerProvider === 'ollama') {
-                    providerLabel = 'Generated locally with Ollama';
-                } else if (answerProvider.includes('fallback')) {
-                    providerLabel = 'Deterministic source evidence (LLM unavailable)';
-                }
-                const citationHtml = answerCitations.length
-                    ? `<span>Sources: ${answerCitations.map(c => `<code>${escapeHtml(c)}</code>`).join(' · ')}</span>`
-                    : '';
-                outContent.innerHTML = formatMarkdown(fullText) +
-                    `<div class="walkthrough-status"><span class="status-dot"></span><strong>${escapeHtml(providerLabel)}</strong>${citationHtml}</div>`;
-                outContent.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
+                const data = await res.json();
+                outContent.innerHTML = formatMarkdown(data.answer || 'No explanation generated.') +
+                    `<div class="walkthrough-status"><span class="status-dot"></span><strong>${escapeHtml(data.provider || 'Ollama')}</strong> · Retrieved ${data.citations?.length || 0} citations</div>`;
+                outContent.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
             } catch (err) {
-                outContent.innerHTML = `Synthesis error: ${err.message}`;
+                outContent.innerHTML = `<span style="color: var(--accent-red);">Synthesis failed: ${escapeHtml(err.message)}</span>`;
             } finally {
                 btn.textContent = 'Explain';
+                btn.disabled = false;
             }
         }
 
-        /* --- SYMBOL ARCHITECTURE TABLE & FILTERS --- */
-        let activeFilteredSymbolsMap = {};
-
+        /* --- DEPENDENCY MAP & ARCHITECTURE --- */
         async function loadSymbolGraph() {
             const target = getActiveTarget();
             const filesListEl = document.getElementById('masterFilesList');
-            filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">Loading files...</div>`;
+            filesListEl.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">Loading files...</div>`;
 
             try {
                 const res = await fetch(`/api/graph?repo_path=${encodeURIComponent(target)}`);
@@ -2800,7 +2015,7 @@
                 graphRawData = data;
 
                 if (!data.nodes || data.nodes.length === 0) {
-                    filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No files found. Index repository first.</div>`;
+                    filesListEl.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">No files found. Index repository first.</div>`;
                     document.getElementById('masterFilesCount').textContent = '0 files';
                     return;
                 }
@@ -2808,7 +2023,7 @@
                 populateArchitectureLanguages(data.nodes.filter(n => n.group === 1));
                 applyArchitectureFilters();
             } catch (err) {
-                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--system-red); font-size: 0.8rem;">Error loading architecture: ${err.message}</div>`;
+                filesListEl.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--accent-red); font-size: 0.8rem;">Error loading architecture: ${err.message}</div>`;
             }
         }
 
@@ -2865,7 +2080,6 @@
                 }
             });
 
-            // 1. Filter symbols
             const matchingSymbols = symbols.filter(s => {
                 const sType = (s.type || '').toLowerCase();
                 if (typeFilter !== 'ALL') {
@@ -2894,7 +2108,6 @@
                 return true;
             });
 
-            // 2. Map filtered symbols to parent files
             activeFilteredSymbolsMap = {};
             files.forEach(f => { activeFilteredSymbolsMap[f.id] = []; });
 
@@ -2905,7 +2118,6 @@
                 activeFilteredSymbolsMap[parentFileId].push(sym);
             });
 
-            // 3. Filter files list
             const activeFiles = files.filter(f => {
                 const label = f.label || '';
                 const ext = label.includes('.') ? label.split('.').pop().toLowerCase() : '';
@@ -2946,11 +2158,9 @@
             document.getElementById('masterFilesCount').textContent = `${activeFiles.length} files`;
 
             if (activeFiles.length === 0) {
-                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No files or symbols match the selected filters.</div>`;
+                filesListEl.innerHTML = `<div style="padding: 2rem; text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">No matching files.</div>`;
                 const tableBody = document.getElementById('symbolTableBody');
-                if (tableBody) {
-                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">No matching symbols found. Try adjusting filters.</td></tr>`;
-                }
+                if (tableBody) tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 4rem 1rem; color: var(--text-tertiary);">No matching symbols found.</td></tr>`;
                 return;
             }
 
@@ -2958,7 +2168,7 @@
                 const count = (activeFilteredSymbolsMap[f.id] || []).length;
                 const ext = (f.label || '').includes('.') ? f.label.split('.').pop().toUpperCase() : 'CODE';
                 return `
-                <div class="file-item-row ${i === 0 ? 'active' : ''}" id="file_item_${i}" onclick="selectMasterFile('${f.id}', 'file_item_${i}')" data-file-id="${f.id}" data-file-path="${escapeHtml(f.full_path || f.label)}">
+                <div class="file-item-row ${i === 0 ? 'active' : ''}" id="file_item_${i}" onclick="selectMasterFile('${f.id}', 'file_item_${i}')">
                     <div class="file-item-left">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <span class="symbol-type-chip method" style="font-size: 0.6rem; padding: 1px 4px;">${escapeHtml(ext)}</span>
@@ -2977,8 +2187,6 @@
         }
 
         function selectMasterFile(fileId, itemRowId) {
-            selectedFileId = fileId;
-
             document.querySelectorAll('.file-item-row').forEach(r => r.classList.remove('active'));
             const targetRow = document.getElementById(itemRowId);
             if (targetRow) targetRow.classList.add('active');
@@ -3009,13 +2217,7 @@
             const tableBody = document.getElementById('symbolTableBody');
 
             if (fileSymbols.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                            No symbols match the current filters in this file.
-                        </td>
-                    </tr>
-                `;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 4rem 1rem; color: var(--text-tertiary);">No symbols match the current filters in this file.</td></tr>`;
                 return;
             }
 
@@ -3026,16 +2228,16 @@
                 const callsHtml = callees.map(targetId => {
                     const targetNode = graphRawData.nodes.find(n => n.id === targetId);
                     const name = targetNode ? targetNode.name || targetNode.label : 'callee';
-                    return `<span class="relation-mini-pill" onclick="openSymbolInspector('${targetId}')" title="Calls ${name}">${escapeHtml(name)}</span>`;
-                }).join('');
+                    return `<span class="relation-mini-pill" onclick="openSymbolInspector('${targetId}')">Calls ${escapeHtml(name)}</span>`;
+                }).join(' ');
 
                 const callersHtml = callers.map(sourceId => {
                     const srcNode = graphRawData.nodes.find(n => n.id === sourceId);
                     const name = srcNode ? srcNode.name || srcNode.label : 'caller';
-                    return `<span class="relation-mini-pill" style="color: var(--system-green);" onclick="openSymbolInspector('${sourceId}')" title="Called by ${name}">Called by ${escapeHtml(name)}</span>`;
-                }).join('');
+                    return `<span class="relation-mini-pill" style="color: var(--accent-green);" onclick="openSymbolInspector('${sourceId}')">Called by ${escapeHtml(name)}</span>`;
+                }).join(' ');
 
-                const relationshipsHtml = (callsHtml || callersHtml) ? `<div class="sym-calls-cell">${callersHtml} ${callsHtml}</div>` : '<span style="color: var(--label-tertiary); font-size: 0.72rem;">Self-contained</span>';
+                const relationshipsHtml = (callsHtml || callersHtml) ? `<div style="display: flex; gap: 4px; flex-wrap: wrap;">${callersHtml} ${callsHtml}</div>` : '<span style="color: var(--text-tertiary); font-size: 0.72rem;">Self-contained</span>';
 
                 const rawType = (s.type || 'function').toLowerCase();
                 const symTypeClass = ['class', 'struct', 'interface', 'enum', 'trait', 'type', 'method', 'function', 'module'].includes(rawType) ? rawType : 'function';
@@ -3045,13 +2247,13 @@
                 return `
                 <tr>
                     <td>
-                        <div class="sym-name-cell">
+                        <div style="display: flex; align-items: center; gap: 8px;">
                             <span class="symbol-type-chip ${symTypeClass}">${escapeHtml(rawType)}</span>
-                            <span style="font-weight: 500;">${symDisplay}</span>
+                            <span style="font-weight: 600; color: var(--text-primary);">${symDisplay}</span>
                         </div>
                     </td>
                     <td>
-                        <span class="sym-lines-cell">L${s.start_line}–L${s.end_line || s.start_line}</span>
+                        <span class="sym-lines-cell">L${s.start_line}–${s.end_line || s.start_line}</span>
                     </td>
                     <td>
                         ${relationshipsHtml}
@@ -3064,7 +2266,7 @@
             }).join('');
         }
 
-        /* --- CODE INSPECTOR ("OPEN IT") --- */
+        /* --- CODE INSPECTOR MODAL --- */
         function openSymbolInspector(symId) {
             if (!graphRawData) return;
             const sym = graphRawData.nodes.find(n => n.id === symId);
@@ -3076,21 +2278,12 @@
             const typeChip = document.getElementById('inspectorTypeChip');
 
             const rawType = (sym.type || 'symbol').toLowerCase();
-            const isCallable = rawType === 'function' || rawType === 'method';
+            const isCallable = rawType === 'function' || rawType === 'method' || rawType === 'async_function';
             titleEl.textContent = isCallable ? `${sym.name || sym.label}()` : (sym.name || sym.label);
             typeChip.className = `symbol-type-chip ${rawType}`;
             typeChip.textContent = rawType.toUpperCase();
-            const citationEl = document.getElementById('inspectorFileCitation');
-            const scopeEl = document.getElementById('inspectorScopeText');
-            const gutterEl = document.getElementById('inspectorGutter');
-            const codeBlock = document.getElementById('inspectorCodeBlock');
 
-            titleEl.textContent = `${sym.name}()`;
-            typeChip.textContent = (sym.type || 'FUNCTION').toUpperCase();
-            typeChip.className = `symbol-type-chip ${sym.type === 'class' ? 'class' : 'function'}`;
-
-            citationEl.textContent = `${sym.full_path || sym.file}:${sym.start_line}-${sym.end_line || sym.start_line}`;
-            scopeEl.textContent = `Language: ${sym.language || 'python'}`;
+            document.getElementById('inspectorFileCitation').textContent = `${sym.full_path || sym.file}:${sym.start_line}-${sym.end_line || sym.start_line}`;
 
             const start = sym.start_line || 1;
             const end = sym.end_line || start;
@@ -3098,277 +2291,128 @@
             for (let l = start; l <= end; l++) {
                 gutterHtml += `<div>${l}</div>`;
             }
-            gutterEl.innerHTML = gutterHtml;
+            document.getElementById('inspectorGutter').innerHTML = gutterHtml;
 
-            codeBlock.textContent = sym.code || sym.content || `# No source preview available.`;
+            const codeBlock = document.getElementById('inspectorCodeBlock');
+            codeBlock.textContent = sym.code || sym.content || '# No source available';
             codeBlock.className = `language-${sym.language || 'python'}`;
             hljs.highlightElement(codeBlock);
 
-            const callersList = document.getElementById('inspectorCallersList');
-            const calleesList = document.getElementById('inspectorCalleesList');
-
-            const edges = graphRawData.edges || [];
-            const incoming = edges.filter(e => e.target === symId && e.relation === 'calls');
-            const outgoing = edges.filter(e => e.source === symId && e.relation === 'calls');
-
-            callersList.innerHTML = incoming.length > 0 ? incoming.map(e => {
-                const srcNode = graphRawData.nodes.find(n => n.id === e.source);
-                const name = srcNode ? srcNode.name || srcNode.label : 'caller';
-                return `<span class="relation-mini-pill" onclick="openSymbolInspector('${e.source}')">${escapeHtml(name)}()</span>`;
-            }).join('') : '<span style="color: var(--label-tertiary);">None</span>';
-
-            calleesList.innerHTML = outgoing.length > 0 ? outgoing.map(e => {
-                const tgtNode = graphRawData.nodes.find(n => n.id === e.target);
-                const name = tgtNode ? tgtNode.name || tgtNode.label : 'callee';
-                return `<span class="relation-mini-pill" onclick="openSymbolInspector('${e.target}')">${escapeHtml(name)}()</span>`;
-            }).join('') : '<span style="color: var(--label-tertiary);">None</span>';
-
-            modal.style.display = 'flex';
+            modal.classList.remove('hidden');
         }
 
-        function closeInspector() {
-            document.getElementById('inspectorModal').style.display = 'none';
-        }
-
-        function searchCurrentInspectorSymbol() {
-            if (!currentInspectorData) return;
-            closeInspector();
-            setAndSearch(currentInspectorData.name || currentInspectorData.label);
+        function closeInspectorModal(e) {
+            document.getElementById('inspectorModal').classList.add('hidden');
         }
 
         function copyInspectorCode() {
-            const codeBlock = document.getElementById('inspectorCodeBlock');
-            const btn = document.getElementById('btnInspectorCopy');
-            navigator.clipboard.writeText(codeBlock.innerText).then(() => {
-                btn.textContent = 'Copied';
-                setTimeout(() => { btn.textContent = 'Copy Code'; }, 1800);
-            });
+            if (!currentInspectorData) return;
+            const code = currentInspectorData.code || currentInspectorData.content || '';
+            navigator.clipboard.writeText(code);
+            showToast('Code copied to clipboard');
         }
 
-        /* --- DEV TOOLS SUB-MODES --- */
-        let currentDevMode = 'diff';
-        let currentGeneratedDiff = '';
-
-        function switchDevSubMode(mode) {
-            currentDevMode = mode;
-            document.getElementById('btnDevDiff').classList.toggle('active', mode === 'diff');
-            document.getElementById('btnDevLsp').classList.toggle('active', mode === 'lsp');
-
-            document.getElementById('devPanelDiff').style.display = mode === 'diff' ? 'flex' : 'none';
-            document.getElementById('devPanelLsp').style.display = mode === 'lsp' ? 'flex' : 'none';
-        }
-
-        async function generateDiffPatch() {
-            const instr = document.getElementById('diffInstructionInput').value.trim();
-            if (!instr) return;
-
+        /* --- DEV TOOLS: DIFF & LSP --- */
+        async function generateIncrementalPatch() {
+            const baseCommit = document.getElementById('diffBaseCommit').value.trim() || 'HEAD~1';
             const target = getActiveTarget();
-            const panel = document.getElementById('patchOutputPanel');
-            const diffEl = document.getElementById('diffContent');
-
-            panel.style.display = 'block';
-            diffEl.innerHTML = 'Analyzing relevant code files and synthesizing unified diff...';
+            const out = document.getElementById('diffPatchOutput');
+            out.style.display = 'block';
+            out.innerHTML = `<div style="color: var(--text-tertiary);">Calculating incremental git AST diff patch against ${escapeHtml(baseCommit)}...</div>`;
 
             try {
-                const res = await fetch('/api/patch/generate', {
+                const res = await fetch('/api/git/diff-patch', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ instruction: instr, repo_path: target, top_k: 2 })
+                    body: JSON.stringify({ base_commit: baseCommit, repo_path: target })
                 });
-
                 const data = await res.json();
-                currentGeneratedDiff = data.diff;
-
-                diffEl.innerHTML = renderDiffLines(data.diff);
+                out.innerHTML = `
+                    <div style="font-weight: 700; margin-bottom: 6px;">Git Incremental Diff (${data.changed_files?.length || 0} modified files)</div>
+                    <pre><code class="language-diff">${escapeHtml(data.patch || 'No changes detected.')}</code></pre>
+                `;
+                out.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
             } catch (err) {
-                diffEl.innerHTML = `Patch generation error: ${err.message}`;
+                out.innerHTML = `<span style="color: var(--accent-red);">Diff failed: ${escapeHtml(err.message)}</span>`;
             }
         }
 
-        function renderDiffLines(diffText) {
-            return diffText.split('\n').map(line => {
-                if (line.startsWith('+')) return `<span class="diff-added">${escapeHtml(line)}</span>`;
-                if (line.startsWith('-')) return `<span class="diff-removed">${escapeHtml(line)}</span>`;
-                return escapeHtml(line);
-            }).join('\n');
-        }
+        async function queryLspSymbol() {
+            const query = document.getElementById('lspSymbolQuery').value.trim();
+            if (!query) return;
+            const out = document.getElementById('lspQueryResult');
+            out.style.display = 'block';
+            out.innerHTML = `<div style="color: var(--text-tertiary);">Querying Language Server Protocol bridge...</div>`;
 
-        async function applyGeneratedPatch() {
-            if (!currentGeneratedDiff) return;
-            const target = getActiveTarget();
             try {
-                const res = await fetch('/api/patch/apply', {
+                const res = await fetch('/api/lsp/definition', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ diff: currentGeneratedDiff, repo_path: target })
+                    body: JSON.stringify({ symbol: query, repo_path: getActiveTarget() })
                 });
                 const data = await res.json();
-                alert(data.message || 'Patch applied successfully.');
-            } catch (e) {
-                alert(`Error applying patch: ${e.message}`);
+                out.innerHTML = `<pre><code class="language-json">${escapeHtml(JSON.stringify(data, null, 2))}</code></pre>`;
+                out.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            } catch (err) {
+                out.innerHTML = `<span style="color: var(--accent-red);">LSP query failed: ${escapeHtml(err.message)}</span>`;
             }
         }
 
-        /* --- OPEN IN EDITOR / FINDER ACTIONS --- */
-        function showActionToast(message, isError = false) {
-            let toast = document.getElementById('actionToast');
-            if (!toast) {
-                toast = document.createElement('div');
-                toast.id = 'actionToast';
-                document.body.appendChild(toast);
-            }
-            toast.className = `action-toast${isError ? ' error' : ''}`;
-            toast.textContent = message;
-            requestAnimationFrame(() => toast.classList.add('visible'));
-            clearTimeout(window.actionToastTimer);
-            window.actionToastTimer = setTimeout(() => toast.classList.remove('visible'), 4200);
-        }
-
-        async function openFileInEditor(filePath, line = 1) {
+        /* --- WATCHER TOGGLE --- */
+        async function toggleWatcher() {
             const target = getActiveTarget();
+            const dot = document.getElementById('watcherDot');
+            const text = document.getElementById('watcherStatusText');
+            watcherActive = !watcherActive;
+
             try {
-                const res = await fetch('/api/open', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        repo_path: target,
-                        file_path: filePath,
-                        line: line,
-                        action: 'editor'
-                    })
-                });
-                const data = await res.json();
-                showActionToast(data.message || data.error || 'Editor action failed.', !data.success);
-            } catch (e) {
-                console.error('Failed to open in editor', e);
-                showActionToast(`Editor error: ${e.message}`, true);
-            }
-        }
-
-        async function openFileInFinder(filePath) {
-            const target = getActiveTarget();
-            try {
-                const res = await fetch('/api/open', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        repo_path: target,
-                        file_path: filePath,
-                        line: 1,
-                        action: 'finder'
-                    })
-                });
-                const data = await res.json();
-                showActionToast(data.message || data.error || 'Finder action failed.', !data.success);
-            } catch (e) {
-                console.error('Failed to open in Finder', e);
-                showActionToast(`Finder error: ${e.message}`, true);
-            }
-        }
-
-        function openCurrentInspectorFile() {
-            if (!currentInspectorData) return;
-            const fPath = currentInspectorData.full_path || currentInspectorData.file;
-            const line = currentInspectorData.start_line || 1;
-            openFileInEditor(fPath, line);
-        }
-
-        function openCurrentInspectorFinder() {
-            if (!currentInspectorData) return;
-            const fPath = currentInspectorData.full_path || currentInspectorData.file;
-            openFileInFinder(fPath);
-        }
-
-        function formatMarkdown(text) {
-            const inline = (value) => escapeHtml(value)
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-
-            const lines = text.replace(/\r\n/g, '\n').split('\n');
-            const html = [];
-            let paragraph = [];
-            let code = [];
-            let codeLanguage = '';
-            let inCode = false;
-            let listType = null;
-
-            const closeList = () => {
-                if (listType) html.push(`</${listType}>`);
-                listType = null;
-            };
-            const flushParagraph = () => {
-                if (paragraph.length) html.push(`<p>${inline(paragraph.join(' '))}</p>`);
-                paragraph = [];
-            };
-
-            for (const line of lines) {
-                const fence = line.match(/^```\s*([\w+-]*)\s*$/);
-                if (fence) {
-                    if (inCode) {
-                        html.push(`<pre><code class="language-${escapeHtml(codeLanguage || 'plaintext')}">${escapeHtml(code.join('\n'))}</code></pre>`);
-                        code = [];
-                        inCode = false;
-                    } else {
-                        flushParagraph();
-                        closeList();
-                        codeLanguage = fence[1] || 'plaintext';
-                        inCode = true;
-                    }
-                    continue;
-                }
-                if (inCode) {
-                    code.push(line);
-                    continue;
-                }
-
-                const heading = line.match(/^(#{2,4})\s+(.+)$/);
-                if (heading) {
-                    flushParagraph();
-                    closeList();
-                    const level = Math.min(3, heading[1].length);
-                    html.push(`<h${level}>${inline(heading[2])}</h${level}>`);
-                    continue;
-                }
-
-                const unordered = line.match(/^[-*]\s+(.+)$/);
-                const ordered = line.match(/^\d+[.)]\s+(.+)$/);
-                if (unordered || ordered) {
-                    flushParagraph();
-                    const desired = unordered ? 'ul' : 'ol';
-                    if (listType !== desired) {
-                        closeList();
-                        html.push(`<${desired}>`);
-                        listType = desired;
-                    }
-                    html.push(`<li>${inline((unordered || ordered)[1])}</li>`);
-                    continue;
-                }
-
-                if (!line.trim()) {
-                    flushParagraph();
-                    closeList();
+                await fetch(`/api/watcher/${watcherActive ? 'start' : 'stop'}?repo_path=${encodeURIComponent(target)}`, { method: 'POST' });
+                if (watcherActive) {
+                    dot.className = 'status-dot';
+                    text.textContent = 'Watcher: Active';
+                    showToast('Live file system watcher activated');
                 } else {
-                    paragraph.push(line.trim());
+                    dot.className = 'status-dot warning';
+                    text.textContent = 'Watcher: Off';
+                    showToast('File watcher stopped');
                 }
+            } catch (err) {
+                showToast(`Watcher toggle failed: ${err.message}`, true);
             }
-
-            if (inCode) html.push(`<pre><code>${escapeHtml(code.join('\n'))}</code></pre>`);
-            flushParagraph();
-            closeList();
-            return html.join('');
         }
 
+        /* --- UTILS --- */
         function escapeHtml(str) {
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
-        // Initialize on load
-        loadPresets().then(onRepoChanged);
+        function formatMarkdown(md) {
+            if (!md) return '';
+            return md
+                .replace(/^### (.*$)/gim, '<h3 style="font-size: 1.05rem; font-weight: 700; margin: 12px 0 6px 0; color: var(--text-primary);">$1</h3>')
+                .replace(/^## (.*$)/gim, '<h2 style="font-size: 1.15rem; font-weight: 700; margin: 14px 0 8px 0; color: var(--text-primary);">$1</h2>')
+                .replace(/^# (.*$)/gim, '<h1 style="font-size: 1.3rem; font-weight: 800; margin: 16px 0 10px 0; color: var(--text-primary);">$1</h1>')
+                .replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/gim, '<em>$1</em>')
+                .replace(/```([a-z]*)\n([\s\S]*?)```/gim, '<pre><code class="language-$1">$2</code></pre>')
+                .replace(/`([^`]+)`/gim, '<code style="background: rgba(255,255,255,0.07); padding: 2px 5px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem;">$1</code>')
+                .replace(/\n\n/gim, '<br><br>');
+        }
+
+        function showToast(msg, isError = false) {
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <span class="status-dot ${isError ? 'danger' : ''}"></span>
+                <span>${escapeHtml(msg)}</span>
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 3500);
+        }
     </script>
 </body>
 </html>
