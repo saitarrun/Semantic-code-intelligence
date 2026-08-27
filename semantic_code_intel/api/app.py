@@ -15,7 +15,7 @@ import threading
 from collections import OrderedDict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import Depends, FastAPI, HTTPException, Query, Request, Security
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -28,6 +28,12 @@ from semantic_code_intel.indexing.engine import HybridIndexer
 from semantic_code_intel.indexing.embeddings import ModelUnavailableError
 from semantic_code_intel.indexing.watcher import CodebaseWatcher
 from semantic_code_intel.retrieval.pipeline import HybridRetrievalPipeline
+from semantic_code_intel.security import (
+    index_limiter, redact_secrets, sanitize_github_url,
+    search_limiter, validate_safe_path, verify_api_access
+)
+
+parse_github_url = sanitize_github_url
 from semantic_code_intel.api.schemas import (
     GitHubImportRequest, IndexRequest, OpenFileRequest, PatchApplyRequest,
     PatchGenerateRequest, SearchRequest, SearchResponse, SearchResultItem,
@@ -41,6 +47,30 @@ app = FastAPI(
     description="Local-first hybrid code search with FAISS, BM25, Cross-Encoder reranking, AST graphs, and streaming synthesis",
     version="0.2.0"
 )
+
+_INDEX_SEMAPHORE = threading.BoundedSemaphore(value=2)
+
+
+@app.middleware("http")
+async def security_and_rate_limit_middleware(request: Request, call_next):
+    """Enforce rate limits and security headers on all incoming requests."""
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    path = request.url.path
+
+    # 1. Rate limiting
+    if path.startswith("/api/search") and not search_limiter.is_allowed(client_ip):
+        return JSONResponse(status_code=429, content={"detail": "Too many search requests. Rate limit exceeded."})
+    if (path.startswith("/api/index") or path.startswith("/api/github/import")) and not index_limiter.is_allowed(client_ip):
+        return JSONResponse(status_code=429, content={"detail": "Too many indexing requests. Rate limit exceeded."})
+
+    response = await call_next(request)
+
+    # 2. HTTP Security Headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
 
 
 @app.exception_handler(ModelUnavailableError)
@@ -103,16 +133,16 @@ KNOWN_PRESETS = [
 
 
 def resolve_paths(target_dir: Optional[str] = None, index_dir: Optional[str] = None) -> tuple[Path, Optional[Path]]:
-    """Resolve absolute repository and index directory paths."""
+    """Resolve absolute repository and index directory paths with sandbox validation."""
     global _ACTIVE_REPO_PATH, _ACTIVE_INDEX_PATH, config
 
     if target_dir:
-        t_path = Path(target_dir).expanduser().resolve()
+        t_path = validate_safe_path(target_dir)
     else:
         t_path = config.project_root.resolve()
 
     if index_dir:
-        i_path = Path(index_dir).expanduser().resolve()
+        i_path = validate_safe_path(index_dir)
     elif config.index_dir is not None and target_dir is None:
         i_path = config.index_dir.resolve()
     elif target_dir:
@@ -256,6 +286,16 @@ async def stream_indexing(
         })
 
     def run_indexer():
+        acquired = _INDEX_SEMAPHORE.acquire(blocking=False)
+        if not acquired:
+            event_q.put({
+                "stage": "error",
+                "message": "Indexing capacity reached. An indexing task is already actively running.",
+                "percentage": 0.0
+            })
+            event_q.put(None)
+            return
+
         try:
             cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
             indexer = HybridIndexer(cfg)
@@ -292,6 +332,7 @@ async def stream_indexing(
                 "percentage": 0.0
             })
         finally:
+            _INDEX_SEMAPHORE.release()
             event_q.put(None)
 
     threading.Thread(target=run_indexer, daemon=True).start()
@@ -332,30 +373,6 @@ async def trigger_index(req: IndexRequest):
     }
 
 
-def parse_github_url(url: str) -> tuple[str, str, str]:
-    """Parse and sanitize a GitHub repository URL or slug into (owner, repo, clone_url)."""
-    import re
-    cleaned = url.strip().rstrip("/")
-    if cleaned.endswith(".git"):
-        cleaned = cleaned[:-4]
-
-    if "://" in cleaned or cleaned.startswith("git@"):
-        match = re.search(r"^(?:https?:\/\/)?(?:www\.)?github\.com[:/]([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
-        if not match:
-            match = re.search(r"^git@github\.com:([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
-    elif cleaned.startswith("github.com/"):
-        match = re.search(r"^github\.com/([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
-    else:
-        match = re.search(r"^([a-zA-Z0-9_\-\.]+)/([a-zA-Z0-9_\-\.]+)$", cleaned)
-
-    if not match:
-        raise ValueError(f"Invalid GitHub repository URL: '{url}'. Expected format: 'owner/repo' or 'https://github.com/owner/repo'")
-
-    owner, repo = match.group(1), match.group(2)
-    clone_url = f"https://github.com/{owner}/{repo}.git"
-    return owner, repo, clone_url
-
-
 @app.get("/api/github/import/stream")
 async def stream_github_import(
     url: str = Query(..., description="GitHub repository URL or slug"),
@@ -366,10 +383,7 @@ async def stream_github_import(
     import subprocess
     import shutil
 
-    try:
-        owner, repo, clone_url = parse_github_url(url)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    owner, repo, clone_url = sanitize_github_url(url)
 
     cloned_root = (config.project_root / "cloned_repos").resolve()
     cloned_root.mkdir(parents=True, exist_ok=True)
@@ -378,6 +392,16 @@ async def stream_github_import(
     event_q: queue.Queue = queue.Queue()
 
     def run_import():
+        acquired = _INDEX_SEMAPHORE.acquire(blocking=False)
+        if not acquired:
+            event_q.put({
+                "stage": "error",
+                "message": "Indexing capacity reached. An active indexing task is currently running.",
+                "percentage": 0.0
+            })
+            event_q.put(None)
+            return
+
         try:
             event_q.put({
                 "stage": "cloning",
@@ -390,12 +414,12 @@ async def stream_github_import(
                 shutil.rmtree(target_dir, ignore_errors=True)
 
             if not target_dir.exists():
-                cmd = ["git", "clone", "--depth", "1"]
+                cmd = ["git", "clone", "--depth", "1", "--single-branch"]
                 if branch:
                     cmd.extend(["--branch", branch])
-                cmd.extend([clone_url, str(target_dir)])
+                cmd.extend(["--", clone_url, str(target_dir)])
 
-                res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+                res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=60)
                 if res.returncode != 0:
                     raise RuntimeError(f"Git clone failed: {res.stderr.strip() or res.stdout.strip()}")
             else:
@@ -405,7 +429,7 @@ async def stream_github_import(
                     "message": f"Updating existing local clone for {owner}/{repo}...",
                     "repo_name": f"{owner}/{repo}"
                 })
-                subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False)
+                subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
 
             event_q.put({
                 "stage": "cloning",
@@ -470,6 +494,7 @@ async def stream_github_import(
                 "percentage": 0.0
             })
         finally:
+            _INDEX_SEMAPHORE.release()
             event_q.put(None)
 
     threading.Thread(target=run_import, daemon=True).start()
@@ -492,10 +517,7 @@ async def import_github_repo(req: GitHubImportRequest):
     import subprocess
     import shutil
 
-    try:
-        owner, repo, clone_url = parse_github_url(req.url)
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+    owner, repo, clone_url = sanitize_github_url(req.url)
 
     cloned_root = (config.project_root / "cloned_repos").resolve()
     cloned_root.mkdir(parents=True, exist_ok=True)
@@ -505,15 +527,15 @@ async def import_github_repo(req: GitHubImportRequest):
         shutil.rmtree(target_dir, ignore_errors=True)
 
     if not target_dir.exists():
-        cmd = ["git", "clone", "--depth", "1"]
+        cmd = ["git", "clone", "--depth", "1", "--single-branch"]
         if req.branch:
             cmd.extend(["--branch", req.branch])
-        cmd.extend([clone_url, str(target_dir)])
-        res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        cmd.extend(["--", clone_url, str(target_dir)])
+        res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=60)
         if res.returncode != 0:
             raise HTTPException(status_code=500, detail=f"Git clone failed: {res.stderr.strip()}")
     else:
-        subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False)
+        subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
 
     cfg = CodeIntelConfig(project_root=target_dir)
     indexer = HybridIndexer(cfg)
@@ -753,6 +775,9 @@ async def open_file(req: OpenFileRequest):
     if not target.exists():
         # Try absolute path fallback
         target = Path(req.file_path).resolve()
+
+    # Sandboxing validation
+    target = validate_safe_path(target)
 
     if not target.exists():
         raise HTTPException(status_code=404, detail=f"File not found: {req.file_path}")

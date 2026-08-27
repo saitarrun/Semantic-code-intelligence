@@ -12,6 +12,7 @@ from semantic_code_intel.parser.base import BaseParser, CodeChunk, ParseResult
 from semantic_code_intel.parser.ignore_rules import IgnoreFilter
 from semantic_code_intel.parser.polyglot_parser import PolyglotParser
 from semantic_code_intel.parser.python_parser import PythonASTParser
+from semantic_code_intel.security import redact_secrets
 
 
 class CodebaseScanner:
@@ -68,6 +69,10 @@ class CodebaseScanner:
         for file_path in files:
             parser = self.get_parser_for_file(file_path)
             res = parser.parse_file(file_path, root_path)
+            # Redact sensitive credentials/API keys from chunk text
+            for chunk in res.chunks:
+                chunk.content = redact_secrets(chunk.content)
+                chunk.code = redact_secrets(chunk.code)
             total_lines += res.total_lines
             total_chunks += len(res.chunks)
             yield res

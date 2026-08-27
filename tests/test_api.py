@@ -97,6 +97,7 @@ def test_github_url_parsing():
     assert repo == "linux"
     assert clone == "https://github.com/torvalds/linux.git"
 
-    # Invalid URL should raise ValueError
-    with pytest.raises(ValueError):
+    # Invalid URL should raise ValueError or HTTPException
+    from fastapi import HTTPException
+    with pytest.raises((ValueError, HTTPException)):
         parse_github_url("https://notgithub.com/something")
