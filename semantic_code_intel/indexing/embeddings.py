@@ -30,16 +30,22 @@ class EmbeddingEngine:
         self._model: Optional[AutoModel] = None
 
     def _ensure_loaded(self) -> None:
-        """Lazy load tokenizer and model."""
+        """Lazy load tokenizer and model with hardware acceleration."""
         if self._tokenizer is None or self._model is None:
             logger.info(f"Loading embedding model '{self.model_name}' on device '{self.device}'...")
             try:
                 self._tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name, local_files_only=self.config.local_files_only
                 )
-                self._model = AutoModel.from_pretrained(
+                model = AutoModel.from_pretrained(
                     self.model_name, local_files_only=self.config.local_files_only
                 ).to(self.device)
+
+                # Use FP16 on GPU / Apple Silicon MPS for 2x faster matrix operations
+                if self.device in ("cuda", "mps"):
+                    model = model.half()
+
+                self._model = model
             except (OSError, ValueError) as exc:
                 download_hint = (
                     "Set CODE_INTEL_ALLOW_MODEL_DOWNLOADS=1 and retry once, or pre-download "
@@ -66,7 +72,8 @@ class EmbeddingEngine:
         progress_callback: Optional[Callable[[int, int], None]] = None
     ) -> np.ndarray:
         """
-        Encode a list of text strings into normalized float32 numpy embeddings.
+        Encode a list of text strings into normalized float32 numpy embeddings
+        using length-sorted bucketing to minimize padding compute.
         Shape: (len(texts), embedding_dim)
         """
         if not texts:
@@ -74,32 +81,39 @@ class EmbeddingEngine:
 
         self._ensure_loaded()
         batch_sz = batch_size or self.config.batch_size
-        all_embeddings: List[np.ndarray] = []
         total_texts = len(texts)
 
+        # Length-sorted dynamic bucketing: minimize pad token waste
+        sorted_indices = np.argsort([len(t) for t in texts])
+        sorted_texts = [texts[idx] for idx in sorted_indices]
+        ordered_embeddings: List[Optional[np.ndarray]] = [None] * total_texts
+
         for i in range(0, total_texts, batch_sz):
-            batch_texts = texts[i : i + batch_sz]
+            batch_texts = sorted_texts[i : i + batch_sz]
             encoded = self._tokenizer(
                 batch_texts,
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=256,
                 return_tensors="pt"
             ).to(self.device)
 
-            with torch.no_grad():
+            with torch.inference_mode():
                 out = self._model(**encoded)
                 pooled = self._mean_pooling(out, encoded["attention_mask"])
                 if self.config.normalize_embeddings:
                     pooled = F.normalize(pooled, p=2, dim=1)
 
-            all_embeddings.append(pooled.cpu().numpy().astype(np.float32))
+            batch_embs = pooled.cpu().numpy().astype(np.float32)
+            batch_indices = sorted_indices[i : i + batch_sz]
+            for orig_idx, emb in zip(batch_indices, batch_embs):
+                ordered_embeddings[orig_idx] = emb
 
             if progress_callback:
                 processed = min(i + batch_sz, total_texts)
                 progress_callback(processed, total_texts)
 
-        return np.vstack(all_embeddings)
+        return np.array(ordered_embeddings, dtype=np.float32)
 
     def encode_query(self, query: str) -> np.ndarray:
         """
@@ -111,11 +125,11 @@ class EmbeddingEngine:
             [query],
             padding=True,
             truncation=True,
-            max_length=512,
+            max_length=256,
             return_tensors="pt"
         ).to(self.device)
 
-        with torch.no_grad():
+        with torch.inference_mode():
             out = self._model(**encoded)
             pooled = self._mean_pooling(out, encoded["attention_mask"])
             if self.config.normalize_embeddings:
