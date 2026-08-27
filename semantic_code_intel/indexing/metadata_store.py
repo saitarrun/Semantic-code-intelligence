@@ -207,6 +207,21 @@ class MetadataStore:
                 return json.loads(row["value"])
         return default
 
+    def get_all_file_hashes(self) -> Dict[str, str]:
+        """Return a mapping of all indexed file paths to their SHA-256 hashes."""
+        with self._get_connection() as conn:
+            rows = conn.execute("SELECT file_path, file_hash FROM files").fetchall()
+            return {r["file_path"]: r["file_hash"] for r in rows}
+
+    def delete_files(self, file_paths: List[str]) -> None:
+        """Batch delete files and their associated chunks from the metadata store."""
+        if not file_paths:
+            return
+        with self._get_connection() as conn:
+            conn.executemany("DELETE FROM chunks WHERE file_path = ?", [(p,) for p in file_paths])
+            conn.executemany("DELETE FROM files WHERE file_path = ?", [(p,) for p in file_paths])
+            conn.commit()
+
     def clear(self) -> None:
         """Wipe all indexed data."""
         with self._get_connection() as conn:

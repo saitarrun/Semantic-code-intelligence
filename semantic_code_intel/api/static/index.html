@@ -2108,7 +2108,7 @@
             }
         }
 
-        function startAnimatedIndexing() {
+        function startAnimatedIndexing(force = false) {
             const target = getActiveTarget();
             const modal = document.getElementById('indexingModal');
             const closeBtn = document.getElementById('btnModalClose');
@@ -2127,7 +2127,7 @@
             pillClone.style.display = 'none';
             resetStagePills();
 
-            const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=true`;
+            const sseUrl = `/api/index/stream?target_dir=${encodeURIComponent(target)}&force=${force}`;
             let eventSource = null;
 
             try {

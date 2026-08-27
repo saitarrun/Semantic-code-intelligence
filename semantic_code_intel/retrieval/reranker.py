@@ -27,16 +27,21 @@ class CrossEncoderReranker:
         self._model: Optional[AutoModelForSequenceClassification] = None
 
     def _ensure_loaded(self) -> None:
-        """Lazy load tokenizer and model."""
+        """Lazy load tokenizer and model with hardware acceleration."""
         if self._tokenizer is None or self._model is None:
             logger.info(f"Loading Cross-Encoder reranker '{self.model_name}' on '{self.device}'...")
             try:
                 self._tokenizer = AutoTokenizer.from_pretrained(
                     self.model_name, local_files_only=self.config.local_files_only
                 )
-                self._model = AutoModelForSequenceClassification.from_pretrained(
+                model = AutoModelForSequenceClassification.from_pretrained(
                     self.model_name, local_files_only=self.config.local_files_only
                 ).to(self.device)
+
+                if self.device in ("cuda", "mps"):
+                    model = model.half()
+
+                self._model = model
             except (OSError, ValueError) as exc:
                 raise ModelUnavailableError(
                     f"Reranker model '{self.model_name}' is not available locally. Set "
@@ -58,18 +63,18 @@ class CrossEncoderReranker:
             return []
 
         self._ensure_loaded()
-        pairs = [[query, text[:512]] for _, text in candidates]
-        
+        pairs = [[query, text[:256]] for _, text in candidates]
+
         try:
             encoded = self._tokenizer(
                 pairs,
                 padding=True,
                 truncation=True,
-                max_length=512,
+                max_length=256,
                 return_tensors="pt"
             ).to(self.device)
 
-            with torch.no_grad():
+            with torch.inference_mode():
                 logits = self._model(**encoded).logits
                 if logits.dim() > 1 and logits.shape[1] == 1:
                     scores = logits.squeeze(-1).tolist()

@@ -457,7 +457,7 @@ async def stream_github_import(
             indexer = HybridIndexer(cfg)
             metrics = indexer.index_codebase(
                 target_dir=dest_dir,
-                force_reindex=True,
+                force_reindex=force,
                 progress_callback=progress_handler
             )
 
@@ -490,27 +490,30 @@ async def stream_github_import(
                     "indexing_time_seconds": t_time
                 }
             })
+            event_q.put(None)
         except Exception as e:
-            logger.exception("GitHub import failed")
+            logger.exception("GitHub import streaming failure")
             event_q.put({
                 "stage": "error",
-                "message": f"GitHub import error: {str(e)}",
-                "percentage": 0.0
+                "percentage": 0.0,
+                "message": f"GitHub Import failed: {str(e)}"
             })
+            event_q.put(None)
         finally:
             _INDEX_SEMAPHORE.release()
-            event_q.put(None)
 
-    threading.Thread(target=run_import, daemon=True).start()
+    thread = threading.Thread(target=run_import, daemon=True)
+    thread.start()
 
-    async def event_generator():
+    def event_generator():
         while True:
-            await asyncio.sleep(0.05)
-            while not event_q.empty():
-                item = event_q.get()
+            try:
+                item = event_q.get(timeout=120)
                 if item is None:
                     return
                 yield f"data: {json.dumps(item)}\n\n"
+            except queue.Empty:
+                yield f"data: {json.dumps({'stage': 'ping', 'message': 'Processing...'})}\n\n"
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")
 
@@ -544,7 +547,7 @@ async def import_github_repo(req: GitHubImportRequest):
 
     cfg = CodeIntelConfig(project_root=dest_dir)
     indexer = HybridIndexer(cfg)
-    metrics = indexer.index_codebase(target_dir=dest_dir, force_reindex=True)
+    metrics = indexer.index_codebase(target_dir=dest_dir, force_reindex=req.force)
 
     preset_entry = {
         "name": f"GitHub: {owner}/{repo}",

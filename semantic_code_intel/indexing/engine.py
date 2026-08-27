@@ -44,6 +44,14 @@ class HybridIndexer:
         self.embedding_engine = EmbeddingEngine(self.config.embedding)
         self.scanner = CodebaseScanner(self.config)
 
+    def is_indexed(self) -> bool:
+        """Check if required index files exist on disk."""
+        faiss_p = self.index_dir / self.config.storage.faiss_index_file
+        faiss_npy = self.index_dir / f"{self.config.storage.faiss_index_file}.npy"
+        bm25_p = self.index_dir / self.config.storage.bm25_index_file
+        meta_p = self.index_dir / self.config.storage.metadata_db_file
+        return (faiss_p.exists() or faiss_npy.exists()) and bm25_p.exists() and meta_p.exists()
+
     def index_codebase(
         self,
         target_dir: Optional[Path] = None,
@@ -51,7 +59,7 @@ class HybridIndexer:
         progress_callback: Optional[Callable[[str, int, int, str, float], None]] = None
     ) -> Dict[str, float]:
         """
-        Index a target codebase directory with stage-aware progress reporting.
+        Index a target codebase directory with stage-aware progress reporting and incremental caching.
         """
         start_time = time.time()
         repo_root = (target_dir or self.config.project_root).resolve()
@@ -70,6 +78,37 @@ class HybridIndexer:
         files = self.scanner.discover_files(repo_root)
         total_files = len(files)
         logger.info(f"Discovered {total_files} source files in {repo_root}")
+
+        # Check Cache: If not forced and index exists, verify file hashes
+        if not force_reindex and self.is_indexed():
+            existing_file_hashes = self.metadata_store.get_all_file_hashes()
+            current_files_map = {str(fp.relative_to(repo_root)): fp for fp in files}
+
+            deleted_files = [p for p in existing_file_hashes if p not in current_files_map]
+            modified_or_new: List[Path] = []
+            for rel_str, fp in current_files_map.items():
+                old_hash = existing_file_hashes.get(rel_str)
+                if old_hash is None or compute_file_sha256(fp) != old_hash:
+                    modified_or_new.append(fp)
+
+            # 100% Cache Hit: No files added, modified, or deleted
+            if not deleted_files and not modified_or_new and existing_file_hashes:
+                manifest_data = self.metadata_store.get_manifest_val("index_manifest", {})
+                t_chunks = manifest_data.get("total_chunks", 0)
+                t_lines = manifest_data.get("total_lines", 0)
+                logger.info(f"Repository index is up to date (cache hit): {total_files} files, {t_chunks} chunks.")
+                if progress_callback:
+                    progress_callback("done", total_files, total_files, f"Index is up to date ({total_files} files, cache hit).", 100.0)
+                return {
+                    "total_files": float(total_files),
+                    "total_lines": float(t_lines),
+                    "total_chunks": float(t_chunks),
+                    "parse_time_seconds": 0.0,
+                    "embed_time_seconds": 0.0,
+                    "bm25_time_seconds": 0.0,
+                    "elapsed_seconds": round(time.time() - start_time, 3),
+                    "loc_per_second": 0.0,
+                }
 
         all_chunks: List[CodeChunk] = []
         file_records: List[tuple[str, str, int, int, int]] = []
