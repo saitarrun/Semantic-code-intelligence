@@ -1244,6 +1244,129 @@
             border-color: var(--system-blue);
         }
 
+        /* --- ARCHITECTURE FILTER BAR STYLES --- */
+        .arch-filter-bar {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(28px) saturate(190%);
+            -webkit-backdrop-filter: blur(28px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            padding: 0.85rem 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        .arch-filter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+        }
+
+        .arch-pill-select-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-full);
+            padding: 0 0.75rem 0 0.65rem;
+            height: 32px;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .arch-pill-select-wrapper:hover {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(255, 255, 255, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .arch-pill-select-wrapper:focus-within {
+            border-color: var(--system-blue);
+            background: rgba(10, 132, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(10, 132, 255, 0.25);
+        }
+
+        .arch-pill-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--label-secondary);
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+
+        .arch-pill-select {
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--label-primary);
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding-right: 1.25rem;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .arch-pill-arrow {
+            position: absolute;
+            right: 0.65rem;
+            pointer-events: none;
+            color: var(--label-tertiary);
+            display: flex;
+            align-items: center;
+        }
+
+        .arch-stat-badge {
+            margin-left: auto;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--label-secondary);
+        }
+
+        .arch-stat-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--system-green);
+            box-shadow: 0 0 6px var(--system-green);
+        }
+
+        .arch-reset-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--label-secondary);
+            font-size: 0.74rem;
+            font-weight: 500;
+            padding: 0 10px;
+            height: 32px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s var(--spring-easing);
+        }
+
+        .arch-reset-btn:hover {
+            background: rgba(255, 69, 58, 0.15);
+            border-color: rgba(255, 69, 58, 0.3);
+            color: var(--system-red);
+            transform: translateY(-1px);
+        }
+
         .btn-table-action {
             background: var(--glass-bg-subtle);
             border: 1px solid var(--glass-border);
@@ -1733,51 +1856,105 @@
 
         <!-- 3. DEPENDENCY MAP (ARCHITECTURE) TAB -->
         <div id="tab-graph" class="tab-content-view hidden">
-            <div class="glass-panel" style="padding: 0.85rem 1.25rem; display: flex; flex-direction: column; gap: 0.65rem;">
-                <div class="search-row">
+            <div class="arch-filter-bar">
+                <!-- Search & Refresh Row -->
+                <div class="search-row" style="margin-bottom: 0;">
                     <div class="search-input-wrapper">
+                        <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--label-tertiary); pointer-events: none;">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
                         <input
                             type="text"
                             id="archFilterInput"
                             class="apple-search-input"
-                            style="padding: 0.55rem 1rem; font-size: 0.85rem;"
+                            style="padding-left: 2.4rem; padding-top: 0.5rem; padding-bottom: 0.5rem; font-size: 0.84rem;"
                             placeholder="Filter files or symbols across codebase..."
                             oninput="applyArchitectureFilters()"
                         />
                     </div>
-                    <button class="apple-btn-secondary" onclick="loadSymbolGraph()">Refresh</button>
+                    <button class="apple-btn-secondary" onclick="loadSymbolGraph()" style="display: inline-flex; align-items: center; gap: 5px; height: 38px;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+                        </svg>
+                        Refresh
+                    </button>
                 </div>
 
-                <!-- Filter Controls Row -->
-                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; font-size: 0.78rem;">
-                    <span style="color: var(--label-tertiary); font-weight: 500;">Filter:</span>
+                <!-- Sleek Filter Pills Row -->
+                <div class="arch-filter-row">
+                    <span style="color: var(--label-tertiary); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-right: 2px;">Filters</span>
 
-                    <!-- Language Filter -->
-                    <select id="archLangFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
-                        <option value="ALL">All Languages</option>
-                    </select>
+                    <!-- Language Filter Pill -->
+                    <div class="arch-pill-select-wrapper">
+                        <span class="arch-pill-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="16 18 22 12 16 6"></polyline>
+                                <polyline points="8 6 2 12 8 18"></polyline>
+                            </svg>
+                        </span>
+                        <select id="archLangFilter" class="arch-pill-select" onchange="applyArchitectureFilters()">
+                            <option value="ALL">All Languages</option>
+                        </select>
+                        <span class="arch-pill-arrow">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
 
-                    <!-- Symbol Type Filter -->
-                    <select id="archTypeFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
-                        <option value="ALL">All Symbol Types</option>
-                        <option value="class">Classes</option>
-                        <option value="struct">Structs / Types</option>
-                        <option value="interface">Interfaces / Traits</option>
-                        <option value="function">Functions</option>
-                        <option value="method">Methods</option>
-                        <option value="enum">Enums</option>
-                        <option value="module">Modules</option>
-                    </select>
+                    <!-- Symbol Type Filter Pill -->
+                    <div class="arch-pill-select-wrapper">
+                        <span class="arch-pill-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                            </svg>
+                        </span>
+                        <select id="archTypeFilter" class="arch-pill-select" onchange="applyArchitectureFilters()">
+                            <option value="ALL">All Symbol Types</option>
+                            <option value="class">Classes</option>
+                            <option value="struct">Structs / Types</option>
+                            <option value="interface">Interfaces / Traits</option>
+                            <option value="function">Functions</option>
+                            <option value="method">Methods</option>
+                            <option value="enum">Enums</option>
+                            <option value="module">Modules</option>
+                        </select>
+                        <span class="arch-pill-arrow">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
 
-                    <!-- Connectivity Filter -->
-                    <select id="archRelFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
-                        <option value="ALL">All Connectivity</option>
-                        <option value="CONNECTED">With Callers / Callees</option>
-                        <option value="STANDALONE">Self-Contained Only</option>
-                    </select>
+                    <!-- Connectivity Filter Pill -->
+                    <div class="arch-pill-select-wrapper">
+                        <span class="arch-pill-icon">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
+                        </span>
+                        <select id="archRelFilter" class="arch-pill-select" onchange="applyArchitectureFilters()">
+                            <option value="ALL">All Connectivity</option>
+                            <option value="CONNECTED">With Callers / Callees</option>
+                            <option value="STANDALONE">Self-Contained Only</option>
+                        </select>
+                        <span class="arch-pill-arrow">
+                            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                    </div>
 
-                    <!-- Reset Filters Button -->
-                    <button class="btn-copy" style="margin-left: auto; font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="resetArchitectureFilters()">Reset</button>
+                    <!-- Reset Button -->
+                    <button class="arch-reset-btn" onclick="resetArchitectureFilters()" title="Reset all filters">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                            <path d="M3 3v5h5"/>
+                        </svg>
+                        Reset
+                    </button>
+
+                    <!-- Live Match Stat Counter -->
+                    <div class="arch-stat-badge" id="archMatchBadge">
+                        <span class="arch-stat-dot"></span>
+                        <span id="archMatchText">Ready</span>
+                    </div>
                 </div>
             </div>
 
@@ -2741,6 +2918,11 @@
                 }
                 return syms.length > 0;
             });
+
+            const matchTextEl = document.getElementById('archMatchText');
+            if (matchTextEl) {
+                matchTextEl.textContent = `${matchingSymbols.length} syms · ${activeFiles.length} files`;
+            }
 
             renderMasterFilesListFiltered(activeFiles);
         }

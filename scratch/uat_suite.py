@@ -33,7 +33,7 @@ class UATRunner:
         status_str = "PASS" if passed else "FAIL"
         color = "\033[92m" if passed else "\033[91m"
         reset = "\033[0m"
-        
+
         lat_str = f"[{latency_ms:.1f}ms]" if latency_ms > 0 else ""
         print(f"  [{color}{status_str}{reset}] {test_case:<50} {lat_str} {notes}")
         self.results.append({
