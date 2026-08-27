@@ -634,7 +634,7 @@ async def search_code(req: SearchRequest):
 async def get_symbol_graph(
     repo_path: Optional[str] = None,
     symbol: Optional[str] = None,
-    limit: int = 60
+    limit: int = 500
 ):
     """Retrieve the interactive symbol dependency and call graph."""
     t_path, i_path = resolve_paths(repo_path)

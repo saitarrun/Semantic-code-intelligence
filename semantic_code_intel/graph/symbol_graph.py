@@ -212,19 +212,24 @@ class SymbolGraphEngine:
                     }
                 }
 
-        # Global top nodes
-        all_nodes = list(nodes_dict.values())[:limit_nodes]
+        # Global top nodes: Preserve all active file nodes and their defined symbols
+        file_nodes = [n for n in nodes_dict.values() if n.get("group") == 1]
+        sym_nodes = [n for n in nodes_dict.values() if n.get("group") == 2][:limit_nodes]
+        all_nodes = file_nodes + sym_nodes
         active_ids = {n["id"] for n in all_nodes}
+
         all_edges = [
             e for e in edges_list
             if e["source"] in active_ids and e["target"] in active_ids
-        ][:limit_nodes * 2]
+        ]
 
         return {
             "nodes": all_nodes,
             "edges": all_edges,
             "metrics": {
                 "total_nodes": len(all_nodes),
+                "total_files": len(file_nodes),
+                "total_symbols": len(sym_nodes),
                 "total_edges": len(all_edges)
             }
         }
