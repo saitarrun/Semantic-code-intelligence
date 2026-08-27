@@ -1557,16 +1557,25 @@
                 </select>
                 <div class="select-arrow"></div>
             </div>
-            <div id="githubImportWrapper" style="display: none; align-items: center; gap: var(--space-2); flex: 1; min-width: 340px;">
+            <div id="githubImportWrapper" style="display: none; align-items: center; gap: var(--space-2); flex: 1; min-width: 480px; flex-wrap: wrap;">
                 <input
                     type="text"
                     id="githubUrlInput"
                     class="apple-input-custom"
-                    style="display: block; flex: 1;"
-                    placeholder="https://github.com/owner/repo or owner/repo"
+                    style="display: block; flex: 2; min-width: 220px;"
+                    placeholder="GitHub URL (e.g. pallets/flask)"
+                    oninput="onGithubUrlInput(this.value)"
                     onkeydown="if (event.key === 'Enter') startGitHubImport()"
                 />
-                <button class="apple-btn-primary" id="btnImportGithub" style="padding: 0.5rem 0.95rem; font-size: 0.8rem;" onclick="startGitHubImport()">Import & Index</button>
+                <input
+                    type="text"
+                    id="githubDestInput"
+                    class="apple-input-custom"
+                    style="display: block; flex: 2; min-width: 200px;"
+                    placeholder="Destination folder (optional: cloned_repos/...)"
+                    onkeydown="if (event.key === 'Enter') startGitHubImport()"
+                />
+                <button class="apple-btn-primary" id="btnImportGithub" style="padding: 0.5rem 0.95rem; font-size: 0.8rem; white-space: nowrap;" onclick="startGitHubImport()">Import & Index</button>
             </div>
             <input
                 type="text"
@@ -2157,9 +2166,26 @@
             }
         }
 
+        function onGithubUrlInput(val) {
+            const destInput = document.getElementById('githubDestInput');
+            if (!destInput) return;
+            const cleaned = val.trim().replace(/\.git$/, '');
+            if (cleaned) {
+                const parts = cleaned.split(/[/:]/);
+                const repo = parts.pop();
+                const owner = parts.pop();
+                if (owner && repo && !destInput.dataset.userEdited) {
+                    destInput.placeholder = `cloned_repos/${owner}_${repo}`;
+                }
+            }
+        }
+
         async function startGitHubImport() {
             const urlInput = document.getElementById('githubUrlInput');
+            const destInput = document.getElementById('githubDestInput');
             const url = urlInput.value.trim();
+            const customDest = destInput ? destInput.value.trim() : '';
+
             if (!url) {
                 urlInput.focus();
                 return;
@@ -2177,13 +2203,16 @@
             fillBar.style.width = '0%';
             pctText.textContent = '0%';
             statusText.textContent = `Connecting to GitHub to clone ${url}...`;
-            document.getElementById('modalTargetSubtitle').textContent = `GitHub: ${url}`;
+            document.getElementById('modalTargetSubtitle').textContent = customDest ? `GitHub: ${url} → ${customDest}` : `GitHub: ${url}`;
 
             pillClone.style.display = 'block';
             resetStagePills();
             pillClone.className = 'stage-pill active';
 
-            const sseUrl = `/api/github/import/stream?url=${encodeURIComponent(url)}&force=true`;
+            let sseUrl = `/api/github/import/stream?url=${encodeURIComponent(url)}&force=true`;
+            if (customDest) {
+                sseUrl += `&target_dir=${encodeURIComponent(customDest)}`;
+            }
             let eventSource = null;
 
             try {
@@ -2208,6 +2237,7 @@
                             updateStagePills('done', true);
                             closeBtn.style.display = 'block';
                             urlInput.value = '';
+                            if (destInput) destInput.value = '';
                             if (data.repo_path) {
                                 await loadPresets(data.repo_path);
                                 onRepoChanged();

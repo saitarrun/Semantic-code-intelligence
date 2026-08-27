@@ -378,6 +378,7 @@ async def trigger_index(req: IndexRequest):
 @app.get("/api/github/import/stream")
 async def stream_github_import(
     url: str = Query(..., description="GitHub repository URL or slug"),
+    target_dir: Optional[str] = Query(default=None, description="Custom destination directory"),
     branch: Optional[str] = Query(default=None, description="Optional branch or tag to clone"),
     force: bool = Query(default=False, description="Force fresh clone if directory already exists")
 ):
@@ -386,7 +387,10 @@ async def stream_github_import(
     import shutil
 
     owner, repo, clone_url = sanitize_github_url(url)
-    target_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
+    if target_dir and target_dir.strip():
+        dest_dir = validate_safe_path(target_dir.strip())
+    else:
+        dest_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
 
     event_q: queue.Queue = queue.Queue()
 
@@ -405,18 +409,19 @@ async def stream_github_import(
             event_q.put({
                 "stage": "cloning",
                 "percentage": 5.0,
-                "message": f"Cloning {owner}/{repo} from GitHub (shallow depth=1)...",
+                "message": f"Cloning {owner}/{repo} to {dest_dir.name}...",
                 "repo_name": f"{owner}/{repo}"
             })
 
-            if target_dir.exists() and force:
-                shutil.rmtree(target_dir, ignore_errors=True)
+            if dest_dir.exists() and force:
+                shutil.rmtree(dest_dir, ignore_errors=True)
 
-            if not target_dir.exists():
+            if not dest_dir.exists():
+                dest_dir.parent.mkdir(parents=True, exist_ok=True)
                 cmd = ["git", "clone", "--depth", "1", "--single-branch"]
                 if branch:
                     cmd.extend(["--branch", branch])
-                cmd.extend(["--", clone_url, str(target_dir)])
+                cmd.extend(["--", clone_url, str(dest_dir)])
 
                 res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=60)
                 if res.returncode != 0:
@@ -428,7 +433,7 @@ async def stream_github_import(
                     "message": f"Updating existing local clone for {owner}/{repo}...",
                     "repo_name": f"{owner}/{repo}"
                 })
-                subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
+                subprocess.run(["git", "-C", str(dest_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
 
             event_q.put({
                 "stage": "cloning",
@@ -448,10 +453,10 @@ async def stream_github_import(
                     "repo_name": f"{owner}/{repo}"
                 })
 
-            cfg = CodeIntelConfig(project_root=target_dir)
+            cfg = CodeIntelConfig(project_root=dest_dir)
             indexer = HybridIndexer(cfg)
             metrics = indexer.index_codebase(
-                target_dir=target_dir,
+                target_dir=dest_dir,
                 force_reindex=True,
                 progress_callback=progress_handler
             )
@@ -459,11 +464,11 @@ async def stream_github_import(
             # Register as known preset
             preset_entry = {
                 "name": f"GitHub: {owner}/{repo}",
-                "path": str(target_dir),
-                "index_dir": str(target_dir / ".code_intel_index"),
+                "path": str(dest_dir),
+                "index_dir": str(dest_dir / ".code_intel_index"),
                 "description": f"Cloned from https://github.com/{owner}/{repo}"
             }
-            if not any(p["path"] == str(target_dir) for p in KNOWN_PRESETS):
+            if not any(p["path"] == str(dest_dir) for p in KNOWN_PRESETS):
                 KNOWN_PRESETS.append(preset_entry)
 
             t_files = getattr(metrics, 'total_files', None) if not isinstance(metrics, dict) else metrics.get('total_files', 0)
@@ -475,7 +480,7 @@ async def stream_github_import(
                 "stage": "done",
                 "percentage": 100.0,
                 "message": f"Successfully imported & indexed {owner}/{repo} ({t_files} files, {t_lines:,} LOC).",
-                "repo_path": str(target_dir),
+                "repo_path": str(dest_dir),
                 "repo_name": f"{owner}/{repo}",
                 "preset_name": f"GitHub: {owner}/{repo}",
                 "metrics": {
@@ -517,38 +522,42 @@ async def import_github_repo(req: GitHubImportRequest):
     import shutil
 
     owner, repo, clone_url = sanitize_github_url(req.url)
-    target_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
+    if req.target_dir and req.target_dir.strip():
+        dest_dir = validate_safe_path(req.target_dir.strip())
+    else:
+        dest_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
 
-    if target_dir.exists() and req.force:
-        shutil.rmtree(target_dir, ignore_errors=True)
+    if dest_dir.exists() and req.force:
+        shutil.rmtree(dest_dir, ignore_errors=True)
 
-    if not target_dir.exists():
+    if not dest_dir.exists():
+        dest_dir.parent.mkdir(parents=True, exist_ok=True)
         cmd = ["git", "clone", "--depth", "1", "--single-branch"]
         if req.branch:
             cmd.extend(["--branch", req.branch])
-        cmd.extend(["--", clone_url, str(target_dir)])
+        cmd.extend(["--", clone_url, str(dest_dir)])
         res = subprocess.run(cmd, capture_output=True, text=True, check=False, timeout=60)
         if res.returncode != 0:
             raise HTTPException(status_code=500, detail=f"Git clone failed: {res.stderr.strip()}")
     else:
-        subprocess.run(["git", "-C", str(target_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
+        subprocess.run(["git", "-C", str(dest_dir), "pull", "--depth", "1"], capture_output=True, text=True, check=False, timeout=60)
 
-    cfg = CodeIntelConfig(project_root=target_dir)
+    cfg = CodeIntelConfig(project_root=dest_dir)
     indexer = HybridIndexer(cfg)
-    metrics = indexer.index_codebase(target_dir=target_dir, force_reindex=True)
+    metrics = indexer.index_codebase(target_dir=dest_dir, force_reindex=True)
 
     preset_entry = {
         "name": f"GitHub: {owner}/{repo}",
-        "path": str(target_dir),
-        "index_dir": str(target_dir / ".code_intel_index"),
+        "path": str(dest_dir),
+        "index_dir": str(dest_dir / ".code_intel_index"),
         "description": f"Cloned from https://github.com/{owner}/{repo}"
     }
-    if not any(p["path"] == str(target_dir) for p in KNOWN_PRESETS):
+    if not any(p["path"] == str(dest_dir) for p in KNOWN_PRESETS):
         KNOWN_PRESETS.append(preset_entry)
 
     return {
         "status": "indexed",
-        "repo_path": str(target_dir),
+        "repo_path": str(dest_dir),
         "repo_name": f"{owner}/{repo}",
         "preset_name": f"GitHub: {owner}/{repo}",
         "metrics": metrics

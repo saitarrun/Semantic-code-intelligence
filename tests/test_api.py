@@ -102,3 +102,15 @@ def test_github_url_parsing():
     from fastapi import HTTPException
     with pytest.raises((ValueError, HTTPException)):
         parse_github_url("https://notgithub.com/something")
+
+
+def test_github_import_custom_destination_schema():
+    from semantic_code_intel.api.schemas import GitHubImportRequest
+    req = GitHubImportRequest(
+        url="pallets/flask",
+        target_dir="/tmp/my_custom_flask_repo",
+        branch="main"
+    )
+    assert req.url == "pallets/flask"
+    assert req.target_dir == "/tmp/my_custom_flask_repo"
+    assert req.branch == "main"

@@ -90,5 +90,6 @@ class OpenFileRequest(BaseModel):
 
 class GitHubImportRequest(BaseModel):
     url: str
+    target_dir: Optional[str] = None
     branch: Optional[str] = None
     force: bool = False
