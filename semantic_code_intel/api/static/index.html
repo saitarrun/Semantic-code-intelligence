@@ -1192,6 +1192,26 @@
             background: var(--system-blue-tint);
         }
 
+        .symbol-type-chip.interface, .symbol-type-chip.trait {
+            color: #5e5ce6;
+            background: rgba(94, 92, 230, 0.12);
+        }
+
+        .symbol-type-chip.struct, .symbol-type-chip.type {
+            color: var(--system-orange);
+            background: var(--system-orange-tint);
+        }
+
+        .symbol-type-chip.enum {
+            color: #ff9f0a;
+            background: rgba(255, 159, 10, 0.12);
+        }
+
+        .symbol-type-chip.module {
+            color: #64d2ff;
+            background: rgba(100, 210, 255, 0.12);
+        }
+
         .sym-lines-cell {
             font-family: var(--font-mono);
             font-size: 0.75rem;
@@ -2606,10 +2626,14 @@
 
             filesListEl.innerHTML = activeFiles.map((f, i) => {
                 const count = (fileSymbolsMap[f.id] || []).length;
+                const ext = (f.label || '').includes('.') ? f.label.split('.').pop().toUpperCase() : 'CODE';
                 return `
                 <div class="file-item-row ${i === 0 ? 'active' : ''}" id="file_item_${i}" onclick="selectMasterFile('${f.id}', 'file_item_${i}')" data-file-id="${f.id}" data-file-path="${escapeHtml(f.full_path || f.label)}">
                     <div class="file-item-left">
-                        <span class="file-item-name">${escapeHtml(f.label)}</span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span class="symbol-type-chip method" style="font-size: 0.6rem; padding: 1px 4px;">${escapeHtml(ext)}</span>
+                            <span class="file-item-name">${escapeHtml(f.label)}</span>
+                        </div>
                         <span class="file-item-path">${escapeHtml(f.full_path || f.label)}</span>
                     </div>
                     <span class="file-item-badge">${count} sym</span>
@@ -2677,25 +2701,28 @@
                 const callsHtml = callees.map(targetId => {
                     const targetNode = graphRawData.nodes.find(n => n.id === targetId);
                     const name = targetNode ? targetNode.name || targetNode.label : 'callee';
-                    return `<span class="relation-mini-pill" onclick="openSymbolInspector('${targetId}')" title="Calls ${name}">${escapeHtml(name)}()</span>`;
+                    return `<span class="relation-mini-pill" onclick="openSymbolInspector('${targetId}')" title="Calls ${name}">${escapeHtml(name)}</span>`;
                 }).join('');
 
                 const callersHtml = callers.map(sourceId => {
                     const srcNode = graphRawData.nodes.find(n => n.id === sourceId);
                     const name = srcNode ? srcNode.name || srcNode.label : 'caller';
-                    return `<span class="relation-mini-pill" style="color: var(--system-green);" onclick="openSymbolInspector('${sourceId}')" title="Called by ${name}">Called by ${escapeHtml(name)}()</span>`;
+                    return `<span class="relation-mini-pill" style="color: var(--system-green);" onclick="openSymbolInspector('${sourceId}')" title="Called by ${name}">Called by ${escapeHtml(name)}</span>`;
                 }).join('');
 
                 const relationshipsHtml = (callsHtml || callersHtml) ? `<div class="sym-calls-cell">${callersHtml} ${callsHtml}</div>` : '<span style="color: var(--label-tertiary); font-size: 0.72rem;">Self-contained</span>';
 
-                const symTypeClass = s.type === 'class' ? 'class' : (s.type === 'method' ? 'method' : 'function');
+                const rawType = (s.type || 'function').toLowerCase();
+                const symTypeClass = ['class', 'struct', 'interface', 'enum', 'trait', 'type', 'method', 'function', 'module'].includes(rawType) ? rawType : 'function';
+                const isCallable = rawType === 'function' || rawType === 'method';
+                const symDisplay = isCallable ? `${escapeHtml(s.name)}()` : escapeHtml(s.name);
 
                 return `
                 <tr>
                     <td>
                         <div class="sym-name-cell">
-                            <span class="symbol-type-chip ${symTypeClass}">${escapeHtml(s.type || 'function')}</span>
-                            <span>${escapeHtml(s.name)}()</span>
+                            <span class="symbol-type-chip ${symTypeClass}">${escapeHtml(rawType)}</span>
+                            <span style="font-weight: 500;">${symDisplay}</span>
                         </div>
                     </td>
                     <td>
@@ -2733,6 +2760,12 @@
             const modal = document.getElementById('inspectorModal');
             const titleEl = document.getElementById('inspectorSymbolTitle');
             const typeChip = document.getElementById('inspectorTypeChip');
+
+            const rawType = (sym.type || 'symbol').toLowerCase();
+            const isCallable = rawType === 'function' || rawType === 'method';
+            titleEl.textContent = isCallable ? `${sym.name || sym.label}()` : (sym.name || sym.label);
+            typeChip.className = `symbol-type-chip ${rawType}`;
+            typeChip.textContent = rawType.toUpperCase();
             const citationEl = document.getElementById('inspectorFileCitation');
             const scopeEl = document.getElementById('inspectorScopeText');
             const gutterEl = document.getElementById('inspectorGutter');

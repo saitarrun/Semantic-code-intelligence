@@ -104,12 +104,14 @@ class SymbolGraphEngine:
                 continue
 
             sym_id = f"sym:{f_path}:{clean_sym_name}"
-            sym_type = ch.symbol_type or "function"
-            
+            sym_type_str = ch.symbol_type.value if hasattr(ch.symbol_type, "value") else str(ch.symbol_type or "function").lower()
+            is_callable = sym_type_str in ("function", "method")
+            label_str = f"{clean_sym_name}()" if is_callable else clean_sym_name
+
             defined_symbols[clean_sym_name] = {
                 "id": sym_id,
                 "name": clean_sym_name,
-                "type": sym_type,
+                "type": sym_type_str,
                 "file_path": f_path,
                 "start_line": ch.start_line,
                 "end_line": ch.end_line,
@@ -118,9 +120,9 @@ class SymbolGraphEngine:
 
             nodes_dict[sym_id] = {
                 "id": sym_id,
-                "label": f"{clean_sym_name}()" if sym_type == "function" else clean_sym_name,
+                "label": label_str,
                 "name": clean_sym_name,
-                "type": sym_type,
+                "type": sym_type_str,
                 "file": clean_file_name,
                 "full_path": f_path,
                 "start_line": ch.start_line,
