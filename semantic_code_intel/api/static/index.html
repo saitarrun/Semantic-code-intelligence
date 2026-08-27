@@ -1733,7 +1733,7 @@
 
         <!-- 3. DEPENDENCY MAP (ARCHITECTURE) TAB -->
         <div id="tab-graph" class="tab-content-view hidden">
-            <div class="glass-panel" style="padding: 0.85rem 1.25rem;">
+            <div class="glass-panel" style="padding: 0.85rem 1.25rem; display: flex; flex-direction: column; gap: 0.65rem;">
                 <div class="search-row">
                     <div class="search-input-wrapper">
                         <input
@@ -1742,10 +1742,42 @@
                             class="apple-search-input"
                             style="padding: 0.55rem 1rem; font-size: 0.85rem;"
                             placeholder="Filter files or symbols across codebase..."
-                            oninput="filterMasterDetail()"
+                            oninput="applyArchitectureFilters()"
                         />
                     </div>
                     <button class="apple-btn-secondary" onclick="loadSymbolGraph()">Refresh</button>
+                </div>
+
+                <!-- Filter Controls Row -->
+                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; font-size: 0.78rem;">
+                    <span style="color: var(--label-tertiary); font-weight: 500;">Filter:</span>
+
+                    <!-- Language Filter -->
+                    <select id="archLangFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
+                        <option value="ALL">All Languages</option>
+                    </select>
+
+                    <!-- Symbol Type Filter -->
+                    <select id="archTypeFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
+                        <option value="ALL">All Symbol Types</option>
+                        <option value="class">Classes</option>
+                        <option value="struct">Structs / Types</option>
+                        <option value="interface">Interfaces / Traits</option>
+                        <option value="function">Functions</option>
+                        <option value="method">Methods</option>
+                        <option value="enum">Enums</option>
+                        <option value="module">Modules</option>
+                    </select>
+
+                    <!-- Connectivity Filter -->
+                    <select id="archRelFilter" class="apple-select" style="padding: 0.35rem 0.65rem; font-size: 0.78rem;" onchange="applyArchitectureFilters()">
+                        <option value="ALL">All Connectivity</option>
+                        <option value="CONNECTED">With Callers / Callees</option>
+                        <option value="STANDALONE">Self-Contained Only</option>
+                    </select>
+
+                    <!-- Reset Filters Button -->
+                    <button class="btn-copy" style="margin-left: auto; font-size: 0.75rem; padding: 0.3rem 0.6rem;" onclick="resetArchitectureFilters()">Reset</button>
                 </div>
             </div>
 
@@ -2577,7 +2609,9 @@
             }
         }
 
-        /* --- SYMBOL ARCHITECTURE TABLE --- */
+        /* --- SYMBOL ARCHITECTURE TABLE & FILTERS --- */
+        let activeFilteredSymbolsMap = {};
+
         async function loadSymbolGraph() {
             const target = getActiveTarget();
             const filesListEl = document.getElementById('masterFilesList');
@@ -2594,38 +2628,152 @@
                     return;
                 }
 
-                renderMasterFilesList(data);
+                populateArchitectureLanguages(data.nodes.filter(n => n.group === 1));
+                applyArchitectureFilters();
             } catch (err) {
                 filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--system-red); font-size: 0.8rem;">Error loading architecture: ${err.message}</div>`;
             }
         }
 
-        function renderMasterFilesList(data) {
-            const filesListEl = document.getElementById('masterFilesList');
-            const files = data.nodes.filter(n => n.group === 1);
-            const symbols = data.nodes.filter(n => n.group === 2);
-            const edges = data.edges || [];
+        function populateArchitectureLanguages(files) {
+            const langSelect = document.getElementById('archLangFilter');
+            if (!langSelect) return;
 
-            const fileSymbolsMap = {};
-            files.forEach(f => { fileSymbolsMap[f.id] = []; });
-
-            symbols.forEach(sym => {
-                const parentEdge = edges.find(e => e.target === sym.id && e.relation === 'defines');
-                const parentFileId = parentEdge ? parentEdge.source : `file:${sym.full_path}`;
-                if (!fileSymbolsMap[parentFileId]) fileSymbolsMap[parentFileId] = [];
-                fileSymbolsMap[parentFileId].push(sym);
+            const currentVal = langSelect.value;
+            const detectedExts = new Set();
+            files.forEach(f => {
+                const label = f.label || '';
+                if (label.includes('.')) {
+                    detectedExts.add(label.split('.').pop().toLowerCase());
+                }
             });
 
-            const activeFiles = files.filter(f => (fileSymbolsMap[f.id] || []).length > 0);
+            langSelect.innerHTML = `<option value="ALL">All Languages</option>` +
+                Array.from(detectedExts).sort().map(ext => {
+                    const labelMap = {
+                        'py': 'Python (.py)', 'ts': 'TypeScript (.ts)', 'tsx': 'TSX (.tsx)',
+                        'js': 'JavaScript (.js)', 'jsx': 'JSX (.jsx)', 'go': 'Go (.go)',
+                        'rs': 'Rust (.rs)', 'java': 'Java (.java)', 'cpp': 'C++ (.cpp)',
+                        'c': 'C (.c)', 'cs': 'C# (.cs)', 'swift': 'Swift (.swift)',
+                        'kt': 'Kotlin (.kt)', 'scala': 'Scala (.scala)', 'rb': 'Ruby (.rb)',
+                        'php': 'PHP (.php)', 'sql': 'SQL (.sql)'
+                    };
+                    const name = labelMap[ext] || `.${ext.toUpperCase()}`;
+                    return `<option value="${escapeHtml(ext)}">${escapeHtml(name)}</option>`;
+                }).join('');
+
+            if (currentVal && Array.from(langSelect.options).some(o => o.value === currentVal)) {
+                langSelect.value = currentVal;
+            }
+        }
+
+        function applyArchitectureFilters() {
+            if (!graphRawData) return;
+
+            const query = (document.getElementById('archFilterInput')?.value || '').trim().toLowerCase();
+            const langFilter = document.getElementById('archLangFilter')?.value || 'ALL';
+            const typeFilter = document.getElementById('archTypeFilter')?.value || 'ALL';
+            const relFilter = document.getElementById('archRelFilter')?.value || 'ALL';
+
+            const files = graphRawData.nodes.filter(n => n.group === 1);
+            const symbols = graphRawData.nodes.filter(n => n.group === 2);
+            const edges = graphRawData.edges || [];
+
+            const callersMap = {};
+            const calleesMap = {};
+            edges.forEach(e => {
+                if (e.relation === 'calls') {
+                    calleesMap[e.source] = (calleesMap[e.source] || []).concat(e.target);
+                    callersMap[e.target] = (callersMap[e.target] || []).concat(e.source);
+                }
+            });
+
+            // 1. Filter symbols
+            const matchingSymbols = symbols.filter(s => {
+                const sType = (s.type || '').toLowerCase();
+                if (typeFilter !== 'ALL') {
+                    if (typeFilter === 'class' && sType !== 'class') return false;
+                    else if (typeFilter === 'method' && sType !== 'method') return false;
+                    else if (typeFilter === 'function' && sType !== 'function' && sType !== 'async_function') return false;
+                    else if (typeFilter === 'struct' && sType !== 'struct' && sType !== 'type') return false;
+                    else if (typeFilter === 'interface' && sType !== 'interface' && sType !== 'trait') return false;
+                    else if (typeFilter === 'enum' && sType !== 'enum') return false;
+                    else if (typeFilter === 'module' && sType !== 'module') return false;
+                }
+
+                const hasCallers = (callersMap[s.id] || []).length > 0;
+                const hasCallees = (calleesMap[s.id] || []).length > 0;
+                const isConnected = hasCallers || hasCallees;
+
+                if (relFilter === 'CONNECTED' && !isConnected) return false;
+                if (relFilter === 'STANDALONE' && isConnected) return false;
+
+                if (query) {
+                    const symName = (s.name || s.label || '').toLowerCase();
+                    const filePath = (s.full_path || s.file || '').toLowerCase();
+                    if (!symName.includes(query) && !filePath.includes(query)) return false;
+                }
+
+                return true;
+            });
+
+            // 2. Map filtered symbols to parent files
+            activeFilteredSymbolsMap = {};
+            files.forEach(f => { activeFilteredSymbolsMap[f.id] = []; });
+
+            matchingSymbols.forEach(sym => {
+                const parentEdge = edges.find(e => e.target === sym.id && e.relation === 'defines');
+                const parentFileId = parentEdge ? parentEdge.source : `file:${sym.full_path}`;
+                if (!activeFilteredSymbolsMap[parentFileId]) activeFilteredSymbolsMap[parentFileId] = [];
+                activeFilteredSymbolsMap[parentFileId].push(sym);
+            });
+
+            // 3. Filter files list
+            const activeFiles = files.filter(f => {
+                const label = f.label || '';
+                const ext = label.includes('.') ? label.split('.').pop().toLowerCase() : '';
+                if (langFilter !== 'ALL' && ext !== langFilter.toLowerCase()) return false;
+
+                const syms = activeFilteredSymbolsMap[f.id] || [];
+                if (query) {
+                    const fullPath = (f.full_path || f.label || '').toLowerCase();
+                    return fullPath.includes(query) || syms.length > 0;
+                }
+                return syms.length > 0;
+            });
+
+            renderMasterFilesListFiltered(activeFiles);
+        }
+
+        function resetArchitectureFilters() {
+            const searchInput = document.getElementById('archFilterInput');
+            const langSelect = document.getElementById('archLangFilter');
+            const typeSelect = document.getElementById('archTypeFilter');
+            const relSelect = document.getElementById('archRelFilter');
+
+            if (searchInput) searchInput.value = '';
+            if (langSelect) langSelect.value = 'ALL';
+            if (typeSelect) typeSelect.value = 'ALL';
+            if (relSelect) relSelect.value = 'ALL';
+
+            applyArchitectureFilters();
+        }
+
+        function renderMasterFilesListFiltered(activeFiles) {
+            const filesListEl = document.getElementById('masterFilesList');
             document.getElementById('masterFilesCount').textContent = `${activeFiles.length} files`;
 
             if (activeFiles.length === 0) {
-                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No code symbols found.</div>`;
+                filesListEl.innerHTML = `<div style="padding: 1.5rem; text-align: center; color: var(--label-tertiary); font-size: 0.8rem;">No files or symbols match the selected filters.</div>`;
+                const tableBody = document.getElementById('symbolTableBody');
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">No matching symbols found. Try adjusting filters.</td></tr>`;
+                }
                 return;
             }
 
             filesListEl.innerHTML = activeFiles.map((f, i) => {
-                const count = (fileSymbolsMap[f.id] || []).length;
+                const count = (activeFilteredSymbolsMap[f.id] || []).length;
                 const ext = (f.label || '').includes('.') ? f.label.split('.').pop().toUpperCase() : 'CODE';
                 return `
                 <div class="file-item-row ${i === 0 ? 'active' : ''}" id="file_item_${i}" onclick="selectMasterFile('${f.id}', 'file_item_${i}')" data-file-id="${f.id}" data-file-path="${escapeHtml(f.full_path || f.label)}">
@@ -2660,17 +2808,12 @@
             if (!graphRawData) return;
 
             const fileNode = graphRawData.nodes.find(n => n.id === fileId);
-            const symbols = graphRawData.nodes.filter(n => n.group === 2);
+            const fileSymbols = activeFilteredSymbolsMap[fileId] || [];
             const edges = graphRawData.edges || [];
-
-            const fileSymbols = symbols.filter(s => {
-                const parentEdge = edges.find(e => e.target === s.id && e.relation === 'defines');
-                return parentEdge ? parentEdge.source === fileId : (s.full_path === fileNode?.full_path);
-            });
 
             document.getElementById('detailFileName').textContent = fileNode ? fileNode.label : 'File Symbols';
             document.getElementById('detailFilePath').textContent = fileNode ? fileNode.full_path : '';
-            document.getElementById('detailFileStats').textContent = `${fileSymbols.length} Symbols Defined`;
+            document.getElementById('detailFileStats').textContent = `${fileSymbols.length} Matching Symbols`;
 
             const callersMap = {};
             const calleesMap = {};
@@ -2687,7 +2830,7 @@
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align: center; padding: 3rem 1rem; color: var(--label-tertiary);">
-                            No symbols defined in this file.
+                            No symbols match the current filters in this file.
                         </td>
                     </tr>
                 `;
@@ -2714,7 +2857,7 @@
 
                 const rawType = (s.type || 'function').toLowerCase();
                 const symTypeClass = ['class', 'struct', 'interface', 'enum', 'trait', 'type', 'method', 'function', 'module'].includes(rawType) ? rawType : 'function';
-                const isCallable = rawType === 'function' || rawType === 'method';
+                const isCallable = rawType === 'function' || rawType === 'method' || rawType === 'async_function';
                 const symDisplay = isCallable ? `${escapeHtml(s.name)}()` : escapeHtml(s.name);
 
                 return `
@@ -2737,17 +2880,6 @@
                 </tr>
                 `;
             }).join('');
-        }
-
-        function filterMasterDetail() {
-            const query = document.getElementById('archFilterInput').value.trim().toLowerCase();
-            const fileRows = document.querySelectorAll('.file-item-row');
-
-            fileRows.forEach(row => {
-                const path = (row.dataset.filePath || '').toLowerCase();
-                const matches = query === '' || path.includes(query);
-                row.style.display = matches ? 'flex' : 'none';
-            });
         }
 
         /* --- CODE INSPECTOR ("OPEN IT") --- */
