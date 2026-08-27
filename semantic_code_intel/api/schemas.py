@@ -53,7 +53,7 @@ class SynthesizeRequest(BaseModel):
     repo_path: Optional[str] = None
     index_path: Optional[str] = None
     top_k: int = Field(default=5, ge=1, le=20)
-    provider: Optional[str] = Field(default=None, pattern="^(ollama|extractive)$")
+    provider: Optional[str] = Field(default=None, pattern="^(mlx|ollama|extractive)$")
 
 
 class SynthesizeResponse(BaseModel):

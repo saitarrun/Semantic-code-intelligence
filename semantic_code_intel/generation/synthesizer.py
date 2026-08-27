@@ -92,6 +92,23 @@ class CodeSynthesizer:
             raise RuntimeError("Local Ollama generation returned an empty response")
         return answer
 
+    def _mlx_answer(self, query: str, results: List[SearchResult]) -> str:
+        """Generate response using Apple Silicon MLX framework."""
+        prompt = CodePromptBuilder.build_rag_prompt(query, results)
+        try:
+            from mlx_lm import load, generate
+            model, tokenizer = load(self.config.generation.mlx_model)
+            response = generate(
+                model,
+                tokenizer,
+                prompt=prompt,
+                max_tokens=1024,
+                verbose=False
+            )
+            return response.strip()
+        except Exception as exc:
+            raise RuntimeError(f"Apple MLX local generation failed: {exc}") from exc
+
     def synthesize(self, query: str, results: List[SearchResult]) -> SynthesisResponse:
         """
         Synchronously synthesizes a citation-backed technical answer.
@@ -106,7 +123,16 @@ class CodeSynthesizer:
 
         citations = [r.chunk.citation for r in results]
         provider_used = self.provider
-        if self.provider == "ollama":
+        if self.provider == "mlx":
+            try:
+                answer = self._mlx_answer(query, results)
+            except Exception:
+                if not self.config.generation.fallback_to_extractive:
+                    raise
+                logger.warning("MLX model unavailable; falling back to source evidence")
+                answer = self._extractive_answer(query, results)
+                provider_used = "extractive-fallback"
+        elif self.provider == "ollama":
             try:
                 answer = self._ollama_answer(query, results)
             except RuntimeError:

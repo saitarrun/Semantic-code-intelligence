@@ -2536,9 +2536,14 @@
                     }
                 }
 
-                const providerLabel = answerProvider === 'ollama'
-                    ? 'Generated locally with Ollama'
-                    : 'Deterministic source evidence (Ollama unavailable)';
+                let providerLabel = 'Deterministic source evidence';
+                if (answerProvider === 'mlx') {
+                    providerLabel = 'Generated locally with Apple Silicon MLX';
+                } else if (answerProvider === 'ollama') {
+                    providerLabel = 'Generated locally with Ollama';
+                } else if (answerProvider.includes('fallback')) {
+                    providerLabel = 'Deterministic source evidence (LLM unavailable)';
+                }
                 const citationHtml = answerCitations.length
                     ? `<span>Sources: ${answerCitations.map(c => `<code>${escapeHtml(c)}</code>`).join(' · ')}</span>`
                     : '';
