@@ -135,6 +135,10 @@ class CodeIntelConfig(BaseModel):
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
     storage: StorageConfig = Field(default_factory=StorageConfig)
 
+    @property
+    def supported_extensions(self) -> list[str]:
+        return self.parser.include_extensions
+
     def get_index_dir(self) -> Path:
         """Resolve and return the absolute index storage directory."""
         if self.index_dir is not None:

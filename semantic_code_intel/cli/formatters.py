@@ -38,12 +38,12 @@ def render_latency_table(latency: LatencyBreakdown) -> Table:
     table.add_column("Latency (ms)", justify="right", style="green")
     table.add_column("Status", justify="center")
 
-    table.add_row("FAISS Dense Vector Search", f"{latency.dense_ms:.2f} ms", "⚡ Fast")
-    table.add_row("BM25 Sparse Lexical Search", f"{latency.sparse_ms:.2f} ms", "⚡ Fast")
-    table.add_row("Reciprocal Rank Fusion (RRF)", f"{latency.fusion_ms:.2f} ms", "⚡ Fast")
-    table.add_row("SQLite Metadata & Code Fetch", f"{latency.metadata_fetch_ms:.2f} ms", "⚡ Fast")
-    table.add_row("Cross-Encoder Reranking", f"{latency.rerank_ms:.2f} ms", "🎯 High Precision")
-    
+    table.add_row("FAISS Dense Vector Search", f"{latency.dense_ms:.2f} ms", "Optimal")
+    table.add_row("BM25 Sparse Lexical Search", f"{latency.sparse_ms:.2f} ms", "Optimal")
+    table.add_row("Reciprocal Rank Fusion (RRF)", f"{latency.fusion_ms:.2f} ms", "Optimal")
+    table.add_row("SQLite Metadata & Code Fetch", f"{latency.metadata_fetch_ms:.2f} ms", "Optimal")
+    table.add_row("Cross-Encoder Reranking", f"{latency.rerank_ms:.2f} ms", "High Precision")
+
     sub_second = latency.total_ms < 1000.0
     status_icon = "[bold green]SUB-SECOND (PASS)[/]" if sub_second else "[yellow]SLOW[/]"
     table.add_row(

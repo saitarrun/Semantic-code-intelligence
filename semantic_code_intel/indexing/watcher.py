@@ -57,7 +57,10 @@ class IncrementalIndexHandler(FileSystemEventHandler):
 
         # Check if extension is supported
         ext = file_path.suffix.lower()
-        if ext not in self.config.supported_extensions and not is_deletion:
+        supported = getattr(self.config, "supported_extensions", None) or getattr(
+            self.config.parser, "include_extensions", []
+        )
+        if ext not in supported and not is_deletion:
             return
 
         with self._lock:

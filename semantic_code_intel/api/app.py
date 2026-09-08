@@ -148,16 +148,15 @@ def resolve_paths(target_dir: Optional[str] = None, index_dir: Optional[str] = N
         i_path = validate_safe_path(index_dir)
     elif config.index_dir is not None and target_dir is None:
         i_path = config.index_dir.resolve()
-    elif target_dir:
+    else:
         matched_preset = next((p for p in KNOWN_PRESETS if Path(p["path"]).resolve() == t_path), None)
         if matched_preset and matched_preset.get("index_dir"):
             i_path = Path(matched_preset["index_dir"]).resolve()
         else:
             i_path = (t_path / ".code_intel_index").resolve()
-    else:
-        i_path = None
 
     return t_path, i_path
+
 
 
 def get_pipeline(repo_path: Optional[str] = None, index_path: Optional[str] = None) -> HybridRetrievalPipeline:
@@ -193,8 +192,10 @@ async def serve_ui():
 
 
 @app.get("/api/presets")
+@app.get("/api/repos")
 async def get_presets():
     """List available repositories and presets."""
+    cloned = []
     if CLONED_REPOS_ROOT.exists():
         for sub in CLONED_REPOS_ROOT.iterdir():
             if sub.is_dir() and not sub.name.startswith("."):
@@ -206,6 +207,7 @@ async def get_presets():
                     "index_dir": str(sub / ".code_intel_index"),
                     "description": f"Cloned repository in cloned_repos/{sub.name}"
                 }
+                cloned.append({"name": sub.name, "path": str(sub)})
                 if not any(p["path"] == str(sub) for p in KNOWN_PRESETS):
                     KNOWN_PRESETS.append(preset_entry)
 
@@ -223,7 +225,8 @@ async def get_presets():
         })
     return {
         "active_repo": str(_ACTIVE_REPO_PATH.resolve()),
-        "presets": resolved_presets
+        "presets": resolved_presets,
+        "cloned_repos": cloned
     }
 
 
@@ -239,14 +242,20 @@ async def health_check():
 
 
 @app.get("/api/stats")
-async def get_stats(repo_path: Optional[str] = None, index_path: Optional[str] = None):
+@app.get("/api/status")
+async def get_stats(
+    repo_path: Optional[str] = None,
+    target_dir: Optional[str] = None,
+    index_path: Optional[str] = None
+):
     """Get statistics about the selected repository index."""
-    t_path, i_path = resolve_paths(repo_path, index_path)
+    t_path, i_path = resolve_paths(target_dir or repo_path, index_path)
     p = get_pipeline(str(t_path), str(i_path) if i_path else None)
 
     if not p.is_indexed():
         return {
             "status": "not_indexed",
+            "indexed": False,
             "repo_path": str(t_path),
             "index_dir": str(p.index_dir),
             "total_chunks": 0,
@@ -258,11 +267,13 @@ async def get_stats(repo_path: Optional[str] = None, index_path: Optional[str] =
     manifest = p.metadata_store.get_manifest_val("index_manifest", {})
     return {
         "status": "ready",
+        "indexed": True,
         "repo_path": str(t_path),
         "index_dir": str(p.index_dir),
         **stats,
         "manifest": manifest
     }
+
 
 
 @app.get("/api/index/stream")
@@ -352,27 +363,56 @@ async def stream_indexing(
 
 
 @app.post("/api/index")
-async def trigger_index(req: IndexRequest):
-    """Synchronous indexing fallback endpoint."""
-    t_path, i_path = resolve_paths(req.target_dir, req.index_dir)
+async def trigger_index(
+    req: Optional[IndexRequest] = None,
+    target_dir: Optional[str] = Query(None),
+    repo_path: Optional[str] = Query(None),
+    force: Optional[bool] = Query(None)
+):
+    """Synchronous indexing fallback endpoint supporting JSON body and query parameters."""
+    target = None
+    custom_index = None
+    is_force = False
+
+    if req:
+        target = req.target_dir or req.repo_path
+        custom_index = req.index_dir
+        is_force = req.force
+
+    if target_dir:
+        target = target_dir
+    elif repo_path:
+        target = repo_path
+
+    if force is not None:
+        is_force = force
+
+    target = target or "."
+    t_path, i_path = resolve_paths(target, custom_index)
 
     if not t_path.exists():
         raise HTTPException(status_code=404, detail=f"Target directory not found: {t_path}")
 
     cfg = CodeIntelConfig(project_root=t_path, index_dir=i_path)
     indexer = HybridIndexer(cfg)
-    metrics = indexer.index_codebase(t_path, force_reindex=req.force)
+    metrics = indexer.index_codebase(t_path, force_reindex=is_force)
 
     cache_key = f"{t_path}::{cfg.get_index_dir()}"
     with _PIPELINES_LOCK:
         _PIPELINES.pop(cache_key, None)
 
+    total_chunks = metrics.get("total_chunks", 0) if isinstance(metrics, dict) else getattr(metrics, "total_chunks", 0)
+    duration_sec = metrics.get("indexing_time_seconds", 0.0) if isinstance(metrics, dict) else getattr(metrics, "indexing_time_seconds", 0.0)
+
     return {
         "status": "indexed",
         "repo_path": str(t_path),
         "index_dir": str(cfg.get_index_dir()),
+        "total_chunks": total_chunks,
+        "duration_ms": duration_sec * 1000.0,
         "metrics": metrics
     }
+
 
 
 @app.get("/api/github/import/stream")
@@ -519,18 +559,26 @@ async def stream_github_import(
 
 
 @app.post("/api/github/import")
+@app.post("/api/import/github")
 async def import_github_repo(req: GitHubImportRequest):
     """Synchronous endpoint to clone and index a GitHub repository."""
     import subprocess
     import shutil
 
-    owner, repo, clone_url = sanitize_github_url(req.url)
-    if req.target_dir and req.target_dir.strip():
-        dest_dir = validate_safe_path(req.target_dir.strip())
+    raw_url = req.url or req.repo_url
+    if not raw_url:
+        raise HTTPException(status_code=400, detail="GitHub URL is required.")
+
+    target_directory = req.target_dir or req.destination
+    is_force = req.force or req.force_reindex
+
+    owner, repo, clone_url = sanitize_github_url(raw_url)
+    if target_directory and target_directory.strip():
+        dest_dir = validate_safe_path(target_directory.strip())
     else:
         dest_dir = CLONED_REPOS_ROOT / f"{owner}_{repo}"
 
-    if dest_dir.exists() and req.force:
+    if dest_dir.exists() and is_force:
         shutil.rmtree(dest_dir, ignore_errors=True)
 
     if not dest_dir.exists():
@@ -547,7 +595,9 @@ async def import_github_repo(req: GitHubImportRequest):
 
     cfg = CodeIntelConfig(project_root=dest_dir)
     indexer = HybridIndexer(cfg)
-    metrics = indexer.index_codebase(target_dir=dest_dir, force_reindex=req.force)
+    metrics = indexer.index_codebase(target_dir=dest_dir, force_reindex=is_force)
+
+    total_chunks = metrics.get("total_chunks", 0) if isinstance(metrics, dict) else getattr(metrics, "total_chunks", 0)
 
     preset_entry = {
         "name": f"GitHub: {owner}/{repo}",
@@ -563,8 +613,10 @@ async def import_github_repo(req: GitHubImportRequest):
         "repo_path": str(dest_dir),
         "repo_name": f"{owner}/{repo}",
         "preset_name": f"GitHub: {owner}/{repo}",
+        "total_chunks": total_chunks,
         "metrics": metrics
     }
+
 
 
 @app.post("/api/search", response_model=SearchResponse)
@@ -740,6 +792,28 @@ async def toggle_watcher(repo_path: Optional[str] = None):
         return {"running": True, "watched_root": str(t_path), "message": "Watcher active"}
 
 
+@app.post("/api/watcher/start")
+async def start_watcher(repo_path: Optional[str] = None):
+    """Explicitly start background file watcher."""
+    global _WATCHER
+    t_path, _ = resolve_paths(repo_path)
+    if not _WATCHER or not _WATCHER.is_running:
+        cfg = CodeIntelConfig(project_root=t_path)
+        _WATCHER = CodebaseWatcher(config=cfg)
+        _WATCHER.start()
+    return {"running": True, "watched_root": str(t_path), "message": "Watcher active"}
+
+
+@app.post("/api/watcher/stop")
+async def stop_watcher():
+    """Explicitly stop background file watcher."""
+    global _WATCHER
+    if _WATCHER and _WATCHER.is_running:
+        _WATCHER.stop()
+    return {"running": False, "message": "Watcher stopped"}
+
+
+
 @app.get("/api/lsp/inspect")
 async def lsp_inspect(
     repo_path: Optional[str] = None,
@@ -845,3 +919,114 @@ async def open_file(req: OpenFileRequest):
         "error": "No supported editor could open the file. Install the Cursor or VS Code shell command.",
         "attempts": attempts,
     }
+
+
+@app.post("/api/browse/folder")
+@app.get("/api/browse/folder")
+async def browse_folder():
+    """
+    Open native macOS Finder folder chooser dialog (or desktop file manager)
+    and return the selected absolute directory path.
+    """
+    import subprocess
+    import sys
+
+    if sys.platform == "darwin":
+        script = '''
+        try
+            tell application "Finder"
+                activate
+                set chosenFolder to choose folder with prompt "Select Codebase Directory to Index:"
+                return POSIX path of chosenFolder
+            end tell
+        on error number -128
+            return "CANCELED"
+        on error errMsg
+            return "ERROR: " & errMsg
+        end try
+        '''
+
+        try:
+            res = await asyncio.to_thread(
+                subprocess.run,
+                ["osascript", "-e", script],
+                capture_output=True,
+                text=True,
+                timeout=120,
+                check=False
+            )
+            output = res.stdout.strip()
+            if output.startswith("ERROR:"):
+                logger.warning(f"AppleScript folder selection error: {output}")
+                return {"path": "", "canceled": False, "error": output}
+            if output == "CANCELED" or not output:
+                return {"path": "", "canceled": True}
+
+            selected_path = output.rstrip("/")
+            safe_path = validate_safe_path(selected_path)
+            return {"path": str(safe_path), "canceled": False}
+        except subprocess.TimeoutExpired:
+            return {"path": "", "canceled": True, "error": "Folder selection timed out."}
+        except Exception as e:
+            logger.exception("Failed to open native macOS folder picker")
+            return {"path": "", "canceled": True, "error": str(e)}
+
+    elif sys.platform.startswith("linux"):
+        for cmd in [["zenity", "--file-selection", "--directory", "--title=Select Codebase Directory"],
+                    ["kdialog", "--getexistingdirectory"]]:
+            try:
+                res = await asyncio.to_thread(
+                    subprocess.run, cmd, capture_output=True, text=True, timeout=120, check=False
+                )
+                selected_path = res.stdout.strip().rstrip("/")
+                if selected_path:
+                    safe_path = validate_safe_path(selected_path)
+                    return {"path": str(safe_path), "canceled": False}
+            except Exception:
+                continue
+
+    return {"path": "", "canceled": True, "error": "Native folder chooser not supported on this platform."}
+
+
+@app.get("/api/fs/list")
+async def list_filesystem_directories(path: str = ""):
+    """
+    List subdirectories for the in-app folder picker modal.
+    """
+    import os
+    if not path or path == "~":
+        target = Path.home()
+    else:
+        target = Path(os.path.expanduser(path)).resolve()
+
+    if not target.exists() or not target.is_dir():
+        return {"error": f"Path '{path}' does not exist or is not a directory.", "directories": []}
+
+    try:
+        entries = []
+        for item in sorted(target.iterdir(), key=lambda p: (not p.is_dir(), p.name.lower())):
+            if item.name.startswith(".") and item.name not in [".git"]:
+                continue
+            if item.is_dir():
+                try:
+                    # check readability
+                    list(item.iterdir())
+                    readable = True
+                except Exception:
+                    readable = False
+                entries.append({
+                    "name": item.name,
+                    "path": str(item.resolve()),
+                    "readable": readable
+                })
+
+        parent = str(target.parent.resolve()) if target != target.parent else None
+        return {
+            "current": str(target),
+            "parent": parent,
+            "directories": entries
+        }
+    except PermissionError:
+        return {"error": f"Permission denied for directory '{target}'", "directories": []}
+    except Exception as e:
+        return {"error": str(e), "directories": []}

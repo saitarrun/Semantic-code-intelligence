@@ -76,7 +76,8 @@ class PatchApplyRequest(BaseModel):
 
 
 class IndexRequest(BaseModel):
-    target_dir: str = Field(default=".")
+    target_dir: Optional[str] = Field(default=None)
+    repo_path: Optional[str] = None
     index_dir: Optional[str] = None
     force: bool = False
 
@@ -89,7 +90,10 @@ class OpenFileRequest(BaseModel):
 
 
 class GitHubImportRequest(BaseModel):
-    url: str
+    url: Optional[str] = None
+    repo_url: Optional[str] = None
     target_dir: Optional[str] = None
+    destination: Optional[str] = None
     branch: Optional[str] = None
     force: bool = False
+    force_reindex: bool = False

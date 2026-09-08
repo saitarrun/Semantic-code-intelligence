@@ -87,7 +87,8 @@ def index_cmd(
             progress_callback=progress_cb
         )
 
-    console.print("\n[bold green]✓ Indexing successfully completed![/]\n")
+    console.print("\n[bold green]Indexing successfully completed.[/]\n")
+
     render_stats_table(metrics)
 
 
@@ -293,7 +294,8 @@ def watch_cmd(
     console.print("[dim]Press Ctrl+C to stop.[/]\n")
 
     def on_change(event_type: str, file_path: str):
-        console.print(f"[cyan]⚡ Event:[/] [{ 'green' if event_type=='updated' else 'red' }]{event_type}[/] [yellow]{file_path}[/]")
+        console.print(f"[cyan]Event:[/] [{ 'green' if event_type=='updated' else 'red' }]{event_type}[/] [yellow]{file_path}[/]")
+
 
     watcher = CodebaseWatcher(config=cfg, on_change_callback=on_change)
     watcher.start()
