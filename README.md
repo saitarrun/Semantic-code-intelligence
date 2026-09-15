@@ -4,7 +4,7 @@ Local-first semantic search and cited code walkthroughs for software repositorie
 
 Semantic Code Intelligence parses a repository into symbol-aware chunks, indexes those chunks with FAISS and BM25, fuses both result sets, and reranks the strongest candidates with a cross-encoder. Results include exact file paths and line ranges. Everything runs locally; no cloud API key is required.
 
-## What it provides
+## What it provides: 
 
 - Hybrid semantic and lexical code search
 - Exact symbol, path, and contextual-term boosting
